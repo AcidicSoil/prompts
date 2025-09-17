@@ -1,5 +1,7 @@
 # Codex Prompts — Vibe Coding Additions
 
+Just clone into your .codex/ directory and all of the following slash commands will be added.
+
 These prompts complement existing Codex files and map to vibe-coding practices from YC notes.
 
 ## Triggers
