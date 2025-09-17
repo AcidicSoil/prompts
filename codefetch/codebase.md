@@ -1500,6 +1500,99 @@ version-proposal.md
 27 | Usage: /gemini-map
 ```
 
+vibe-coders.md
+```
+1 | # YC Guide to Vibe Coding
+2 | 
+3 | ## Planning Process
+4 | 
+5 | - **Create a comprehensive plan**: Start by working with the AI to write a detailed implementation plan in a markdown file.
+6 | - **Review and refine**: Delete unnecessary items, mark features as *won’t do* if too complex.
+7 | - **Maintain scope control**: Keep a separate section for *ideas for later* to stay focused.
+8 | - **Implement incrementally**: Work section by section rather than attempting to build everything at once.
+9 | - **Track progress**: Have the AI mark sections as complete after successful implementation.
+10 | - **Commit regularly**: Ensure each working section is committed to Git before moving to the next.
+11 | 
+12 | ---
+13 | 
+14 | ## Version Control Strategies
+15 | 
+16 | - **Use Git religiously**: Don’t rely solely on the AI tools’ revert functionality.
+17 | - **Start clean**: Begin each new feature with a clean Git slate.
+18 | - **Reset when stuck**: Use `git reset --hard HEAD` if the AI goes on a vision quest.
+19 | - **Avoid cumulative problems**: Multiple failed attempts create layers of bad code.
+20 | - **Clean implementation**: When you finally find a solution, reset and implement it cleanly.
+21 | 
+22 | ---
+23 | 
+24 | ## Testing Framework
+25 | 
+26 | - **Prioritize high-level tests**: Focus on end-to-end integration tests over unit tests.
+27 | - **Simulate user behavior**: Test features by simulating someone clicking through the site/app.
+28 | - **Catch regressions**: LLMs often make unnecessary changes to unrelated logic.
+29 | - **Test before proceeding**: Ensure tests pass before moving to the next feature.
+30 | - **Use tests as guardrails**: Some founders recommend starting with test cases to provide clear boundaries.
+31 | 
+32 | ---
+33 | 
+34 | ## Effective Bug Fixing
+35 | 
+36 | - **Leverage error messages**: Simply copy-pasting error messages is often enough for the AI.
+37 | - **Analyze before coding**: Ask the AI to consider multiple possible causes.
+38 | - **Reset after failures**: Start with a clean slate after each unsuccessful fix attempt.
+39 | - **Implement logging**: Add strategic logging to better understand what’s happening.
+40 | - **Switch models**: Try different AI models when one gets stuck.
+41 | - **Clean implementation**: Once you identify the fix, reset and implement it on a clean codebase.
+42 | 
+43 | ---
+44 | 
+45 | ## AI Tool Optimization
+46 | 
+47 | - **Create instruction files**: Write detailed instructions for your AI in appropriate files (`cursor.rules`, `windsurf.rules`, `claude.md`).
+48 | - **Local documentation**: Download API documentation to your project folder for accuracy.
+49 | - **Use multiple tools**: Some founders run both Cursor and Windsurf simultaneously on the same project.
+50 | - **Tool specialization**: Cursor is a bit faster for frontend work, while Windsurf thinks longer.
+51 | - **Compare outputs**: Generate multiple solutions and pick the best one.
+52 | 
+53 | ---
+54 | 
+55 | ## Complex Feature Development
+56 | 
+57 | - **Create standalone prototypes**: Build complex features in a clean codebase first.
+58 | - **Use reference implementations**: Point the AI to working examples to follow.
+59 | - **Clear boundaries**: Maintain consistent external APIs while allowing internal changes.
+60 | - **Modular architecture**: Service-based architectures with clear boundaries work better than monorepos.
+61 | 
+62 | ---
+63 | 
+64 | ## Tech Stack Considerations
+65 | 
+66 | - **Established frameworks excel**: Ruby on Rails works well due to 20 years of consistent conventions.
+67 | - **Training data matters**: Newer languages like Rust or Elixir may have less training data.
+68 | - **Modularity is key**: Small, modular files are easier for both humans and AIs to work with.
+69 | - **Avoid large files**: Don’t have files that are thousands of lines long.
+70 | 
+71 | ---
+72 | 
+73 | ## Beyond Coding
+74 | 
+75 | - **DevOps automation**: Use AI for configuring servers, DNS, and hosting.
+76 | - **Design assistance**: Generate favicons and other design elements.
+77 | - **Content creation**: Draft documentation and marketing materials.
+78 | - **Educational tool**: Ask the AI to explain implementations line by line.
+79 | - **Use screenshots**: Share UI bugs or design inspiration visually.
+80 | - **Voice input**: Tools like Aqua enable 140 words per minute input.
+81 | 
+82 | ---
+83 | 
+84 | ## Continuous Improvement
+85 | 
+86 | - **Regular refactoring**: Once tests are in place, refactor frequently.
+87 | - **Identify opportunities**: Ask the AI to find refactoring candidates.
+88 | - **Stay current**: Try every new model release.
+89 | - **Recognize strengths**: Different models excel at different tasks.
+```
+
 voice-input.md
 ```
 1 | # Voice Input
@@ -1517,4 +1610,61 @@ voice-input.md
 13 | ## Output format
 14 | 
 15 | - Cleaned command list ready to execute.
+```
+
+workflow.mmd
+```
+1 | flowchart TD
+2 |     A[planning-process.md] --> B[scope-control.md]
+3 |     B --> C[prototype-feature.md]
+4 |     C --> D[explain-code.md]
+5 |     D --> E[refactor-file.md]
+6 |     E --> F[file-modularity.md]
+7 |     F --> G[generate.md]
+8 |     G --> H[integration-test.md]
+9 |     H --> I[coverage-guide.md]
+10 |     I --> J[explain-failures.md]
+11 |     J --> K[fix.md]
+12 |     K --> L[commit.md]
+13 |     L --> M[review.md]
+14 |     M --> N[review-branch.md]
+15 |     N --> O[pr-desc.md]
+16 |     O --> P[regression-guard.md]
+17 |     P --> Q[release-notes.md]
+18 |     Q --> R[version-proposal.md]
+19 |     R --> S[devops-automation.md]
+20 |     S --> T[reset-strategy.md]
+21 |     T --> U[cleanup-branches.md]
+22 |     U --> V[design-assets.md]
+23 |     V --> W[ui-screenshots.md]
+24 |     W --> X[logging-strategy.md]
+25 |     X --> Y[error-analysis.md]
+26 |     Y --> Z[audit.md]
+27 |     Z --> AA[summary.md]
+28 |     AA --> AB[instruction-file.md]
+29 |     AB --> AC[version-control-guide.md]
+30 |     AC --> AD[owners.md]
+31 |     AD --> AE[blame-summary.md]
+32 |     AE --> AF[changed-files.md]
+33 |     AF --> AG[todo-report.md]
+34 |     AG --> AH[todos.md]
+35 |     AH --> AI[dead-code-scan.md]
+36 |     AI --> AJ[grep.md]
+37 |     AJ --> AK[explain-symbol.md]
+38 |     AK --> AL[api-usage.md]
+39 |     AL --> AM[action-diagram.md]
+40 |     AM --> AN[plan.md]
+41 |     AN --> AO[tsconfig-review.md]
+42 |     AO --> AP[eslint-review.md]
+43 |     AP --> AQ[stack-evaluation.md]
+44 |     AQ --> AR[modular-architecture.md]
+45 |     AR --> AS[refactor-suggestions.md]
+46 |     AS --> AT[reference-implementation.md]
+47 |     AT --> AU[model-strengths.md]
+48 |     AU --> AV[model-evaluation.md]
+49 |     AV --> AW[compare-outputs.md]
+50 |     AW --> AX[switch-model.md]
+51 |     AX --> AY[voice-input.md]
+52 |     AY --> AZ[content-generation.md]
+53 |     AZ --> BA[api-docs-local.md]
 ```
