@@ -36,6 +36,80 @@
 20 | }
 ```
 
+AGENTS.md
+```
+1 | # Repository Guidelines
+2 | 
+3 | ## Project Structure & Module Organization
+4 | All contributor-facing prompts live at the repository root as `.md` files. Files that declare a `Trigger:` expose direct Codex slash commands, while front-matter templates (with `---` blocks) plug into the shared `/gemini-map` workflow. Supporting assets reside in `codefetch/` (reference snippets) and `workflow.mmd` (Mermaid source for the end-to-end flow shown in `README.md`). Keep new prompts co-located with peers and reference them from `README.md` when they add net-new functionality.
+5 | 
+6 | ## Build, Test, and Development Commands
+7 | The project is docs-only, so there is no build pipeline. Validate Markdown locally with `npx markdownlint-cli2 "**/*.md"` to honor the styles defined in `.markdownlint.json`. When editing prompts that issue shell commands, dry-run them with `bash -lc '<command>'` inside the Codex CLI to confirm arguments and paths resolve correctly.
+8 | 
+9 | ## Coding Style & Naming Conventions
+10 | Write prompts in Markdown with ATX headings, 80–100 character lines, and ASCII characters unless the template already requires otherwise. For `/gemini-map` templates, mirror the existing front matter keys (`name`, `command`, `tags`, `scope`). Use imperative voice for numbered steps and bold the callouts that users should copy verbatim. New files should follow the lowercase-hyphenated naming pattern (e.g., `new-helper.md`).
+11 | 
+12 | ## Testing Guidelines
+13 | Each prompt should explain a deterministic validation path. Include concrete command snippets (such as `rg -n "TODO" .`) so agents can verify results. After authoring changes, run `codex prompt run <file>` (or invoke the slash command directly) to ensure the prompt executes without missing context or syntax errors. Aim to cover both success and failure handling in the numbered steps.
+14 | 
+15 | ## Commit & Pull Request Guidelines
+16 | Commits should read as imperative sentences ("Add scope control checklist") and focus on a single prompt or documentation area. Reference `/commit` to auto-generate an initial message, then edit for clarity. Pull requests must summarize the changes, list affected prompts, note verification steps (e.g., `markdownlint` and prompt dry-runs), and link to any relevant follow-up issues. Include screenshots or copied terminal output when updating Mermaid flows or command transcripts.
+17 | 
+18 | ## Agent Workflow Reminders
+19 | Cross-link new prompts from `README.md` tables and, if relevant, extend the Mermaid flow to depict the new step. When deprecating a prompt, update its entry with a "Deprecated" note rather than deleting it outright so downstream agents can migrate gracefully.
+```
+
+GEMINI.md
+```
+1 | # GEMINI.md
+2 | 
+3 | ## Directory Overview
+4 | 
+5 | This directory contains a collection of prompts for the Codex CLI, designed to streamline and enhance various software development workflows. The prompts are written in Markdown and act as templates or scripts that can be invoked from the Codex command line. They cover a wide range of tasks, from planning and architecture to code generation, review, and auditing.
+6 | 
+7 | The prompts are categorized into two main types:
+8 | 
+9 | - **Slash Commands:** These are standalone prompts that can be directly invoked using a slash command (e.g., `/planning-process`). They are identified by a `Trigger:` line in the Markdown file.
+10 | - **Gemini→Codex Mapper Templates:** These prompts are designed to be used with the `/gemini-map` command. They are identified by a YAML front-matter block at the beginning of the file.
+11 | 
+12 | ## Key Files
+13 | 
+14 | - **`README.md`**: The main documentation for the prompt collection. It provides an overview of the available prompts, their purpose, and how to use them.
+15 | - **`AGENTS.md`**: Contains guidelines for contributors, including information on project structure, coding style, testing, and commit conventions.
+16 | - **`workflow.mmd`**: A Mermaid flowchart that visualizes the end-to-end workflow of using the prompts.
+17 | - **`.markdownlint.json`**: The configuration file for the Markdown linter, which enforces a consistent style for all prompt files.
+18 | - **`codefetch/`**: A directory containing reference snippets and other assets used by the prompts.
+19 | - **Prompt Files (`.md`)**: The individual prompt files, each of which corresponds to a specific command or template.
+20 | 
+21 | ## Usage
+22 | 
+23 | The prompts in this directory are intended to be used with the Codex CLI. To use them, you can either invoke the slash commands directly or use the `/gemini-map` command with a template file.
+24 | 
+25 | **Slash Commands:**
+26 | 
+27 | To use a slash command, simply type the command into the Codex CLI. For example, to use the planning process prompt, you would type:
+28 | 
+29 | ```
+30 | /planning-process Add a new feature
+31 | ```
+32 | 
+33 | **Gemini→Codex Mapper Templates:**
+34 | 
+35 | To use a `gemini-map` template, you would use the `/gemini-map` command followed by the name of the template file. For example, to use the `audit.md` template, you would type:
+36 | 
+37 | ```
+38 | /gemini-map audit
+39 | ```
+40 | 
+41 | **Validation:**
+42 | 
+43 | To ensure that the prompt files are well-formed and adhere to the project's style guidelines, you can use the following command to run the Markdown linter:
+44 | 
+45 | ```
+46 | npx markdownlint-cli2 "**/*.md"
+47 | ```
+```
+
 action-diagram.md
 ```
 1 | ---
