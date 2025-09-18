@@ -29,7 +29,6 @@ node_modules/
 dist/*
 !dist/element.js
 !dist/element.d.ts
-scripts/
 .cursor/
 package-lock.json
 
@@ -37,4 +36,5 @@ package-lock.json
 
 # Task files
 # tasks.json
-# tasks/ 
+# tasks/
+.archive/
