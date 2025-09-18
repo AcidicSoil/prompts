@@ -16,3 +16,10 @@ HttpClient
 Expected Output:
 
 - Usage cluster in src/network/* with note on inconsistent error handling.
+
+## Stage alignment
+
+- **Phase**: [P7 Release & Ops](WORKFLOW.md#p7-release--ops)
+- **Gate**: Review Gate — peer review coverage met before merging.
+- **Previous prompts**: `/owners`
+- **Next prompts**: `/review-branch`, `/pr-desc`

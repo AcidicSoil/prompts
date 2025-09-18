@@ -20,3 +20,10 @@ Expected Output:
 ## Fixes
 
 - Resolve logout crash (PR #57)
+
+## Stage alignment
+
+- **Phase**: [P7 Release & Ops](WORKFLOW.md#p7-release--ops)
+- **Gate**: Release Gate — notes compiled for staging review and production rollout.
+- **Previous prompts**: `/pr-desc`
+- **Next prompts**: `/version-proposal`, `/monitoring-setup`

@@ -16,3 +16,10 @@ Example Input:
 Expected Output:
 
 - Structured report following the specified sections.
+
+## Stage alignment
+
+- **Phase**: [P7 Release & Ops](WORKFLOW.md#p7-release--ops)
+- **Gate**: Release Gate — version bump decision recorded before deployment.
+- **Previous prompts**: `/release-notes`
+- **Next prompts**: `/monitoring-setup`, `/slo-setup`

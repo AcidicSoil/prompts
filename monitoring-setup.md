@@ -15,3 +15,10 @@
 **Examples:** `/monitoring-setup`.
 
 **Notes:** Avoid high‑cardinality labels. Sample traces selectively in prod.
+
+## Stage alignment
+
+- **Phase**: [P7 Release & Ops](WORKFLOW.md#p7-release--ops)
+- **Gate**: Release Gate — observability baselines ready before rollout.
+- **Previous prompts**: `/version-proposal`
+- **Next prompts**: `/slo-setup`, `/logging-strategy`

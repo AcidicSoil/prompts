@@ -14,3 +14,11 @@ Purpose: Enforce modular boundaries and clear external interfaces.
 ## Output format
 
 - Diagram-ready list of modules and edges, plus diffs.
+
+## Stage alignment
+
+- **Phase**: [P2 App Scaffold & Contracts](WORKFLOW.md#p2-app-scaffold--contracts);
+  revisit during [P4 Frontend UX](WORKFLOW.md#p4-frontend-ux) for UI seams.
+- **Gate**: Test Gate lite — boundaries documented and lint/build scripts still pass.
+- **Previous prompts**: `/openapi-generate`
+- **Next prompts**: `/db-bootstrap`, `/ui-screenshots`, `/design-assets`

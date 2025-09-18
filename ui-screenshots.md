@@ -13,3 +13,10 @@ Purpose: Analyze screenshots for UI bugs or inspiration and propose actionable U
 ## Output format
 
 - Issue list and code snippets to fix visuals.
+
+## Stage alignment
+
+- **Phase**: [P4 Frontend UX](WORKFLOW.md#p4-frontend-ux)
+- **Gate**: Accessibility checks queued — capture UX issues and backlog fixes.
+- **Previous prompts**: `/design-assets`, `/modular-architecture`
+- **Next prompts**: `/logging-strategy`, `/e2e-runner-setup`

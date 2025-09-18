@@ -15,3 +15,10 @@ Example Input:
 Expected Output:
 
 - Structured report following the specified sections.
+
+## Stage alignment
+
+- **Phase**: [P8 Post-release Hardening](WORKFLOW.md#p8-post-release-hardening)
+- **Gate**: Post-release cleanup — repo tidy with stale branches archived.
+- **Previous prompts**: `/dead-code-scan`
+- **Next prompts**: `/feature-flags`, `/model-strengths`

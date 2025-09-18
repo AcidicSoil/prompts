@@ -14,3 +14,10 @@ Purpose: Decide when to try a different AI backend and how to compare.
 ## Output format
 
 - Table: task → model → settings → win reason.
+
+## Stage alignment
+
+- **Phase**: [P9 Model Tactics](WORKFLOW.md#p9-model-tactics-cross-cutting)
+- **Gate**: Model uplift — document rollback/guardrails before flipping defaults.
+- **Previous prompts**: `/compare-outputs`
+- **Next prompts**: Return to the blocked stage (e.g., `/integration-test`) to apply learnings.

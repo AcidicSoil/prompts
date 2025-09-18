@@ -14,3 +14,10 @@ Purpose: Generate or update `cursor.rules`, `windsurf.rules`, or `claude.md` wit
 ## Output format
 
 - Markdown instruction file with stable headings.
+
+## Stage alignment
+
+- **Phase**: [P0 Preflight Docs](WORKFLOW.md#p0-preflight-docs-blocking)
+- **Gate**: DocFetchReport — capture approved instructions before proceeding.
+- **Previous prompts**: Preflight discovery (AGENTS baseline)
+- **Next prompts**: `/planning-process`, `/scope-control`

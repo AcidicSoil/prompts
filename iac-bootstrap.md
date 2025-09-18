@@ -16,3 +16,10 @@
 **Examples:** `/iac-bootstrap aws`.
 
 **Notes:** Prefer least privilege IAM and remote state with locking.
+
+## Stage alignment
+
+- **Phase**: [P6 CI/CD & Env](WORKFLOW.md#p6-cicd--env)
+- **Gate**: Review Gate — IaC applied in staging with drift detection configured.
+- **Previous prompts**: `/secrets-manager-setup`
+- **Next prompts**: `/owners`, `/review`

@@ -13,3 +13,10 @@ Purpose: Try a new model and compare outputs against a baseline.
 ## Output format
 
 - Summary table and recommendations to adopt or not.
+
+## Stage alignment
+
+- **Phase**: [P9 Model Tactics](WORKFLOW.md#p9-model-tactics-cross-cutting)
+- **Gate**: Model uplift — experiments must beat baseline quality metrics.
+- **Previous prompts**: `/model-strengths`
+- **Next prompts**: `/compare-outputs`, `/switch-model`

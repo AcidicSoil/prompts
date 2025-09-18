@@ -17,3 +17,10 @@ Purpose: Detect unrelated changes and add tests to prevent regressions.
 ## Notes
 
 - Keep proposed tests minimal and focused.
+
+## Stage alignment
+
+- **Phase**: [P5 Quality Gates & Tests](WORKFLOW.md#p5-quality-gates--tests)
+- **Gate**: Test Gate — regression coverage in place before CI hand-off.
+- **Previous prompts**: `/coverage-guide`
+- **Next prompts**: `/version-control-guide`, `/devops-automation`

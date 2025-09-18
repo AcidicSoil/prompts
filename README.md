@@ -14,34 +14,112 @@ This pack extends the default Codex CLI prompts with vibe-coding playbooks inspi
 
 ## Core slash commands
 
-| Command | File | What it does |
+Commands are grouped by development phase. Stage headings link back to
+[WORKFLOW.md](WORKFLOW.md) for owners, gates, and evidence expectations.
+
+### [P0 Preflight Docs](WORKFLOW.md#p0-preflight-docs-blocking) — DocFetchReport must be **OK**
+
+| Command | What it does |
+| --- | --- |
+| /instruction-file | Generate or update `cursor.rules`, `windsurf.rules`, or `claude.md` so DocFetchReport captures current guardrails. |
+
+### [P1 Plan & Scope](WORKFLOW.md#p1-plan--scope) — pass the [Scope Gate](WORKFLOW.md#scope-gate)
+
+| Command | What it does |
+| --- | --- |
+| /planning-process | Draft, refine, and execute a feature plan with strict scope control. |
+| /scope-control | Enforce explicit scope boundaries plus “won’t do” and “ideas for later” lists. |
+| /stack-evaluation | Evaluate language/framework choices relative to AI familiarity and roadmap goals. |
+
+### [P2 App Scaffold & Contracts](WORKFLOW.md#p2-app-scaffold--contracts) — clear Test Gate lite
+
+| Command | What it does |
+| --- | --- |
+| /scaffold-fullstack | Create a minimal full-stack workspace with CI seeds. |
+| /api-contract | Author an initial OpenAPI/GraphQL contract from requirements. |
+| /openapi-generate | Generate server stubs or typed clients from an OpenAPI spec. |
+| /modular-architecture | Enforce module boundaries; revisit during P4 for UI seams. |
+| /reference-implementation | Mimic the style and API of a known working example. |
+| /api-docs-local | Fetch API docs and store locally for deterministic reference. |
+
+### [P3 Data & Auth](WORKFLOW.md#p3-data--auth) — migrations must dry-run cleanly
+
+| Command | What it does |
+| --- | --- |
+| /db-bootstrap | Pick a database, initialize migrations, and seed scripts. |
+| /migration-plan | Produce safe up/down migration steps with rollback notes. |
+| /auth-scaffold | Scaffold auth flows, threat model, and secure session storage. |
+
+### [P4 Frontend UX](WORKFLOW.md#p4-frontend-ux) — queue accessibility checks
+
+| Command | What it does |
+| --- | --- |
+| /design-assets | Generate favicons and lightweight visual assets from your product brand. |
+| /ui-screenshots | Analyze screenshots for UI bugs or inspiration and propose actionable fixes. |
+
+### [P5 Quality Gates & Tests](WORKFLOW.md#p5-quality-gates--tests) — meet the [Test Gate](WORKFLOW.md#test-gate)
+
+| Command | What it does |
+| --- | --- |
+| /e2e-runner-setup | Configure Playwright/Cypress with fixtures and CI jobs. |
+| /integration-test | Generate end-to-end tests that simulate real user flows. |
+| /coverage-guide | Suggest a plan to raise coverage based on uncovered areas. |
+| /regression-guard | Detect unrelated changes and add tests to prevent regressions. |
+
+### [P6 CI/CD & Env](WORKFLOW.md#p6-cicd--env) — satisfy the [Review Gate](WORKFLOW.md#review-gate)
+
+| Command | What it does |
+| --- | --- |
+| /version-control-guide | Enforce clean incremental commits and clean-room re-implementation before merge. |
+| /devops-automation | Configure servers, DNS, SSL, and CI/CD with pragmatic defaults. |
+| /env-setup | Create `.env.example`, runtime validation, and per-environment overrides. |
+| /secrets-manager-setup | Provision a secret store and map application variables. |
+| /iac-bootstrap | Create minimal IaC stacks with plan/apply pipelines. |
+
+### [P7 Release & Ops](WORKFLOW.md#p7-release--ops) — clear the [Release Gate](WORKFLOW.md#release-gate)
+
+| Command | What it does |
+| --- | --- |
+| /owners | Suggest owners and reviewers for a path using CODEOWNERS and history. |
+| /review | Review code matching a pattern and provide actionable feedback. |
+| /review-branch | Provide a high-level review of the branch compared to `origin/main`. |
+| /pr-desc | Draft a PR description from the branch diff. |
+| /release-notes | Convert recent commits into human-readable release notes. |
+| /version-proposal | Propose the next semantic version based on commit history. |
+| /monitoring-setup | Bootstrap logs, metrics, and traces with dashboards per domain. |
+| /slo-setup | Define SLOs, burn alerts, and supporting runbooks. |
+| /logging-strategy | Add or remove diagnostic logging with structured levels and privacy considerations. |
+
+### [P8 Post-release Hardening](WORKFLOW.md#p8-post-release-hardening) — resolve Sev-1 issues
+
+| Command | What it does |
+| --- | --- |
+| /error-analysis | Analyze error logs and enumerate likely root causes with fixes. |
+| /fix | Propose a minimal, correct fix with patch hunks. |
+| /refactor-suggestions | Propose repo-wide refactoring opportunities once tests exist. |
+| /file-modularity | Enforce smaller files and propose safe splits for giant files. |
+| /dead-code-scan | Flag likely dead files and exports using static signals. |
+| /cleanup-branches | Recommend local branches that are merged or stale and safe to delete. |
+| /feature-flags | Integrate a flag provider, wire SDK, and enforce guardrails. |
+
+### [P9 Model Tactics](WORKFLOW.md#p9-model-tactics-cross-cutting) — document uplift before switching defaults
+
+| Command | What it does |
+| --- | --- |
+| /model-strengths | Route work by model strengths for faster delegation. |
+| /model-evaluation | Try a new model and compare outputs against a baseline. |
+| /compare-outputs | Run multiple models or tools on the same prompt and summarize the best output. |
+| /switch-model | Decide when to try a different AI backend and how to compare. |
+
+### [Reset Playbook](WORKFLOW.md#reset-playbook) and other cross-cutting helpers
+
+| Command | Stage tie-in | What it does |
 | --- | --- | --- |
-| /api-docs-local | api-docs-local.md | Fetch API docs and store locally for offline, deterministic reference. |
-| /compare-outputs | compare-outputs.md | Run multiple models or tools on the same prompt and summarize the best output. |
-| /content-generation | content-generation.md | Draft docs, blog posts, or marketing copy aligned with the codebase. |
-| /design-assets | design-assets.md | Generate favicons and lightweight visual assets from your product brand. |
-| /devops-automation | devops-automation.md | Configure servers, DNS, SSL, and CI/CD with pragmatic defaults. |
-| /error-analysis | error-analysis.md | Analyze error logs and enumerate likely root causes with fixes. |
-| /explain-code | explain-code.md | Provide line-by-line explanations for a given file or diff. |
-| /file-modularity | file-modularity.md | Enforce smaller files and propose safe splits for giant files. |
-| /instruction-file | instruction-file.md | Generate or update `cursor.rules`, `windsurf.rules`, or `claude.md` with project-specific guidance. |
-| /integration-test | integration-test.md | Generate end-to-end tests that simulate real user flows. |
-| /logging-strategy | logging-strategy.md | Add or remove diagnostic logging with structured levels and privacy considerations. |
-| /model-evaluation | model-evaluation.md | Try a new model and compare outputs against a baseline. |
-| /model-strengths | model-strengths.md | Route work by model strengths for faster delegation. |
-| /modular-architecture | modular-architecture.md | Enforce module boundaries and external interfaces. |
-| /planning-process | planning-process.md | Draft, refine, and execute a feature plan with strict scope control. |
-| /prototype-feature | prototype-feature.md | Spin up a standalone prototype in a clean repo before merging into main. |
-| /refactor-suggestions | refactor-suggestions.md | Propose repo-wide refactoring opportunities once tests exist. |
-| /reference-implementation | reference-implementation.md | Mimic the style and API of a known working example. |
-| /regression-guard | regression-guard.md | Detect unrelated changes and add tests to prevent regressions. |
-| /reset-strategy | reset-strategy.md | Decide when to hard reset and start clean to avoid layered bad diffs. |
-| /scope-control | scope-control.md | Enforce explicit scope boundaries plus “won’t do” and “ideas for later” lists. |
-| /stack-evaluation | stack-evaluation.md | Evaluate language/framework choices relative to AI familiarity and roadmap goals. |
-| /switch-model | switch-model.md | Decide when to try a different AI backend and how to compare. |
-| /ui-screenshots | ui-screenshots.md | Analyze screenshots for UI bugs or inspiration and propose actionable fixes. |
-| /version-control-guide | version-control-guide.md | Enforce clean incremental commits and clean-room re-implementation before merge. |
-| /voice-input | voice-input.md | Convert speech to structured prompts for Codex. |
+| /reset-strategy | Reset path | Decide when to hard reset and start clean to avoid layered bad diffs. |
+| /prototype-feature | P1–P2 sandbox | Spin up a standalone prototype before merging into main. |
+| /content-generation | Support | Draft docs, blog posts, or marketing copy aligned with the codebase. |
+| /explain-code | Support | Provide line-by-line explanations for a given file or diff. |
+| /voice-input | Support | Convert speech to structured prompts for Codex. |
 
 ## Gemini→Codex Mapper templates (`/gemini-map`)
 
@@ -106,54 +184,111 @@ Each template below is invoked through `/gemini-map`. Supply any arguments reque
 
 ```mermaid
 flowchart TD
-  A["Preflight Docs (§A) AGENTS"] -->|DocFetchReport OK| B[/planning-process/]
-  B --> C[/scope-control/]
-  C --> D[/stack-evaluation/]
-  D --> E[/scaffold-fullstack/]
-  E --> F[/api-contract/]
-  F --> G[/openapi-generate/]
-  G --> H[/modular-architecture/]
-  H --> I[/db-bootstrap/]
-  I --> J[/migration-plan/]
-  J --> K[/auth-scaffold/]
-  K --> L[/e2e-runner-setup/]
-  L --> M[/integration-test/]
-  M --> N[/coverage-guide/]
-  N --> O[/regression-guard/]
-  O --> P[/version-control-guide/]
-  P --> Q[/devops-automation/]
-  Q --> R[/env-setup/]
-  R --> S[/secrets-manager-setup/]
-  S --> T[/iac-bootstrap/]
-  T --> U[/owners/]
-  U --> V[/review/]
-  V --> W[/review-branch/]
-  W --> X[/pr-desc/]
-  X --> Y{Gates}
-  Y -->|Scope Gate pass| Z1[proceed]
-  Y -->|Test Gate pass| Z2[proceed]
-  Y -->|Review Gate pass| Z3[proceed]
-  Z3 --> AA[/release-notes/]
-  AA --> AB[/version-proposal/]
-  AB --> AC{Release Gate}
-  AC -->|pass| AD[Deploy Staging]
-  AD --> AE[Canary + Health]
-  AE -->|ok| AF[Deploy Prod]
-  AE -->|fail| AR[Rollback]
-  AF --> AG[/monitoring-setup/]
-  AG --> AH[/slo-setup/]
-  AH --> AI[/logging-strategy/]
-  AI --> AJ[/error-analysis/]
-  AJ --> AK[/fix/]
-  AK --> AL[/refactor-suggestions/]
-  AL --> AM[/file-modularity/]
-  AM --> AN[/dead-code-scan/]
-  AN --> AO[/cleanup-branches/]
-  AF --> AP[/feature-flags/]
-  AF --> AQ[/model-strengths/]
-  AQ --> AR2[/model-evaluation/]
-  AR2 --> AS[/compare-outputs/]
-  AS --> AT[/switch-model/]
+  subgraph P0["P0 Preflight Docs"]
+    preflight["Preflight Docs (§A) AGENTS"]
+  end
+
+  subgraph P1["P1 Plan & Scope"]
+    plan[/planning-process/]
+    scope[/scope-control/]
+    stack[/stack-evaluation/]
+  end
+
+  subgraph P2["P2 App Scaffold & Contracts"]
+    scaffold[/scaffold-fullstack/]
+    api_contract[/api-contract/]
+    openapi[/openapi-generate/]
+    modular[/modular-architecture/]
+  end
+
+  subgraph P3["P3 Data & Auth"]
+    db[/db-bootstrap/]
+    migrate[/migration-plan/]
+    auth[/auth-scaffold/]
+  end
+
+  subgraph P4["P4 Frontend UX"]
+    assets[/design-assets/]
+    screenshots[/ui-screenshots/]
+  end
+
+  subgraph P5["P5 Quality Gates & Tests"]
+    e2e[/e2e-runner-setup/]
+    integration[/integration-test/]
+    coverage[/coverage-guide/]
+    regression[/regression-guard/]
+  end
+
+  subgraph P6["P6 CI/CD & Env"]
+    vcs[/version-control-guide/]
+    devops[/devops-automation/]
+    env[/env-setup/]
+    secrets[/secrets-manager-setup/]
+    iac[/iac-bootstrap/]
+  end
+
+  subgraph P7["P7 Release & Ops"]
+    owners[/owners/]
+    review[/review/]
+    review_branch[/review-branch/]
+    pr_desc[/pr-desc/]
+    release_notes[/release-notes/]
+    version[/version-proposal/]
+    monitoring[/monitoring-setup/]
+    slo[/slo-setup/]
+    logging[/logging-strategy/]
+  end
+
+  subgraph Deploy["Deployment Flow"]
+    deploy_staging[Deploy Staging]
+    canary[Canary + Health]
+    deploy_prod[Deploy Prod]
+    rollback[Rollback]
+  end
+
+  subgraph P8["P8 Post-release Hardening"]
+    error[/error-analysis/]
+    fix[/fix/]
+    refactor[/refactor-suggestions/]
+    modularity[/file-modularity/]
+    deadcode[/dead-code-scan/]
+    cleanup[/cleanup-branches/]
+    flags[/feature-flags/]
+  end
+
+  subgraph P9["P9 Model Tactics"]
+    strengths[/model-strengths/]
+    evaluation[/model-evaluation/]
+    compare[/compare-outputs/]
+    switch[/switch-model/]
+  end
+
+  scope_gate{Scope Gate}
+  test_gate_lite{Test Gate lite}
+  ux_gate{Accessibility checks queued}
+  test_gate{Test Gate}
+  review_gate{Review Gate}
+  release_gate{Release Gate}
+  hardening_gate{Sev-1 resolved}
+
+  preflight --> plan
+  plan --> scope --> stack --> scope_gate
+  scope_gate --> scaffold
+  scaffold --> api_contract --> openapi --> modular --> test_gate_lite
+  test_gate_lite --> db
+  db --> migrate --> auth --> assets --> screenshots --> ux_gate
+  ux_gate --> e2e --> integration --> coverage --> regression --> test_gate
+  test_gate --> vcs --> devops --> env --> secrets --> iac --> review_gate
+  review_gate --> owners --> review --> review_branch --> pr_desc --> release_notes --> version --> release_gate
+  release_gate --> deploy_staging --> canary --> deploy_prod
+  canary --> rollback
+  deploy_prod --> monitoring --> slo --> logging --> hardening_gate
+  deploy_prod --> error
+  error --> fix --> refactor --> modularity --> deadcode --> cleanup --> flags --> hardening_gate
+  deploy_prod --> flags
+  deploy_prod --> strengths
+  strengths --> evaluation --> compare --> switch
+  flags --> strengths
 ```
 
 ## Future enhancements

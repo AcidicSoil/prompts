@@ -14,3 +14,10 @@ Purpose: Configure servers, DNS, SSL, CI/CD at a pragmatic level.
 ## Output format
 
 - Infra plan with checkpoints and secrets placeholders.
+
+## Stage alignment
+
+- **Phase**: [P6 CI/CD & Env](WORKFLOW.md#p6-cicd--env)
+- **Gate**: Review Gate — CI pipeline codified, rollback steps rehearsed.
+- **Previous prompts**: `/version-control-guide`
+- **Next prompts**: `/env-setup`, `/secrets-manager-setup`, `/iac-bootstrap`

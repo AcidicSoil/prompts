@@ -22,3 +22,10 @@ Purpose: Decide when to hard reset and start clean to avoid layered bad diffs.
 ## Notes
 
 - Warn about destructive nature. Require user confirmation.
+
+## Stage alignment
+
+- **Phase**: [Reset Playbook](WORKFLOW.md#reset-playbook)
+- **Gate**: Clean restart — triggered when gate criteria stall for >60 minutes.
+- **Previous prompts**: Any blocked stage
+- **Next prompts**: Restart with `/planning-process` then follow the gated flow

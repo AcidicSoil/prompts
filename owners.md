@@ -16,3 +16,10 @@ src/components/Button.tsx
 Expected Output:
 
 - Likely reviewers: @frontend-team (CODEOWNERS), @jane (last 5 commits).
+
+## Stage alignment
+
+- **Phase**: [P7 Release & Ops](WORKFLOW.md#p7-release--ops)
+- **Gate**: Review Gate — confirm approvers and escalation paths before PR submission.
+- **Previous prompts**: `/iac-bootstrap`
+- **Next prompts**: `/review`, `/review-branch`, `/pr-desc`

@@ -16,3 +16,10 @@ Example Input:
 Expected Output:
 
 - Structured report following the specified sections.
+
+## Stage alignment
+
+- **Phase**: [P7 Release & Ops](WORKFLOW.md#p7-release--ops)
+- **Gate**: Review Gate — branch scope validated before PR submission.
+- **Previous prompts**: `/review`
+- **Next prompts**: `/pr-desc`, `/release-notes`

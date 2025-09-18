@@ -18,3 +18,10 @@ Purpose: Analyze error logs and enumerate likely root causes with fixes.
 ## Examples
 
 - "TypeError: x is not a function" → wrong import, circular dep, stale build.
+
+## Stage alignment
+
+- **Phase**: [P8 Post-release Hardening](WORKFLOW.md#p8-post-release-hardening)
+- **Gate**: Post-release cleanup — Sev-1 incidents triaged with fixes scheduled.
+- **Previous prompts**: `/logging-strategy`, `/audit`
+- **Next prompts**: `/fix`, `/refactor-suggestions`
