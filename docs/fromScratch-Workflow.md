@@ -170,7 +170,7 @@ Scope summary, changes by area, migration steps, breaking changes, version bump,
 
 ---
 
-# workflow\.mmd
+## workflow\.mmd
 
 ```mermaid
 flowchart TD
@@ -264,7 +264,7 @@ flowchart TD
 
 ---
 
-# Reset Playbook
+## Reset Playbook
 
 **When**: E2E red >60m, diff noisy, plan drift, large rebase pain, conflicting designs.
 **Command path**: `/reset-strategy` → propose clean slice. Create new branch from main, cherry-pick minimal commits, re-run Gate sequence.&#x20;
@@ -272,7 +272,7 @@ flowchart TD
 
 ---
 
-# Model Eval Block
+## Model Eval Block
 
 **When**: Contentious generation, flaky refactors, new model availability.
 **Steps**: `/model-strengths` → route candidates. `/model-evaluation` → baseline vs new. `/compare-outputs` → pick best. `/switch-model` → roll change with guardrails. Success = higher test pass rate or smaller diff with same tests.&#x20;
