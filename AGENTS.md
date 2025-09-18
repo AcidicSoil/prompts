@@ -66,7 +66,7 @@
 
 ## Tagging Syntax (context only)
 
-**Context tag — `@{file}` (no behavior change)**
+**Context tag — ********************************************************************************************************`@{file}`******************************************************************************************************** (no behavior change)**
 
 - Purpose: include files for retrieval only.
 - Syntax: `@{path/to/file.md}`. Globs allowed.
@@ -166,23 +166,25 @@ When discovery/confirmation is used, add:
 
 **Primary/Fallback Order (consolidated):**
 
-1. **sourcebot** (primary) **or** **docfork** (if configured for direct retrieval)
-2. **contex7-mcp** (fallback if the primary fails)
-3. **gitmcp** (last-resort fallback if both above fail)
+1. **contex7-mcp** (primary)&#x20;
 
-**What to do:**
+2. gitmcp (fallback if the primary fails)
 
-- For every task that could touch code, configuration, APIs, tooling, or libraries:
+3. **What to do:**
 
-  - Call **sourcebot** **or** **docfork** to fetch the latest documentation or guides.
-  - If the chosen primary call **fails**, immediately retry with the other primary (**docfork** ⇄ **sourcebot**); if that also **fails**, retry with **contex7-mcp**; if that also **fails**, retry with **gitmcp**.
-- Each successful call **MUST** capture:
+4. For every task that could touch code, configuration, APIs, tooling, or libraries:
 
-  - Tool name, query/topic, retrieval timestamp (UTC), and source refs/URLs (or repo refs/commits).
-- Scope:
+   - Call **contex7-mcp** to fetch the latest documentation or guides.
+   - If the chosen primary call **fails**, immediately retry with the other  (**context7-mcp** ⇄ **gitmcp**)
 
-  - Fetch docs for each **area to be touched** (framework, library, CLI, infra, etc.).
-  - Prefer focused topics (e.g., "exception handlers", "lifespan", "retry policy", "schema").
+5. Each successful call **MUST** capture:
+
+   - Tool name, query/topic, retrieval timestamp (UTC), and source refs/URLs (or repo refs/commits).
+
+6. Scope:
+
+   - Fetch docs for each **area to be touched** (framework, library, CLI, infra, etc.).
+   - Prefer focused topics (e.g., "exception handlers", "lifespan", "retry policy", "schema").
 
 **Failure handling:**
 
@@ -210,6 +212,73 @@ Allowed only for outages/ambiguous scope/timeboxed spikes. Must include:
   }
 }
 ```
+
+---
+
+## Prompt Registry & Precedence
+
+- **Baseline:** AGENTS.md is always authoritative. Prompts in `~/.codex/prompts` are available but inert until manually invoked.
+- **Engagement:** Prompts run only when the user explicitly types the slash command or pastes the body. The assistant must not auto-run them.
+- **Precedence:** Behavior extensions and rule-packs follow later-wins. Prompts never override baseline unless pasted inline.
+- **Recording:** When invoked, the assistant must echo which prompt was used and log it in `DocFetchReport.approved_instructions[]` as `{source: "~/.codex/prompts", command: "/<name>"}`.
+
+---
+
+## Prompt Discovery & Namespacing
+
+- **Discovery:** `/foo` resolves to `~/.codex/prompts/foo.md`. No auto-run.
+- **Reserved namespace:** `/vibe-*` for YC-style playbooks and planning flows.
+- **Default shortlist:** Recommended safe manual commands:
+
+  - `/planning-process`, `/scope-control`, `/integration-test`, `/regression-guard`, `/review`, `/release-notes`, `/reset-strategy`, `/compare-outputs`.
+
+---
+
+## Prompt→Gate Router
+
+- **Scope Gate:** `/scope-control`, `/plan`, `/planning-process`
+- **Test Gate:** `/integration-test`, `/regression-guard`, `/coverage-guide`
+- **Review Gate:** `/review`, `/review-branch`, `/pr-desc`, `/owners`
+- **Release Gate:** `/release-notes`, `/version-proposal`
+- **Reset path:** `/reset-strategy`
+- **Model tactics:** `/compare-outputs`, `/switch-model`, `/model-strengths`
+
+---
+
+## Prompt Safety & Proof Hooks
+
+- Prompts cannot bypass Preflight (§A) or Decision Gate (§B).
+- If a prompt suggests stateful changes, require Safety Gate review first.
+- Before acting on prompt output, confirm `DocFetchReport.status == "OK"`.
+- Append invoked prompts to `DocFetchReport.tools_called[]` as `{tool: "prompt", name: "/<cmd>", path: "~/.codex/prompts/<file>.md", time_utc}`.
+
+---
+
+## Prompt Non-Goals
+
+- No auto-invocation of prompts.
+- Prompts must not redefine baseline gates, safety policies, or precedence.
+- If a command is unrecognized, check `~/.codex/prompts/<name>.md` and restart Codex if missing.
+
+---
+
+## Workflow Expansion Example
+
+To demonstrate prompts in practice, a full-stack app workflow includes:
+
+1. **Preflight Docs** → ensure latest docs. Block if `status != OK`.
+2. **Planning** → `/planning-process`, `/scope-control`, `/stack-evaluation`.
+3. **Scaffold** → `/scaffold-fullstack`, `/api-contract`, `/openapi-generate`.
+4. **Data/Auth** → `/db-bootstrap`, `/migration-plan`, `/auth-scaffold`.
+5. **Frontend** → `/modular-architecture`, `/ui-screenshots`, `/design-assets`.
+6. **Testing** → `/e2e-runner-setup`, `/integration-test`, `/coverage-guide`, `/regression-guard`.
+7. **CI/CD** → `/version-control-guide`, `/devops-automation`, `/env-setup`, `/secrets-manager-setup`, `/iac-bootstrap`.
+8. **Release** → `/owners`, `/review`, `/review-branch`, `/pr-desc`, `/release-notes`, `/version-proposal`.
+9. **Ops** → `/monitoring-setup`, `/slo-setup`, `/logging-strategy`, `/audit`.
+10. **Post-release** → `/error-analysis`, `/fix`, `/refactor-suggestions`, `/file-modularity`, `/dead-code-scan`, `/cleanup-branches`, `/feature-flags`.
+11. **Model tactics** → `/model-strengths`, `/model-evaluation`, `/compare-outputs`, `/switch-model`.
+
+**Missing prompts suggested:** `/scaffold-fullstack`, `/api-contract`, `/openapi-generate`, `/db-bootstrap`, `/migration-plan`, `/auth-scaffold`, `/e2e-runner-setup`, `/env-setup`, `/secrets-manager-setup`, `/iac-bootstrap`, `/monitoring-setup`, `/slo-setup`, `/feature-flags`.
 
 ---
 

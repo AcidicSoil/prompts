@@ -23,8 +23,6 @@ node_modules/
 # OS specific
 .DS_Store
 
-# Task files
-# tasks.json
 **/tasks/
 
 
@@ -34,3 +32,9 @@ dist/*
 scripts/
 .cursor/
 package-lock.json
+
+.vscode
+
+# Task files
+# tasks.json
+# tasks/ 
