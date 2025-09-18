@@ -16,3 +16,10 @@ Example Input:
 Expected Output:
 
 - Focus on src/auth/login.ts — 0% branch coverage; add error path test.
+
+## Stage alignment
+
+- **Phase**: [P5 Quality Gates & Tests](WORKFLOW.md#p5-quality-gates--tests)
+- **Gate**: Test Gate — coverage targets and regression guard plan recorded.
+- **Previous prompts**: `/integration-test`
+- **Next prompts**: `/regression-guard`, `/version-control-guide`

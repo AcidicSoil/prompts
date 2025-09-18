@@ -22,3 +22,10 @@ Purpose: Generate E2E tests that simulate real user flows.
 ## Notes
 
 - Prefer data-test-id attributes. Avoid brittle CSS selectors.
+
+## Stage alignment
+
+- **Phase**: [P5 Quality Gates & Tests](WORKFLOW.md#p5-quality-gates--tests)
+- **Gate**: Test Gate — happy path E2E must pass locally and in CI.
+- **Previous prompts**: `/e2e-runner-setup`
+- **Next prompts**: `/coverage-guide`, `/regression-guard`

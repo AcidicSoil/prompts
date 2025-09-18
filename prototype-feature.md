@@ -14,3 +14,11 @@ Purpose: Spin up a standalone prototype in a clean repo before merging into main
 ## Output format
 
 - Scaffold plan and migration notes.
+
+## Stage alignment
+
+- **Phase**: Sandbox between [P1 Plan & Scope](WORKFLOW.md#p1-plan--scope) and
+  [P2 App Scaffold & Contracts](WORKFLOW.md#p2-app-scaffold--contracts)
+- **Gate**: Validate spike outcomes before committing to scope.
+- **Previous prompts**: `/planning-process`
+- **Next prompts**: `/scaffold-fullstack`, `/api-contract`

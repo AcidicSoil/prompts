@@ -22,3 +22,10 @@ diff
 ```
 
 Regression test: add case for missing user.
+
+## Stage alignment
+
+- **Phase**: [P8 Post-release Hardening](WORKFLOW.md#p8-post-release-hardening)
+- **Gate**: Post-release cleanup — validated fix with regression coverage before closing incident.
+- **Previous prompts**: `/error-analysis`
+- **Next prompts**: `/refactor-suggestions`, `/file-modularity`

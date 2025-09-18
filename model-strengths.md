@@ -13,3 +13,10 @@ Purpose: Choose model per task type.
 ## Output format
 
 - Routing guide with examples.
+
+## Stage alignment
+
+- **Phase**: [P9 Model Tactics](WORKFLOW.md#p9-model-tactics-cross-cutting)
+- **Gate**: Model uplift — capture baseline routing before experimentation.
+- **Previous prompts**: `/feature-flags` (optional) or stage-specific blockers.
+- **Next prompts**: `/model-evaluation`, `/compare-outputs`

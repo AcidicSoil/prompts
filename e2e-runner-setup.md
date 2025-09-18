@@ -15,3 +15,10 @@
 **Examples:** `/e2e-runner-setup playwright`.
 
 **Notes:** Keep runs under 10 minutes locally; parallelize spec files.
+
+## Stage alignment
+
+- **Phase**: [P5 Quality Gates & Tests](WORKFLOW.md#p5-quality-gates--tests)
+- **Gate**: Test Gate — runner green locally and wired into CI before expanding coverage.
+- **Previous prompts**: `/auth-scaffold`, `/ui-screenshots`
+- **Next prompts**: `/integration-test`, `/coverage-guide`

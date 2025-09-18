@@ -22,3 +22,10 @@ Purpose: Enforce clean incremental commits and clean-room re-implementation when
 ## Notes
 
 - Never modify remote branches without confirmation.
+
+## Stage alignment
+
+- **Phase**: [P6 CI/CD & Env](WORKFLOW.md#p6-cicd--env)
+- **Gate**: Review Gate — clean diff, CI green, and approvals ready.
+- **Previous prompts**: `/regression-guard`
+- **Next prompts**: `/devops-automation`, `/env-setup`

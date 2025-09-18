@@ -14,3 +14,10 @@ Purpose: Run multiple models or tools on the same prompt and summarize best outp
 ## Output format
 
 - Matrix comparison and a one-paragraph decision.
+
+## Stage alignment
+
+- **Phase**: [P9 Model Tactics](WORKFLOW.md#p9-model-tactics-cross-cutting)
+- **Gate**: Model uplift — comparative data compiled before switching defaults.
+- **Previous prompts**: `/model-evaluation`
+- **Next prompts**: `/switch-model`

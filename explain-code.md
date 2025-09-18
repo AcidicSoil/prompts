@@ -13,3 +13,11 @@ Purpose: Provide line-by-line explanations for a given file or diff.
 ## Output format
 
 - Annotated markdown with code fences and callouts.
+
+## Stage alignment
+
+- **Phase**: Support — reinforce reviews noted in
+  [P7 Release & Ops](WORKFLOW.md#p7-release--ops)
+- **Gate**: Improve reviewer comprehension before approvals.
+- **Previous prompts**: `/owners`, `/review`
+- **Next prompts**: `/review-branch`, `/pr-desc`

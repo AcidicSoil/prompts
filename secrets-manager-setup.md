@@ -15,3 +15,10 @@
 **Examples:** `/secrets-manager-setup doppler`.
 
 **Notes:** Never echo secret values. Include rotation policy.
+
+## Stage alignment
+
+- **Phase**: [P6 CI/CD & Env](WORKFLOW.md#p6-cicd--env)
+- **Gate**: Review Gate — secret paths mapped and least-privilege policies drafted.
+- **Previous prompts**: `/env-setup`
+- **Next prompts**: `/iac-bootstrap`, `/owners`

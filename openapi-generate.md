@@ -17,3 +17,10 @@
 **Examples:** `/openapi-generate client ts apis/auth/openapi.yaml`.
 
 **Notes:** Prefer openapi-typescript + zod for TS clients when possible.
+
+## Stage alignment
+
+- **Phase**: [P2 App Scaffold & Contracts](WORKFLOW.md#p2-app-scaffold--contracts)
+- **Gate**: Test Gate lite — generated code builds and CI checks cover the new scripts.
+- **Previous prompts**: `/api-contract`
+- **Next prompts**: `/modular-architecture`, `/db-bootstrap`

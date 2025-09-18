@@ -15,3 +15,10 @@
 **Examples:** `/migration-plan "orders add status enum"`.
 
 **Notes:** Include online migration strategies for large tables.
+
+## Stage alignment
+
+- **Phase**: [P3 Data & Auth](WORKFLOW.md#p3-data--auth)
+- **Gate**: Migration dry-run — validated rollback steps and safety checks documented.
+- **Previous prompts**: `/db-bootstrap`
+- **Next prompts**: `/auth-scaffold`, `/e2e-runner-setup`

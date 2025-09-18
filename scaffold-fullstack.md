@@ -40,3 +40,10 @@
 
 - Assume pnpm and Node 20+. Do not run package installs automatically; propose commands instead.
 - Respect existing files; avoid overwriting without explicit confirmation.
+
+## Stage alignment
+
+- **Phase**: [P2 App Scaffold & Contracts](WORKFLOW.md#p2-app-scaffold--contracts)
+- **Gate**: Test Gate lite — ensure lint/build scripts execute on the generated scaffold.
+- **Previous prompts**: `/stack-evaluation`
+- **Next prompts**: `/api-contract`, `/openapi-generate`, `/modular-architecture`

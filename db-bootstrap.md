@@ -17,3 +17,10 @@
 **Examples:** `/db-bootstrap postgres` → Prisma + Postgres docker-compose.
 
 **Notes:** Avoid destructive defaults; provide `--preview-feature` warnings if relevant.
+
+## Stage alignment
+
+- **Phase**: [P3 Data & Auth](WORKFLOW.md#p3-data--auth)
+- **Gate**: Migration dry-run — migrations apply/rollback cleanly with seeds populated.
+- **Previous prompts**: `/modular-architecture`
+- **Next prompts**: `/migration-plan`, `/auth-scaffold`

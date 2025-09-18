@@ -17,3 +17,10 @@
 **Examples:** `/auth-scaffold oauth` → NextAuth/Passport/Custom adapter plan.
 
 **Notes:** Never print real secrets. Use placeholders in `.env.example`.
+
+## Stage alignment
+
+- **Phase**: [P3 Data & Auth](WORKFLOW.md#p3-data--auth)
+- **Gate**: Migration dry-run — auth flows threat-modeled and test accounts wired.
+- **Previous prompts**: `/migration-plan`
+- **Next prompts**: `/modular-architecture`, `/ui-screenshots`, `/e2e-runner-setup`

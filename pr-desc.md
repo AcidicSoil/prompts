@@ -17,3 +17,10 @@ src/example.ts
 Expected Output:
 
 - Actionable summary aligned with the output section.
+
+## Stage alignment
+
+- **Phase**: [P7 Release & Ops](WORKFLOW.md#p7-release--ops)
+- **Gate**: Review Gate — PR narrative ready for approvals and release prep.
+- **Previous prompts**: `/review-branch`
+- **Next prompts**: `/release-notes`, `/version-proposal`

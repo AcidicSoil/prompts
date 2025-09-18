@@ -15,3 +15,10 @@ Example Input:
 Expected Output:
 
 - Structured report following the specified sections.
+
+## Stage alignment
+
+- **Phase**: [P8 Post-release Hardening](WORKFLOW.md#p8-post-release-hardening)
+- **Gate**: Post-release cleanup — ensure code removals keep prod stable.
+- **Previous prompts**: `/file-modularity`
+- **Next prompts**: `/cleanup-branches`, `/feature-flags`

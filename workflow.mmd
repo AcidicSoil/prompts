@@ -1,53 +1,107 @@
 flowchart TD
-    A[planning-process.md] --> B[scope-control.md]
-    B --> C[prototype-feature.md]
-    C --> D[explain-code.md]
-    D --> E[refactor-file.md]
-    E --> F[file-modularity.md]
-    F --> G[generate.md]
-    G --> H[integration-test.md]
-    H --> I[coverage-guide.md]
-    I --> J[explain-failures.md]
-    J --> K[fix.md]
-    K --> L[commit.md]
-    L --> M[review.md]
-    M --> N[review-branch.md]
-    N --> O[pr-desc.md]
-    O --> P[regression-guard.md]
-    P --> Q[release-notes.md]
-    Q --> R[version-proposal.md]
-    R --> S[devops-automation.md]
-    S --> T[reset-strategy.md]
-    T --> U[cleanup-branches.md]
-    U --> V[design-assets.md]
-    V --> W[ui-screenshots.md]
-    W --> X[logging-strategy.md]
-    X --> Y[error-analysis.md]
-    Y --> Z[audit.md]
-    Z --> AA[summary.md]
-    AA --> AB[instruction-file.md]
-    AB --> AC[version-control-guide.md]
-    AC --> AD[owners.md]
-    AD --> AE[blame-summary.md]
-    AE --> AF[changed-files.md]
-    AF --> AG[todo-report.md]
-    AG --> AH[todos.md]
-    AH --> AI[dead-code-scan.md]
-    AI --> AJ[grep.md]
-    AJ --> AK[explain-symbol.md]
-    AK --> AL[api-usage.md]
-    AL --> AM[action-diagram.md]
-    AM --> AN[plan.md]
-    AN --> AO[tsconfig-review.md]
-    AO --> AP[eslint-review.md]
-    AP --> AQ[stack-evaluation.md]
-    AQ --> AR[modular-architecture.md]
-    AR --> AS[refactor-suggestions.md]
-    AS --> AT[reference-implementation.md]
-    AT --> AU[model-strengths.md]
-    AU --> AV[model-evaluation.md]
-    AV --> AW[compare-outputs.md]
-    AW --> AX[switch-model.md]
-    AX --> AY[voice-input.md]
-    AY --> AZ[content-generation.md]
-    AZ --> BA[api-docs-local.md]
+  subgraph P0["P0 Preflight Docs"]
+    preflight["Preflight Docs (§A) AGENTS"]
+  end
+
+  subgraph P1["P1 Plan & Scope"]
+    plan[/planning-process/]
+    scope[/scope-control/]
+    stack[/stack-evaluation/]
+  end
+
+  subgraph P2["P2 App Scaffold & Contracts"]
+    scaffold[/scaffold-fullstack/]
+    api_contract[/api-contract/]
+    openapi[/openapi-generate/]
+    modular[/modular-architecture/]
+  end
+
+  subgraph P3["P3 Data & Auth"]
+    db[/db-bootstrap/]
+    migrate[/migration-plan/]
+    auth[/auth-scaffold/]
+  end
+
+  subgraph P4["P4 Frontend UX"]
+    assets[/design-assets/]
+    screenshots[/ui-screenshots/]
+  end
+
+  subgraph P5["P5 Quality Gates & Tests"]
+    e2e[/e2e-runner-setup/]
+    integration[/integration-test/]
+    coverage[/coverage-guide/]
+    regression[/regression-guard/]
+  end
+
+  subgraph P6["P6 CI/CD & Env"]
+    vcs[/version-control-guide/]
+    devops[/devops-automation/]
+    env[/env-setup/]
+    secrets[/secrets-manager-setup/]
+    iac[/iac-bootstrap/]
+  end
+
+  subgraph P7["P7 Release & Ops"]
+    owners[/owners/]
+    review[/review/]
+    review_branch[/review-branch/]
+    pr_desc[/pr-desc/]
+    release_notes[/release-notes/]
+    version[/version-proposal/]
+    monitoring[/monitoring-setup/]
+    slo[/slo-setup/]
+    logging[/logging-strategy/]
+    audit[/audit/]
+  end
+
+  subgraph Deploy["Deployment Flow"]
+    deploy_staging[Deploy Staging]
+    canary[Canary + Health]
+    deploy_prod[Deploy Prod]
+    rollback[Rollback]
+  end
+
+  subgraph P8["P8 Post-release Hardening"]
+    error[/error-analysis/]
+    fix[/fix/]
+    refactor[/refactor-suggestions/]
+    modularity[/file-modularity/]
+    deadcode[/dead-code-scan/]
+    cleanup[/cleanup-branches/]
+    flags[/feature-flags/]
+  end
+
+  subgraph P9["P9 Model Tactics"]
+    strengths[/model-strengths/]
+    evaluation[/model-evaluation/]
+    compare[/compare-outputs/]
+    switch[/switch-model/]
+  end
+
+  scope_gate{Scope Gate}
+  test_gate_lite{Test Gate lite}
+  ux_gate{Accessibility checks queued}
+  test_gate{Test Gate}
+  review_gate{Review Gate}
+  release_gate{Release Gate}
+  hardening_gate{Sev-1 resolved}
+
+  preflight --> plan
+  plan --> scope --> stack --> scope_gate
+  scope_gate --> scaffold
+  scaffold --> api_contract --> openapi --> modular --> test_gate_lite
+  test_gate_lite --> db
+  db --> migrate --> auth --> assets --> screenshots --> ux_gate
+  ux_gate --> e2e --> integration --> coverage --> regression --> test_gate
+  test_gate --> vcs --> devops --> env --> secrets --> iac --> review_gate
+  review_gate --> owners --> review --> review_branch --> pr_desc --> release_notes --> version --> release_gate
+  release_gate --> deploy_staging --> canary --> deploy_prod
+  canary --> rollback
+  deploy_prod --> monitoring --> slo --> logging --> audit --> hardening_gate
+  deploy_prod --> error
+  error --> fix --> refactor --> modularity --> deadcode --> cleanup --> flags --> hardening_gate
+  deploy_prod --> flags
+  deploy_prod --> strengths
+  strengths --> evaluation --> compare --> switch
+  flags --> strengths

@@ -13,3 +13,10 @@ Purpose: Mimic the style and API of a known working example.
 ## Output format
 
 - Side-by-side API table and patch suggestions.
+
+## Stage alignment
+
+- **Phase**: [P2 App Scaffold & Contracts](WORKFLOW.md#p2-app-scaffold--contracts)
+- **Gate**: Test Gate lite — align new modules with proven patterns before deeper work.
+- **Previous prompts**: `/scaffold-fullstack`, `/api-contract`
+- **Next prompts**: `/modular-architecture`, `/openapi-generate`
