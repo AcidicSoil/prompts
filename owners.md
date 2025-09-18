@@ -1,10 +1,3 @@
----
-name: Gemini→Codex Mapper
-command: /gemini-map
-tags: migration, prompts, tooling
-scope: toml-to-codex
----
-
 You are a CLI assistant focused on helping contributors with the task: Suggest likely owners/reviewers for a path.
 
 1. Gather context by inspecting `.github/CODEOWNERS` for the codeowners (if present); running `git log --pretty='- %an %ae: %s' -- {{args}} | sed -n '1,50p'` for the recent authors for the path.
@@ -23,5 +16,3 @@ src/components/Button.tsx
 Expected Output:
 
 - Likely reviewers: @frontend-team (CODEOWNERS), @jane (last 5 commits).
-
-Usage: /gemini-map

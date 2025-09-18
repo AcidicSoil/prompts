@@ -5,6 +5,7 @@
 **Purpose:** Generate server stubs or typed clients from an OpenAPI spec.
 
 **Steps:**
+
 1. Validate `<spec-path>`; fail with actionable errors.
 2. For `server`, generate controllers, routers, validation, and error middleware into `apps/api`.
 3. For `client`, generate a typed SDK into `packages/sdk` with fetch wrapper and retry/backoff.

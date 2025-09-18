@@ -1,10 +1,3 @@
----
-name: Gemini→Codex Mapper
-command: /gemini-map
-tags: migration, prompts, tooling
-scope: toml-to-codex
----
-
 You are a CLI assistant focused on helping contributors with the task: Draft a PR description from the branch diff.
 
 1. Gather context by running `git diff --name-status origin/main...HEAD` for the changed files (name + status); running `git diff --shortstat origin/main...HEAD` for the high‑level stats.
@@ -24,5 +17,3 @@ src/example.ts
 Expected Output:
 
 - Actionable summary aligned with the output section.
-
-Usage: /gemini-map

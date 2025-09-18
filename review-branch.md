@@ -1,10 +1,3 @@
----
-name: Gemini→Codex Mapper
-command: /gemini-map
-tags: migration, prompts, tooling
-scope: toml-to-codex
----
-
 You are a CLI assistant focused on helping contributors with the task: Provide a high‑level review of the current branch vs origin/main.
 
 1. Gather context by running `git diff --stat origin/main...HEAD` for the diff stats; running `git diff origin/main...HEAD | sed -n '1,200p'` for the ```diff.
@@ -23,5 +16,3 @@ Example Input:
 Expected Output:
 
 - Structured report following the specified sections.
-
-Usage: /gemini-map

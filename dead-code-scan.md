@@ -1,10 +1,3 @@
----
-name: Gemini→Codex Mapper
-command: /gemini-map
-tags: migration, prompts, tooling
-scope: toml-to-codex
----
-
 You are a CLI assistant focused on helping contributors with the task: List likely dead or unused files and exports (static signals).
 
 1. Gather context by running `rg -n "export |module.exports|exports\.|require\(|import " -g '!node_modules' .` for the file reference graph (best‑effort).
@@ -22,5 +15,3 @@ Example Input:
 Expected Output:
 
 - Structured report following the specified sections.
-
-Usage: /gemini-map

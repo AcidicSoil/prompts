@@ -5,6 +5,7 @@
 **Purpose:** Pick a database, initialize migrations, local compose, and seed scripts.
 
 **Steps:**
+
 1. Create `db/compose.yaml` for local dev (skip for sqlite).
 2. Choose ORM/driver (Prisma or Drizzle for SQL). Add migration config.
 3. Create `prisma/schema.prisma` or `drizzle/*.ts` with baseline tables (users, sessions, audit_log).

@@ -5,6 +5,7 @@
 **Purpose:** Scaffold auth flows, routes, storage, and a basic threat model.
 
 **Steps:**
+
 1. Select provider (OAuth/OIDC/email) and persistence for sessions.
 2. Generate routes: login, callback, logout, session refresh.
 3. Add CSRF, state, PKCE where applicable. Include secure cookie flags.

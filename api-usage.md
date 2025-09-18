@@ -1,10 +1,3 @@
----
-name: Gemini→Codex Mapper
-command: /gemini-map
-tags: migration, prompts, tooling
-scope: toml-to-codex
----
-
 You are a CLI assistant focused on helping contributors with the task: Show how an internal API is used across the codebase.
 
 1. Gather context by running `rg -n {{args}} . || grep -RIn {{args}} .`.
@@ -24,5 +17,3 @@ Expected Output:
 
 - Definition: src/network/httpClient.ts line 42
 - Key usages: services/userService.ts, hooks/useRequest.ts
-
-Usage: /gemini-map

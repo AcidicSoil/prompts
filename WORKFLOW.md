@@ -170,7 +170,7 @@ Scope summary, changes by area, migration steps, breaking changes, version bump,
 
 ---
 
-# workflow\.mmd
+## workflow\.mmd
 
 ```mermaid
 flowchart TD
@@ -226,36 +226,36 @@ flowchart TD
 
 ---
 
-# Nodes & Edges list
+## Nodes & Edges list
 
 **Nodes**: Preflight, planning-process, scope-control, stack-evaluation, scaffold-fullstack, api-contract, openapi-generate, modular-architecture, db-bootstrap, migration-plan, auth-scaffold, e2e-runner-setup, integration-test, coverage-guide, regression-guard, version-control-guide, devops-automation, env-setup, secrets-manager-setup, iac-bootstrap, owners, review, review-branch, pr-desc, Gates, release-notes, version-proposal, Deploy Staging, Canary + Health, Deploy Prod, Rollback, monitoring-setup, slo-setup, logging-strategy, error-analysis, fix, refactor-suggestions, file-modularity, dead-code-scan, cleanup-branches, feature-flags, model-strengths, model-evaluation, compare-outputs, switch-model.
 **Edges**: Preflight→planning-process→scope-control→stack-evaluation→scaffold-fullstack→api-contract→openapi-generate→modular-architecture→db-bootstrap→migration-plan→auth-scaffold→e2e-runner-setup→integration-test→coverage-guide→regression-guard→version-control-guide→devops-automation→env-setup→secrets-manager-setup→iac-bootstrap→owners→review→review-branch→pr-desc→Gates→release-notes→version-proposal→Deploy Staging→Canary + Health→Deploy Prod→monitoring-setup→slo-setup→logging-strategy→error-analysis→fix→refactor-suggestions→file-modularity→dead-code-scan→cleanup-branches and Deploy Prod→feature-flags and model-strengths→model-evaluation→compare-outputs→switch-model; Canary + Health→Rollback on fail.
 
 ---
 
-# Gate checklists
+## Gate checklists
 
-## Scope Gate
+### Scope Gate
 
 - Problem, users, Done criteria defined.
 - In/Out lists and Won’t do recorded.
 - Stack chosen and risks listed.
   Evidence: `/planning-process`, `/scope-control`, `/stack-evaluation`.&#x20;
 
-## Test Gate
+### Test Gate
 
 - E2E happy path green locally and in CI.
 - No unrelated file churn.
 - Regression guards added for changed modules.
   Evidence: `/integration-test`, `/regression-guard`.&#x20;
 
-## Review Gate
+### Review Gate
 
 - Clean diff per `/version-control-guide`.
 - PR reviewed via `/review` and `/review-branch`.
 - Owners assigned and approvals met.&#x20;
 
-## Release Gate
+### Release Gate
 
 - Staging deploy passes checks.
 - Canary health metrics stable.
@@ -264,7 +264,7 @@ flowchart TD
 
 ---
 
-# Reset Playbook
+## Reset Playbook
 
 **When**: E2E red >60m, diff noisy, plan drift, large rebase pain, conflicting designs.
 **Command path**: `/reset-strategy` → propose clean slice. Create new branch from main, cherry-pick minimal commits, re-run Gate sequence.&#x20;
@@ -272,7 +272,7 @@ flowchart TD
 
 ---
 
-# Model Eval Block
+## Model Eval Block
 
 **When**: Contentious generation, flaky refactors, new model availability.
 **Steps**: `/model-strengths` → route candidates. `/model-evaluation` → baseline vs new. `/compare-outputs` → pick best. `/switch-model` → roll change with guardrails. Success = higher test pass rate or smaller diff with same tests.&#x20;

@@ -1,9 +1,3 @@
----
-name: Gemini→Codex Mapper
-command: /gemini-map
-tags: migration, prompts, tooling
-scope: toml-to-codex
----
 
 You are a CLI assistant focused on helping contributors with the task: Review ESLint config and suggest rule tweaks.
 
@@ -23,5 +17,3 @@ Example Input:
 Expected Output:
 
 - Structured report following the specified sections.
-
-Usage: /gemini-map

@@ -1,10 +1,3 @@
----
-name: Gemini→Codex Mapper
-command: /gemini-map
-tags: migration, prompts, tooling
-scope: toml-to-codex
----
-
 You are a CLI assistant focused on helping contributors with the task: Check adherence to .editorconfig across the repo.
 
 1. Gather context by inspecting `.editorconfig`; running `git ls-files | sed -n '1,400p'`.
@@ -23,5 +16,3 @@ Example Input:
 Expected Output:
 
 - Structured report following the specified sections.
-
-Usage: /gemini-map

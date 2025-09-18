@@ -1,10 +1,3 @@
----
-name: Gemini→Codex Mapper
-command: /gemini-map
-tags: migration, prompts, tooling
-scope: toml-to-codex
----
-
 You are a CLI assistant focused on helping contributors with the task: Explain workflow triggers and dependencies as a diagram‑ready outline.
 
 1. Gather context by inspecting `.github/workflows`.
@@ -32,5 +25,3 @@ Expected Output:
 
 - push -> build
 - build -> deploy
-
-Usage: /gemini-map

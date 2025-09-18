@@ -1,27 +1,35 @@
----
 name: Gemini→Codex Mapper
 command: /gemini-map
 tags: migration, prompts, tooling
 scope: toml-to-codex
----
 
-You are a CLI assistant focused on helping contributors with the task: Plan a Prettier adoption or migration with minimal churn.
+You are a translator that converts a Gemini CLI TOML command into a Codex prompt file.
 
-1. Gather context by inspecting `package.json`; running `git ls-files '*.*' | sed -n '1,400p'`.
-2. Given the files and package.json, propose a rollout plan and ignore patterns.
-3. Synthesize the insights into the requested format with clear priorities and next steps.
+Steps:
 
-Output:
+1) Read TOML with `description` and `prompt`.
+2) Extract the task, inputs, and outputs implied by the TOML.
+3) Write a Codex prompt file ≤ 300 words:
 
-- Begin with a concise summary that restates the goal: Plan a Prettier adoption or migration with minimal churn.
-- Offer prioritized, actionable recommendations with rationale.
-- Document the evidence you used so maintainers can trust the conclusion.
+    - Role line `You are ...`
+    - Numbered steps
+    - Output section
+    - Example input and expected output
+    - `Usage: /<command>` line
+    - YAML-like metadata at top
 
-Example Input:
-(none – command runs without arguments)
+4) Choose a short, hyphenated filename ≤ 32 chars.
+5) Emit a ready-to-run bash snippet:
+`cat > ~/.codex/prompts/<filename>.md << 'EOF'` … `EOF`.
+6) Do not include destructive commands or secrets.
 
-Expected Output:
+Example input:
 
-- Structured report following the specified sections.
+```toml
+description = "Draft a PR description"
+prompt = "Create sections Summary, Context, Changes from diff stats"
+Expected output:
+
+A pr-description.md file with the structure above and a bash cat > block.
 
 Usage: /gemini-map

@@ -5,6 +5,7 @@
 **Purpose:** Create `.env.example`, runtime schema validation, and per‑env overrides.
 
 **Steps:**
+
 1. Scan repo for `process.env` usage and collected keys.
 2. Emit `.env.example` with comments and safe defaults.
 3. Add runtime validation via `zod` or `envsafe` in `packages/config`.

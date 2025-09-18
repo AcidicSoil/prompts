@@ -5,6 +5,7 @@
 **Purpose:** Provision secret store and map app variables to it.
 
 **Steps:**
+
 1. Choose provider: 1Password, Doppler, AWS Secrets Manager, GCP Secret Manager, Vault.
 2. Define secret names and scopes. Generate read paths for web and api.
 3. Add dev bootstrap instructions and CI access policy docs.

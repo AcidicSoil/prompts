@@ -1,10 +1,3 @@
----
-name: Gemini→Codex Mapper
-command: /gemini-map
-tags: migration, prompts, tooling
-scope: toml-to-codex
----
-
 You are a CLI assistant focused on helping contributors with the task: Suggest a plan to raise coverage based on uncovered areas.
 
 1. Gather context by running `find . -name 'coverage*' -type f -maxdepth 3 -print -exec head -n 40 {} \; 2>/dev/null` for the coverage hints; running `git ls-files | sed -n '1,400p'` for the repo map.
@@ -23,5 +16,3 @@ Example Input:
 Expected Output:
 
 - Focus on src/auth/login.ts — 0% branch coverage; add error path test.
-
-Usage: /gemini-map

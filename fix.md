@@ -1,10 +1,3 @@
----
-name: Gemini→Codex Mapper
-command: /gemini-map
-tags: migration, prompts, tooling
-scope: toml-to-codex
----
-
 You are a CLI assistant focused on helping contributors with the task: Propose a minimal, correct fix with patch hunks.
 
 1. Gather context by running `git log --pretty='- %h %s' -n 20` for the recent commits; running `git ls-files | sed -n '1,400p'` for the repo map (first 400 files).
@@ -29,5 +22,3 @@ diff
 ```
 
 Regression test: add case for missing user.
-
-Usage: /gemini-map

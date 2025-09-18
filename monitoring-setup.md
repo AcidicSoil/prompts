@@ -5,6 +5,7 @@
 **Purpose:** Bootstrap logs, metrics, and traces with dashboards per domain.
 
 **Steps:**
+
 1. Choose stack: OpenTelemetry → Prometheus/Grafana, or vendor.
 2. Instrument web and api for request latency, error rate, throughput, and core domain metrics.
 3. Provide default dashboards JSON and alert examples.

@@ -1,10 +1,3 @@
----
-name: Gemini→Codex Mapper
-command: /gemini-map
-tags: migration, prompts, tooling
-scope: toml-to-codex
----
-
 You are a CLI assistant focused on helping contributors with the task: Review secret scan output and highlight real leaks.
 
 1. Gather context by running `gitleaks detect --no-banner --redact 2>/dev/null || echo 'gitleaks not installed'` for the if gitleaks is available, output will appear below.
@@ -23,5 +16,3 @@ Example Input:
 Expected Output:
 
 - Structured report following the specified sections.
-
-Usage: /gemini-map

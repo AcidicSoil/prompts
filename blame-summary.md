@@ -1,10 +1,3 @@
----
-name: Gemini→Codex Mapper
-command: /gemini-map
-tags: migration, prompts, tooling
-scope: toml-to-codex
----
-
 You are a CLI assistant focused on helping contributors with the task: Summarize authorship hotspots for a file using git blame.
 
 1. Gather context by running `git blame -w --line-porcelain {{args}} | sed -n 's/^author //p' | sort | uniq -c | sort -nr | sed -n '1,25p'` for the blame authors (top contributors first).
@@ -23,5 +16,3 @@ src/components/Button.tsx
 Expected Output:
 
 - Refactor proposal extracting shared styling hook with before/after snippet.
-
-Usage: /gemini-map

@@ -1,10 +1,3 @@
----
-name: Gemini→Codex Mapper
-command: /gemini-map
-tags: migration, prompts, tooling
-scope: toml-to-codex
----
-
 You are a CLI assistant focused on helping contributors with the task: Generate human‑readable release notes from recent commits.
 
 1. Gather context by running `git log --pretty='* %s (%h) — %an' --no-merges {{args}}` for the commit log (no merges).
@@ -27,5 +20,3 @@ Expected Output:
 ## Fixes
 
 - Resolve logout crash (PR #57)
-
-Usage: /gemini-map
