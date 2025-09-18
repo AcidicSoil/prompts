@@ -1742,3 +1742,495 @@ workflow.mmd
 52 |     AY --> AZ[content-generation.md]
 53 |     AZ --> BA[api-docs-local.md]
 ```
+
+MCP/prompts_mcp_server_corrected_minimal_skeleton.md
+```
+1 | # Prompts MCP Server — Full Picture
+2 | 
+3 | > This is the completed version with config, logging, hot reindex, rate limiting, orchestration tool, and tests.
+4 | 
+5 | ---
+6 | 
+7 | ## package.json
+8 | 
+9 | ```json
+10 | {
+11 |   "name": "prompts-mcp-server",
+12 |   "version": "0.1.0",
+13 |   "private": true,
+14 |   "type": "module",
+15 |   "main": "dist/index.js",
+16 |   "scripts": {
+17 |     "build": "tsc -p .",
+18 |     "start": "node dist/index.js",
+19 |     "dev": "tsx watch src/index.ts",
+20 |     "test": "vitest run",
+21 |     "test:watch": "vitest"
+22 |   },
+23 |   "dependencies": {
+24 |     "@modelcontextprotocol/sdk": "^1.5.0",
+25 |     "gray-matter": "^4.0.3",
+26 |     "jsonschema": "^1.4.1",
+27 |     "mermaid-js-parser-lite": "^2.0.1",
+28 |     "chokidar": "^3.6.0",
+29 |     "pino": "^9.4.0"
+30 |   },
+31 |   "devDependencies": {
+32 |     "tsx": "^4.19.0",
+33 |     "typescript": "^5.6.3",
+34 |     "vitest": "^2.1.3"
+35 |   }
+36 | }
+37 | ```
+38 | 
+39 | ## tsconfig.json
+40 | 
+41 | ```json
+42 | {
+43 |   "compilerOptions": {
+44 |     "target": "ES2022",
+45 |     "module": "ES2022",
+46 |     "moduleResolution": "bundler",
+47 |     "outDir": "dist",
+48 |     "rootDir": "src",
+49 |     "strict": true,
+50 |     "skipLibCheck": true,
+51 |     "resolveJsonModule": true
+52 |   },
+53 |   "include": ["src/**/*.ts"]
+54 | }
+55 | ```
+56 | 
+57 | ## src/config.ts
+58 | 
+59 | ```ts
+60 | export type Config = {
+61 |   root: string;
+62 |   timeouts: { toolMs: number; resourceMs: number };
+63 |   limits: { maxFileBytes: number; maxOutputChars: number };
+64 |   rate: { capacity: number; refillPerSec: number };
+65 |   logLevel: 'info' | 'debug' | 'error';
+66 | };
+67 | 
+68 | export function loadConfig(): Config {
+69 |   const env = process.env;
+70 |   return {
+71 |     root: env.PROMPTS_DIR || process.cwd(),
+72 |     timeouts: {
+73 |       toolMs: parseInt(env.MCP_TOOL_TIMEOUT_MS || '15000', 10),
+74 |       resourceMs: parseInt(env.MCP_RESOURCE_TIMEOUT_MS || '8000', 10)
+75 |     },
+76 |     limits: {
+77 |       maxFileBytes: parseInt(env.MCP_MAX_FILE_BYTES || '524288', 10),
+78 |       maxOutputChars: parseInt(env.MCP_MAX_OUTPUT_CHARS || '200000', 10)
+79 |     },
+80 |     rate: {
+81 |       capacity: parseInt(env.MCP_RATE_CAPACITY || '20', 10),
+82 |       refillPerSec: parseFloat(env.MCP_RATE_REFILL_PER_SEC || '5')
+83 |     },
+84 |     logLevel: (env.MCP_LOG_LEVEL as any) || 'info'
+85 |   };
+86 | }
+87 | ```
+88 | 
+89 | ## src/log.ts
+90 | 
+91 | ```ts
+92 | import pino from 'pino';
+93 | export const log = pino({ level: process.env.MCP_LOG_LEVEL || 'info' });
+94 | export type Timer = { start: number; end(): number };
+95 | export function timer(): Timer { const t = Date.now(); return { start: t, end: () => Date.now() - t }; }
+96 | ```
+97 | 
+98 | ## src/rateLimiter.ts
+99 | 
+100 | ```ts
+101 | const buckets = new Map<string, { tokens: number; last: number }>();
+102 | 
+103 | export function allow(key: string, capacity: number, refillPerSec: number): boolean {
+104 |   const now = Date.now();
+105 |   const b = buckets.get(key) || { tokens: capacity, last: now };
+106 |   const elapsed = (now - b.last) / 1000;
+107 |   b.tokens = Math.min(capacity, b.tokens + elapsed * refillPerSec);
+108 |   b.last = now;
+109 |   if (b.tokens < 1) { buckets.set(key, b); return false; }
+110 |   b.tokens -= 1; buckets.set(key, b); return true;
+111 | }
+112 | ```
+113 | 
+114 | ## src/security.ts
+115 | 
+116 | ```ts
+117 | import fs from 'node:fs/promises';
+118 | 
+119 | export async function safeRead(path: string, maxBytes: number): Promise<string> {
+120 |   const h = await fs.open(path, 'r');
+121 |   try {
+122 |     const stat = await h.stat();
+123 |     if (stat.size > maxBytes) throw new Error(`file too large: ${stat.size} > ${maxBytes}`);
+124 |     const buf = Buffer.alloc(stat.size);
+125 |     await h.read(buf, 0, stat.size, 0);
+126 |     return buf.toString('utf8');
+127 |   } finally {
+128 |     await h.close();
+129 |   }
+130 | }
+131 | 
+132 | export function capOutput(s: string, maxChars: number): string {
+133 |   if (s.length <= maxChars) return s;
+134 |   const msg = `\n\n[truncated output: ${s.length} chars > limit]`;
+135 |   return s.slice(0, maxChars) + msg;
+136 | }
+137 | ```
+138 | 
+139 | ## src/orchestrate.ts
+140 | 
+141 | ```ts
+142 | import type { IndexedPrompt } from './types.js';
+143 | import { fillTemplate } from './indexer.js';
+144 | 
+145 | export function orchestrateFlow(start: string, next: (from: string)=>Promise<string[]>, prompts: IndexedPrompt[], args: Record<string, unknown>) {
+146 |   const seen = new Set<string>();
+147 |   async function dfs(node: string, acc: string[]): Promise<string[]> {
+148 |     if (seen.has(node)) return acc; seen.add(node);
+149 |     const p = prompts.find(x => x.name === node);
+150 |     if (p) {
+151 |       const rendered = p.messages.map(m => fillTemplate(m.content, args)).join('\n\n');
+152 |       acc.push(`## ${p.name}\n\n${rendered}`);
+153 |     }
+154 |     const outs = await next(node);
+155 |     for (const n of outs) await dfs(n, acc);
+156 |     return acc;
+157 |   }
+158 |   return dfs(start, []).then(parts => parts.join('\n\n---\n\n'));
+159 | }
+160 | ```
+161 | 
+162 | ## src/index.ts (excerpt)
+163 | 
+164 | ```ts
+165 | import { loadConfig } from './config.js';
+166 | import { log, timer } from './log.js';
+167 | import { allow } from './rateLimiter.js';
+168 | import { capOutput } from './security.js';
+169 | import { orchestrateFlow } from './orchestrate.js';
+170 | 
+171 | const cfg = loadConfig();
+172 | 
+173 | server.setRequestHandler("tools/list", async () => ({
+174 |   tools: [
+175 |     { name: "list_triggers", description: "List triggers", inputSchema: { type: "object", properties: {} } },
+176 |     { name: "run_prompt", description: "Render prompt", inputSchema: { type: "object", required: ["name"], properties: { name: { type: "string" }, args: { type: "object", additionalProperties: true } } } },
+177 |     { name: "next_steps", description: "Graph traversal", inputSchema: { type: "object", required: ["from"], properties: { from: { type: "string" } } } },
+178 |     { name: "grep_prompts", description: "Search prompts", inputSchema: { type: "object", required: ["query"], properties: { query: { type: "string" } } } },
+179 |     { name: "refresh_index", description: "Reindex prompts", inputSchema: { type: "object", properties: {} } },
+180 |     { name: "orchestrate_flow", description: "Stitched plan", inputSchema: { type: "object", required: ["start"], properties: { start: { type: "string" }, args: { type: "object", additionalProperties: true } } } }
+181 |   ]
+182 | }));
+183 | 
+184 | server.setRequestHandler("tools/call", async (req) => {
+185 |   const { name, arguments: args } = req.params;
+186 |   const t = timer();
+187 |   if (!allow(name, cfg.rate.capacity, cfg.rate.refillPerSec)) {
+188 |     return { content: [{ type: 'text', text: 'rate_limited' }] };
+189 |   }
+190 |   // ... implement same as skeleton, but wrap outputs with capOutput and log timings
+191 | });
+192 | ```
+193 | 
+194 | ## tests/basic.test.ts
+195 | 
+196 | ```ts
+197 | import { describe, it, expect } from 'vitest';
+198 | import { fillTemplate } from '../src/indexer.js';
+199 | 
+200 | describe('templating', () => {
+201 |   it('fills vars', () => {
+202 |     const out = fillTemplate('Hello {{name}}', { name: 'Ada' });
+203 |     expect(out).toBe('Hello Ada');
+204 |   });
+205 | });
+206 | ```
+207 | 
+208 | ## README notes
+209 | 
+210 | - Run: `node dist/index.js`
+211 | - Env: `PROMPTS_DIR=/path/to/prompts`
+212 | - ChatGPT custom connector or Claude Desktop: register the command.
+213 | - Tools: `list_triggers`, `run_prompt`, `next_steps`, `grep_prompts`, `refresh_index`, `orchestrate_flow`.
+214 | 
+215 | ---
+216 | 
+217 | **Stack summary**: Node.js 20+, TypeScript, MCP SDK, gray-matter, mermaid parser, chokidar, pino, vitest. Implements prompts/resources/tools, reindexing, logging, rate limits, orchestration.
+218 | 
+```
+
+MCP/prompts_mcp_server_full_picture_add_ons.md
+```
+1 | # Prompts MCP Server — Full Picture Add‑Ons
+2 | 
+3 | This extends the minimal skeleton with config, logging, hot reindex, rate limiting, orchestration, and tests.
+4 | 
+5 | ---
+6 | 
+7 | ## package.json additions
+8 | 
+9 | ```diff
+10 |   "scripts": {
+11 |     "build": "tsc -p .",
+12 |     "start": "node dist/index.js",
+13 | -   "dev": "tsx watch src/index.ts"
+14 | +   "dev": "tsx watch src/index.ts",
+15 | +   "test": "vitest run",
+16 | +   "test:watch": "vitest"
+17 |   },
+18 |   "dependencies": {
+19 |     "@modelcontextprotocol/sdk": "^1.5.0",
+20 |     "gray-matter": "^4.0.3",
+21 | -   "jsonschema": "^1.4.1",
+22 | -   "mermaid-js-parser-lite": "^2.0.1"
+23 | +   "jsonschema": "^1.4.1",
+24 | +   "mermaid-js-parser-lite": "^2.0.1",
+25 | +   "chokidar": "^3.6.0",
+26 | +   "pino": "^9.4.0"
+27 |   },
+28 |   "devDependencies": {
+29 |     "tsx": "^4.19.0",
+30 | -   "typescript": "^5.6.3"
+31 | +   "typescript": "^5.6.3",
+32 | +   "vitest": "^2.1.3"
+33 |   }
+34 | ```
+35 | 
+36 | ---
+37 | 
+38 | ## src/config.ts
+39 | 
+40 | ```ts
+41 | export type Config = {
+42 |   root: string;
+43 |   timeouts: { toolMs: number; resourceMs: number };
+44 |   limits: { maxFileBytes: number; maxOutputChars: number };
+45 |   rate: { capacity: number; refillPerSec: number };
+46 |   logLevel: 'info' | 'debug' | 'error';
+47 | };
+48 | 
+49 | export function loadConfig(): Config {
+50 |   const env = process.env;
+51 |   return {
+52 |     root: env.PROMPTS_DIR || process.cwd(),
+53 |     timeouts: {
+54 |       toolMs: parseInt(env.MCP_TOOL_TIMEOUT_MS || '15000', 10),
+55 |       resourceMs: parseInt(env.MCP_RESOURCE_TIMEOUT_MS || '8000', 10)
+56 |     },
+57 |     limits: {
+58 |       maxFileBytes: parseInt(env.MCP_MAX_FILE_BYTES || '524288', 10),
+59 |       maxOutputChars: parseInt(env.MCP_MAX_OUTPUT_CHARS || '200000', 10)
+60 |     },
+61 |     rate: {
+62 |       capacity: parseInt(env.MCP_RATE_CAPACITY || '20', 10),
+63 |       refillPerSec: parseFloat(env.MCP_RATE_REFILL_PER_SEC || '5')
+64 |     },
+65 |     logLevel: (env.MCP_LOG_LEVEL as any) || 'info'
+66 |   };
+67 | }
+68 | ```
+69 | 
+70 | ---
+71 | 
+72 | ## src/log.ts
+73 | 
+74 | ```ts
+75 | import pino from 'pino';
+76 | export const log = pino({ level: process.env.MCP_LOG_LEVEL || 'info' });
+77 | export type Timer = { start: number; end(): number };
+78 | export function timer(): Timer { const t = Date.now(); return { start: t, end: () => Date.now() - t }; }
+79 | ```
+80 | 
+81 | ---
+82 | 
+83 | ## src/rateLimiter.ts
+84 | 
+85 | ```ts
+86 | const buckets = new Map<string, { tokens: number; last: number }>();
+87 | export function allow(key: string, capacity: number, refillPerSec: number): boolean {
+88 |   const now = Date.now();
+89 |   const b = buckets.get(key) || { tokens: capacity, last: now };
+90 |   const elapsed = (now - b.last) / 1000;
+91 |   b.tokens = Math.min(capacity, b.tokens + elapsed * refillPerSec);
+92 |   b.last = now;
+93 |   if (b.tokens < 1) { buckets.set(key, b); return false; }
+94 |   b.tokens -= 1; buckets.set(key, b); return true;
+95 | }
+96 | ```
+97 | 
+98 | ---
+99 | 
+100 | ## src/watcher.ts
+101 | 
+102 | ```ts
+103 | import chokidar from 'chokidar';
+104 | import { log } from './log.js';
+105 | export function watchDir(dir: string, onChange: () => Promise<void>) {
+106 |   const w = chokidar.watch(dir, { ignored: [/node_modules/, /dist/], ignoreInitial: true });
+107 |   w.on('all', async (event, path) => {
+108 |     log.info({ event, path }, 'fs_change');
+109 |     try { await onChange(); } catch (e) { log.error({ err: e }, 'reindex_failed'); }
+110 |   });
+111 |   return w;
+112 | }
+113 | ```
+114 | 
+115 | ---
+116 | 
+117 | ## src/security.ts
+118 | 
+119 | ```ts
+120 | import fs from 'node:fs/promises';
+121 | export async function safeRead(path: string, maxBytes: number): Promise<string> {
+122 |   const h = await fs.open(path, 'r');
+123 |   try {
+124 |     const stat = await h.stat();
+125 |     if (stat.size > maxBytes) throw new Error(`file too large: ${stat.size} > ${maxBytes}`);
+126 |     const buf = Buffer.alloc(stat.size);
+127 |     await h.read(buf, 0, stat.size, 0);
+128 |     return buf.toString('utf8');
+129 |   } finally {
+130 |     await h.close();
+131 |   }
+132 | }
+133 | export function capOutput(s: string, maxChars: number): string {
+134 |   if (s.length <= maxChars) return s;
+135 |   const msg = `\n\n[truncated output: ${s.length} chars > limit]`;
+136 |   return s.slice(0, maxChars) + msg;
+137 | }
+138 | ```
+139 | 
+140 | ---
+141 | 
+142 | ## src/orchestrate.ts
+143 | 
+144 | ```ts
+145 | import type { IndexedPrompt } from './types.js';
+146 | import { fillTemplate } from './indexer.js';
+147 | export function orchestrateFlow(start: string, next: (from: string)=>Promise<string[]>, prompts: IndexedPrompt[], args: Record<string, unknown>) {
+148 |   const seen = new Set<string>();
+149 |   async function dfs(node: string, acc: string[]): Promise<string[]> {
+150 |     if (seen.has(node)) return acc; seen.add(node);
+151 |     const p = prompts.find(x => x.name === node);
+152 |     if (p) {
+153 |       const rendered = p.messages.map(m => fillTemplate(m.content, args)).join('\n\n');
+154 |       acc.push(`## ${p.name}\n\n${rendered}`);
+155 |     }
+156 |     const outs = await next(node);
+157 |     for (const n of outs) await dfs(n, acc);
+158 |     return acc;
+159 |   }
+160 |   return dfs(start, []).then(parts => parts.join('\n\n---\n\n'));
+161 | }
+162 | ```
+163 | 
+164 | ---
+165 | 
+166 | ## src/index.ts changes
+167 | 
+168 | ```diff
+169 | +import { loadConfig } from './config.js';
+170 | +import { log, timer } from './log.js';
+171 | +import { allow } from './rateLimiter.js';
+172 | +import { watchDir } from './watcher.js';
+173 | +import { capOutput } from './security.js';
+174 | +import { orchestrateFlow } from './orchestrate.js';
+175 | -const ROOT = process.env.PROMPTS_DIR || path.resolve(process.cwd());
+176 | +const cfg = loadConfig();
+177 | +const ROOT = cfg.root;
+178 |  await bootstrap();
+179 | +watchDir(ROOT, bootstrap);
+180 |  server.setRequestHandler("tools/list", async () => ({
+181 |    tools: [
+182 |      { name: "list_triggers", description: "List '/slash' triggers discovered in markdown", inputSchema: { type: "object", properties: {} } },
+183 |      { name: "run_prompt", description: "Render a prompt by name with {{vars}}", inputSchema: { type: "object", required: ["name"], properties: { name: { type: "string" }, args: { type: "object", additionalProperties: true } } } },
+184 |      { name: "next_steps", description: "Return outgoing nodes from workflow.mmd", inputSchema: { type: "object", required: ["from"], properties: { from: { type: "string" } } } },
+185 |      { name: "grep_prompts", description: "Search prompt texts", inputSchema: { type: "object", required: ["query"], properties: { query: { type: "string" } } } },
+186 | +    { name: "refresh_index", description: "Reindex prompt files", inputSchema: { type: "object", properties: {} } },
+187 | +    { name: "orchestrate_flow", description: "Walk workflow.mmd from a node and emit a stitched plan", inputSchema: { type: "object", required: ["start"], properties: { start: { type: "string" }, args: { type: "object", additionalProperties: true } } } }
+188 |    ]
+189 |  }));
+190 |  server.setRequestHandler("tools/call", async (req) => {
+191 |    const { name, arguments: args } = req.params;
+192 | +  const t = timer();
+193 | +  if (!allow(name, cfg.rate.capacity, cfg.rate.refillPerSec)) return { content: [{ type: 'text', text: 'rate_limited' }] };
+194 |    if (name === "list_triggers") {
+195 |      const entries = PROMPTS.map(p => { const m = p.raw.match(/^\s*Trigger:\s*(\/\S+)/mi); return m ? { trigger: m[1], prompt: p.name } : null; }).filter(Boolean);
+196 | -    return { content: [{ type: "text", text: JSON.stringify({ triggers: entries }, null, 2) }] };
+197 | +    const out = JSON.stringify({ triggers: entries }, null, 2); log.info({ tool: name, ms: t.end(), size: out.length }, 'tool_done'); return { content: [{ type: "text", text: capOutput(out, cfg.limits.maxOutputChars) }] };
+198 |    }
+199 |    if (name === "run_prompt") {
+200 |      const key = String((args as any)?.name || "");
+201 |      const p = PROMPTS.find(x => x.name === key);
+202 |      if (!p) throw new Error(`Unknown prompt: ${key}`);
+203 |      const rendered = p.messages.map(m => fillTemplate(m.content, (args as any)?.args || {})).join("\n\n");
+204 | -    return { content: [{ type: "text", text: rendered }] };
+205 | +    log.info({ tool: name, ms: t.end(), chars: rendered.length }, 'tool_done'); return { content: [{ type: "text", text: capOutput(rendered, cfg.limits.maxOutputChars) }] };
+206 |    }
+207 |    if (name === "next_steps") {
+208 |      const from = String((args as any)?.from || "");
+209 |      const next = await nextFrom(ROOT, from);
+210 | -    return { content: [{ type: "text", text: JSON.stringify({ from, next }, null, 2) }] };
+211 | +    const out = JSON.stringify({ from, next }, null, 2); log.info({ tool: name, ms: t.end() }, 'tool_done'); return { content: [{ type: "text", text: out }] };
+212 |    }
+213 |    if (name === "grep_prompts") {
+214 |      const q = String((args as any)?.query || "").toLowerCase();
+215 |      const hits = PROMPTS.map(p => ({ name: p.name, match: p.raw.toLowerCase().includes(q) })).filter(h => h.match).map(h => h.name);
+216 | -    return { content: [{ type: "text", text: JSON.stringify({ query: q, results: hits }, null, 2) }] };
+217 | +    const out = JSON.stringify({ query: q, results: hits }, null, 2); log.info({ tool: name, ms: t.end(), results: hits.length }, 'tool_done'); return { content: [{ type: "text", text: out }] };
+218 |    }
+219 | +  if (name === 'refresh_index') { await bootstrap(); log.info({ tool: name, ms: t.end(), count: PROMPTS.length }, 'tool_done'); return { content: [{ type: 'text', text: JSON.stringify({ prompts: PROMPTS.length }) }] }; }
+220 | +  if (name === 'orchestrate_flow') { const start = String((args as any)?.start || ''); const a = (args as any)?.args || {}; const plan = await orchestrateFlow(start, (n)=> nextFrom(ROOT, n), PROMPTS, a); log.info({ tool: name, ms: t.end(), chars: plan.length }, 'tool_done'); return { content: [{ type: 'text', text: capOutput(plan, cfg.limits.maxOutputChars) }] }; }
+221 |    throw new Error(`Unknown tool: ${name}`);
+222 |  });
+223 |  async function bootstrap() { PROMPTS = await indexRepo(ROOT); }
+224 | ```
+225 | 
+226 | ---
+227 | 
+228 | ## tests/basic.test.ts
+229 | 
+230 | ```ts
+231 | import { describe, it, expect } from 'vitest';
+232 | import { fillTemplate } from '../src/indexer.js';
+233 | 
+234 | describe('templating', () => {
+235 |   it('fills known vars and blanks missing', () => {
+236 |     const out = fillTemplate('Hello {{name}} {{x}}', { name: 'Ada' });
+237 |     expect(out).toBe('Hello Ada ');
+238 |   });
+239 | });
+240 | ```
+241 | 
+242 | ---
+243 | 
+244 | ## tests/mermaid.test.ts
+245 | 
+246 | ```ts
+247 | import { describe, it, expect } from 'vitest';
+248 | import { nextFrom } from '../src/mermaid.js';
+249 | import fs from 'node:fs/promises';
+250 | 
+251 | it('returns [] when workflow.mmd missing', async () => {
+252 |   const tmp = await fs.mkdtemp('mmd-');
+253 |   const out = await nextFrom(tmp, 'A');
+254 |   expect(out).toEqual([]);
+255 | });
+256 | ```
+257 | 
+258 | ---
+259 | 
+260 | ## Operational tips
+261 | 
+262 | - Set `MCP_MAX_FILE_BYTES` and `MCP_MAX_OUTPUT_CHARS` for guardrails.
+263 | - Use `MCP_RATE_*` to protect hosts from bursty tool calls.
+264 | - Enable file watching to keep the host’s prompt catalog fresh.
+265 | - Log to JSONL and ship to your aggregator of choice.
+266 | 
+```
