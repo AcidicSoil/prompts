@@ -174,7 +174,7 @@ Scope summary, changes by area, migration steps, breaking changes, version bump,
 
 ```mermaid
 flowchart TD
-  A[Preflight Docs (§A) AGENTS] -->|DocFetchReport OK| B[/planning-process/]
+  A["Preflight Docs (§A) AGENTS"] -->|DocFetchReport OK| B[/planning-process/]
   B --> C[/scope-control/]
   C --> D[/stack-evaluation/]
   D --> E[/scaffold-fullstack/]
