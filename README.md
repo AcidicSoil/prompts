@@ -155,3 +155,11 @@ flowchart TD
   AR2 --> AS[/compare-outputs/]
   AS --> AT[/switch-model/]
 ```
+
+## Future enhancements
+
+We plan to evolve this prompt pack into a full MCP server so teams can integrate Codex-native workflows through a single machine-coordination endpoint. Detailed architectural and rollout plans are forthcoming, but anticipated capabilities include:
+
+- Hosting the current prompt catalog as callable MCP tools with typed inputs and outputs.
+- Surfacing DocFetch and gating status signals as first-class MCP events.
+- Enabling external automation to trigger prompt flows programmatically while preserving safety gates.
