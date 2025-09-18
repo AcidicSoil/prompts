@@ -1,4 +1,5 @@
 .markdownlint-cli2.jsonc
+
 ```
 1 | {
 2 |   // Ignore patterns for markdownlint-cli2
@@ -13,6 +14,7 @@
 ```
 
 .markdownlint.json
+
 ```
 1 | {
 2 |   "default": true,
@@ -37,6 +39,7 @@
 ```
 
 AGENTS.md
+
 ```
 1 | # Repository Guidelines
 2 | 
@@ -60,6 +63,7 @@ AGENTS.md
 ```
 
 GEMINI.md
+
 ```
 1 | # GEMINI.md
 2 | 
@@ -111,6 +115,7 @@ GEMINI.md
 ```
 
 action-diagram.md
+
 ```
 1 | ---
 2 | name: Gemini→Codex Mapper
@@ -151,6 +156,7 @@ action-diagram.md
 ```
 
 adr-new.md
+
 ```
 1 | ---
 2 | name: Gemini→Codex Mapper
@@ -182,6 +188,7 @@ adr-new.md
 ```
 
 api-docs-local.md
+
 ```
 1 | # API Docs Local
 2 | 
@@ -201,6 +208,7 @@ api-docs-local.md
 ```
 
 api-usage.md
+
 ```
 1 | ---
 2 | name: Gemini→Codex Mapper
@@ -233,6 +241,7 @@ api-usage.md
 ```
 
 audit.md
+
 ```
 1 | ---
 2 | name: Gemini→Codex Mapper
@@ -265,6 +274,7 @@ audit.md
 ```
 
 blame-summary.md
+
 ```
 1 | ---
 2 | name: Gemini→Codex Mapper
@@ -296,6 +306,7 @@ blame-summary.md
 ```
 
 changed-files.md
+
 ```
 1 | ---
 2 | name: Gemini→Codex Mapper
@@ -326,6 +337,7 @@ changed-files.md
 ```
 
 check.md
+
 ```
 1 | ---
 2 | name: Gemini→Codex Mapper
@@ -357,6 +369,7 @@ check.md
 ```
 
 cleanup-branches.md
+
 ```
 1 | ---
 2 | name: Gemini→Codex Mapper
@@ -387,6 +400,7 @@ cleanup-branches.md
 ```
 
 commit.md
+
 ```
 1 | ---
 2 | name: Gemini→Codex Mapper
@@ -419,6 +433,7 @@ commit.md
 ```
 
 compare-outputs.md
+
 ```
 1 | # Compare Outputs
 2 | 
@@ -439,6 +454,7 @@ compare-outputs.md
 ```
 
 content-generation.md
+
 ```
 1 | # Content Generation
 2 | 
@@ -458,6 +474,7 @@ content-generation.md
 ```
 
 coverage-guide.md
+
 ```
 1 | ---
 2 | name: Gemini→Codex Mapper
@@ -489,6 +506,7 @@ coverage-guide.md
 ```
 
 dead-code-scan.md
+
 ```
 1 | ---
 2 | name: Gemini→Codex Mapper
@@ -519,6 +537,7 @@ dead-code-scan.md
 ```
 
 design-assets.md
+
 ```
 1 | # Design Assets
 2 | 
@@ -538,6 +557,7 @@ design-assets.md
 ```
 
 devops-automation.md
+
 ```
 1 | # DevOps Automation
 2 | 
@@ -558,6 +578,7 @@ devops-automation.md
 ```
 
 error-analysis.md
+
 ```
 1 | # Error Analysis
 2 | 
@@ -582,6 +603,7 @@ error-analysis.md
 ```
 
 eslint-review.md
+
 ```
 1 | ---
 2 | name: Gemini→Codex Mapper
@@ -613,6 +635,7 @@ eslint-review.md
 ```
 
 explain-code.md
+
 ```
 1 | # Explain Code
 2 | 
@@ -632,6 +655,7 @@ explain-code.md
 ```
 
 explain-failures.md
+
 ```
 1 | ---
 2 | name: Gemini→Codex Mapper
@@ -663,6 +687,7 @@ explain-failures.md
 ```
 
 explain-symbol.md
+
 ```
 1 | ---
 2 | name: Gemini→Codex Mapper
@@ -695,6 +720,7 @@ explain-symbol.md
 ```
 
 file-modularity.md
+
 ```
 1 | # File Modularity
 2 | 
@@ -714,6 +740,7 @@ file-modularity.md
 ```
 
 fix.md
+
 ```
 1 | ---
 2 | name: Gemini→Codex Mapper
@@ -751,6 +778,7 @@ fix.md
 ```
 
 generate.md
+
 ```
 1 | ---
 2 | name: Gemini→Codex Mapper
@@ -782,6 +810,7 @@ generate.md
 ```
 
 grep.md
+
 ```
 1 | ---
 2 | name: Gemini→Codex Mapper
@@ -812,6 +841,7 @@ grep.md
 ```
 
 instruction-file.md
+
 ```
 1 | # Instruction File
 2 | 
@@ -832,6 +862,7 @@ instruction-file.md
 ```
 
 integration-test.md
+
 ```
 1 | # Integration Test
 2 | 
@@ -860,6 +891,7 @@ integration-test.md
 ```
 
 logging-strategy.md
+
 ```
 1 | # Logging Strategy
 2 | 
@@ -880,6 +912,7 @@ logging-strategy.md
 ```
 
 model-evaluation.md
+
 ```
 1 | # Model Evaluation
 2 | 
@@ -899,6 +932,7 @@ model-evaluation.md
 ```
 
 model-strengths.md
+
 ```
 1 | # Model Strengths
 2 | 
@@ -918,6 +952,7 @@ model-strengths.md
 ```
 
 modular-architecture.md
+
 ```
 1 | # Modular Architecture
 2 | 
@@ -938,6 +973,7 @@ modular-architecture.md
 ```
 
 owners.md
+
 ```
 1 | ---
 2 | name: Gemini→Codex Mapper
@@ -969,6 +1005,7 @@ owners.md
 ```
 
 plan.md
+
 ```
 1 | ---
 2 | name: Gemini→Codex Mapper
@@ -1000,6 +1037,7 @@ plan.md
 ```
 
 planning-process.md
+
 ```
 1 | # Planning Process
 2 | 
@@ -1039,6 +1077,7 @@ planning-process.md
 ```
 
 pr-desc.md
+
 ```
 1 | ---
 2 | name: Gemini→Codex Mapper
@@ -1071,6 +1110,7 @@ pr-desc.md
 ```
 
 prototype-feature.md
+
 ```
 1 | # Prototype Feature
 2 | 
@@ -1091,6 +1131,7 @@ prototype-feature.md
 ```
 
 refactor-file.md
+
 ```
 1 | ---
 2 | name: Gemini→Codex Mapper
@@ -1122,6 +1163,7 @@ refactor-file.md
 ```
 
 refactor-suggestions.md
+
 ```
 1 | # Refactor Suggestions
 2 | 
@@ -1141,6 +1183,7 @@ refactor-suggestions.md
 ```
 
 reference-implementation.md
+
 ```
 1 | # Reference Implementation
 2 | 
@@ -1160,6 +1203,7 @@ reference-implementation.md
 ```
 
 regression-guard.md
+
 ```
 1 | # Regression Guard
 2 | 
@@ -1183,6 +1227,7 @@ regression-guard.md
 ```
 
 release-notes.md
+
 ```
 1 | ---
 2 | name: Gemini→Codex Mapper
@@ -1218,6 +1263,7 @@ release-notes.md
 ```
 
 reset-strategy.md
+
 ```
 1 | # Reset Strategy
 2 | 
@@ -1246,6 +1292,7 @@ reset-strategy.md
 ```
 
 review-branch.md
+
 ```
 1 | ---
 2 | name: Gemini→Codex Mapper
@@ -1277,6 +1324,7 @@ review-branch.md
 ```
 
 review.md
+
 ```
 1 | ---
 2 | name: Gemini→Codex Mapper
@@ -1308,6 +1356,7 @@ review.md
 ```
 
 scope-control.md
+
 ```
 1 | # Scope Control
 2 | 
@@ -1336,6 +1385,7 @@ scope-control.md
 ```
 
 stack-evaluation.md
+
 ```
 1 | # Stack Evaluation
 2 | 
@@ -1355,6 +1405,7 @@ stack-evaluation.md
 ```
 
 summary.md
+
 ```
 1 | ---
 2 | name: Gemini→Codex Mapper
@@ -1385,6 +1436,7 @@ summary.md
 ```
 
 switch-model.md
+
 ```
 1 | # Switch Model
 2 | 
@@ -1405,6 +1457,7 @@ switch-model.md
 ```
 
 todo-report.md
+
 ```
 1 | ---
 2 | name: Gemini→Codex Mapper
@@ -1436,6 +1489,7 @@ todo-report.md
 ```
 
 todos.md
+
 ```
 1 | ---
 2 | name: Gemini→Codex Mapper
@@ -1466,6 +1520,7 @@ todos.md
 ```
 
 tsconfig-review.md
+
 ```
 1 | ---
 2 | name: Gemini→Codex Mapper
@@ -1497,6 +1552,7 @@ tsconfig-review.md
 ```
 
 ui-screenshots.md
+
 ```
 1 | # UI Screenshots
 2 | 
@@ -1516,6 +1572,7 @@ ui-screenshots.md
 ```
 
 version-control-guide.md
+
 ```
 1 | # Version Control Guide
 2 | 
@@ -1544,6 +1601,7 @@ version-control-guide.md
 ```
 
 version-proposal.md
+
 ```
 1 | ---
 2 | name: Gemini→Codex Mapper
@@ -1575,6 +1633,7 @@ version-proposal.md
 ```
 
 vibe-coders.md
+
 ```
 1 | # YC Guide to Vibe Coding
 2 | 
@@ -1668,6 +1727,7 @@ vibe-coders.md
 ```
 
 voice-input.md
+
 ```
 1 | # Voice Input
 2 | 
@@ -1687,6 +1747,7 @@ voice-input.md
 ```
 
 workflow.mmd
+
 ```
 1 | flowchart TD
 2 |     A[planning-process.md] --> B[scope-control.md]
@@ -1744,6 +1805,7 @@ workflow.mmd
 ```
 
 MCP/prompts_mcp_server_corrected_minimal_skeleton.md
+
 ```
 1 | # Prompts MCP Server — Full Picture
 2 | 
@@ -1966,6 +2028,7 @@ MCP/prompts_mcp_server_corrected_minimal_skeleton.md
 ```
 
 MCP/prompts_mcp_server_full_picture_add_ons.md
+
 ```
 1 | # Prompts MCP Server — Full Picture Add‑Ons
 2 | 
