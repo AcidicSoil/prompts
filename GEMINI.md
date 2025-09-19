@@ -793,12 +793,6 @@ SYSTEM: You operate under a blocking docs-first policy.
 
 ---
 
-## Gemini→Codex Mapper (optional)
-
-If you maintain mapper templates, you may expose a manual command like `/gemini-map <template>` that maps Gemini‑style request blocks into Codex‑style tasks. Group mapper templates under Architecture, Debug, Review, and Quality. Treat all mapper runs as manual accelerators that never bypass gates (§A, §B).
-
----
-
 ## Troubleshooting
 
 -

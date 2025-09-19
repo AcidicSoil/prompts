@@ -353,16 +353,6 @@ Allowed only for outages/ambiguous scope/timeboxed spikes. Must include:
     - Optional: `task:${task_id}` —\[depends\_on]→ `<entity>`
   - Attach `observations` capturing key outcomes (e.g., perf metrics, regressions, decisions).
 
-- **Documentation maintenance (auto)** — when a task **changes user-facing behavior**, **APIs**, **setup**, **CLI**, or **examples**:
-
-  - **README.md** — keep **Install**, **Quickstart**, and **Usage/CLI** sections current. Add/adjust new flags, env vars, endpoints, and examples introduced by the task.
-  - **docs/CHANGELOG.md** — append an entry with **UTC date**, `task_id`, short summary, **breaking changes**, and **migration steps**. Create the file if missing.
-  - **docs/** pages — update or add topic pages. If present, refresh **`index.md`**/**`SUMMARY.md`**/**MkDocs/Sphinx nav** to include new pages (alphabetical within section unless a numbered order exists).
-  - **Build check** — run the project’s docs build if available (e.g., `npm run docs:build` | `mkdocs build` | `sphinx-build`). Record the result under `DocFetchReport.observations.docs_build`.
-  - **Sync scripts** — run `docs:sync`/`docs-sync` if defined; otherwise propose a TODO in the completion note.
-  - **Commit style** — use commit prefix `[docs] <scope>: <summary>` and link PR/issue.
-  - **Scope guard** — never edit `AGENTS.md` as part of docs maintenance.
-
 - Seed/Update the knowledge graph **before** exiting the task so subsequent sessions can leverage it.
 
 - Do **NOT** write to `AGENTS.md` beyond these standing instructions.
@@ -655,6 +645,60 @@ Each layer defines role, task, context, reasoning, output format, and stop condi
 - Summarize key guidance inline in `DocFetchReport.key_guidance` and map each planned change to a guidance line.
 - Always note in the task preamble that docs were fetched and which topics/IDs were used.
 
+### Dynamic Docs MCP Router (generic, no hard-coding)
+
+**Goal:** Use any configured `*-docs-mcp` server dynamically as primary or fallback.
+
+**Discovery**
+
+- Query the MCP client for active servers. Filter names matching `/\-docs\-mcp$/i`.
+- Record the set as `DocsServers[]` in `DocFetchReport.server_inventory`.
+
+**Ranking (per question)**
+
+1. Token match: prefer servers whose **display name or label** appears in the question
+   (e.g., “pydantic”, “vite”, “mastra”, “devin”, “mintlify”, “e2b”).
+2. Source match: call `list_doc_sources` on candidates; boost servers whose URLs’ host/path
+   contain query tokens.
+3. Specific term: if the question contains “langgraph”, prefer `langgraph-docs-mcp` **if present**.
+4. Tie-break: stable alphabetical by server name.
+
+**Primary / Fallback selection**
+
+- Default: primary = top-ranked from `DocsServers`. Fallbacks = remaining in rank order.
+- Override via inline tags in the user message or internal planner notes:
+
+  - `[primary:<server-name>]` to force a primary.
+  - `[fallback:+<server-name>]` to append extra fallbacks.
+  - Multiple `fallback:+...` allowed. Unknown names are ignored.
+- Final chain always appends non-docs providers already defined in this file:
+  `… → contex7-mcp → gitmcp`.
+
+**Retrieval loop (stop when coverage is sufficient)**
+For each server in the chain:
+
+1. `list_doc_sources` → collect available `llms.txt` refs and topic URLs.
+2. Reflect on the question and sources; pick relevant URLs.
+3. `fetch_docs` on selected URLs.
+4. Synthesize guidance; if remaining gaps exist, continue to next server.
+
+**Recording (required)**
+
+- Append to `DocFetchReport.tools_called[]` for every call with:
+  `{server, tool, query_or_url, time_utc}`.
+- Save chosen `primary`, evaluated `fallbacks[]`, and `coverage` summary.
+- If all providers fail, return **Docs Missing** with attempted servers and errors.
+
+**Example prompts (not hard-coded)**
+
+- “For ANY question about a library/tool, route to the best `*-docs-mcp` dynamically.”
+- “If `[primary:vite-docs-mcp]` is present, start with that server.”
+- “If `[fallback:+e2b-docs-mcp]` is present, add it before `contex7-mcp`.”
+
+**Safety**
+
+- Do not finalize answers that depend on docs until `DocFetchReport.status == "OK"` (§B).
+
 ---
 
 ## 8) Environment & Testing Policy (**REVISED: Safety Gate for automatic stateless checks**)
@@ -790,12 +834,6 @@ SYSTEM: You operate under a blocking docs-first policy.
 - Restart your Codex client if new prompts are not discovered. Hot‑reload is not guaranteed.
 - File naming must match the command exactly, use `.md` extension, and avoid hidden files or directories prefixed with `_`.
 - On Windows + WSL2, store prompts in the Linux home directory and, if needed, symlink from Windows paths to keep a single source of truth.
-
----
-
-## Gemini→Codex Mapper (optional)
-
-If you maintain mapper templates, you may expose a manual command like `/gemini-map <template>` that maps Gemini‑style request blocks into Codex‑style tasks. Group mapper templates under Architecture, Debug, Review, and Quality. Treat all mapper runs as manual accelerators that never bypass gates (§A, §B).
 
 ---
 
