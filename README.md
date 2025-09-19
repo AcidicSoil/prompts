@@ -10,7 +10,7 @@ This pack extends the default Codex CLI prompts with vibe-coding playbooks inspi
 ## Using these prompts
 
 - **Direct slash commands**: Invoke the files that declare a `Trigger:` (table below) straight from Codex. Example: `/planning-process Add OAuth login` opens `planning-process.md` and walks through the feature plan template.
-- **Gemini→Codex Mapper templates**: Files with front matter call into the unified `/gemini-map` command. Run `/gemini-map <template> <args>` (e.g. `/gemini-map audit`) to execute the specific flow described in that template. Templates expect the repo context described in their numbered steps.
+- **Gemini mapper prompt**: `/gemini-map` is a single translator prompt (`gemini-map.md`) that converts Gemini CLI TOML commands into Codex prompt files. Use it only when migrating Gemini content; all other prompts run directly with their own slash commands.
 
 ## Core slash commands
 
@@ -121,53 +121,6 @@ Commands are grouped by development phase. Stage headings link back to
 | /explain-code | Support | Provide line-by-line explanations for a given file or diff. |
 | /voice-input | Support | Convert speech to structured prompts for Codex. |
 
-## Gemini→Codex Mapper templates (`/gemini-map`)
-
-Each template below is invoked through `/gemini-map`. Supply any arguments requested in the numbered steps within the file (for example, a target path, test output, or error description). They are grouped here so you can quickly locate the right helper.
-
-### Architecture, planning, and lint configuration
-
-- `action-diagram.md` — Explain workflow triggers and dependencies so diagramming tools have ready-made nodes and edges.
-- `adr-new.md` — Draft an Architecture Decision Record with context, options, and consequences.
-- `plan.md` — Plan a Prettier adoption or formatting migration with minimal churn.
-- `refactor-file.md` — Suggest targeted refactors for a single file, including rationale.
-- `eslint-review.md` — Review ESLint configuration and suggest rule tweaks.
-- `tsconfig-review.md` — Review `tsconfig.json` for correctness and developer experience.
-
-### Implementation and debugging accelerators
-
-- `api-usage.md` — Show how an internal API is defined and consumed across the repo.
-- `explain-symbol.md` — Trace where a symbol lives, who calls it, and how to extend it safely.
-- `grep.md` — Run curated ripgrep/grep queries for text discovery.
-- `generate.md` — Produce unit tests for a given source file with arrange/act/assert structure.
-- `fix.md` — Propose a minimal, correct fix with unified diff hunks.
-- `explain-failures.md` — Analyze failing tests, list suspected causes, and outline next steps.
-
-### Review, ownership, and release support
-
-- `blame-summary.md` — Summarize authorship hotspots and likely reviewers from `git blame`.
-- `changed-files.md` — Summarize changed files between `HEAD` and `origin/main`.
-- `cleanup-branches.md` — Recommend local branches that are merged or stale and safe to delete.
-- `commit.md` — Generate a commit message from staged changes.
-- `owners.md` — Suggest owners and reviewers for a path using CODEOWNERS and history.
-- `pr-desc.md` — Draft a PR description from the current branch diff.
-- `review.md` — Review code matching a pattern and provide actionable feedback.
-- `review-branch.md` — Provide a high-level review of the branch compared to `origin/main`.
-- `release-notes.md` — Convert recent commits into human-readable release notes.
-- `version-proposal.md` — Propose the next semantic version based on commit history.
-
-### Quality, hygiene, and compliance
-
-- `audit.md` — Audit repository hygiene (docs, tests, CI, security) and suggest improvements.
-- `check.md` — Check adherence to `.editorconfig` across the repo.
-- `coverage-guide.md` — Suggest a plan to raise test coverage where the suite is thin.
-- `dead-code-scan.md` — Flag likely dead files and exports using static signals.
-- `license-report.md` — Summarize third-party licenses and highlight risk flags.
-- `secrets-scan.md` — Review secret-scan output and separate true leaks from noise.
-- `summary.md` — Produce a README-level summary of the repository.
-- `todo-report.md` — Summarize TODO/FIXME/XXX annotations across the codebase.
-- `todos.md` — Group TODO/FIXME annotations with owners or themes.
-
 ## Reference assets
 
 - `workflow.mmd` — Mermaid source for the end-to-end workflow shown below.
@@ -178,7 +131,7 @@ Each template below is invoked through `/gemini-map`. Supply any arguments reque
 1. `/planning-process Add OAuth login` to align on goals, risks, and validation.
 2. Implement the scoped tasks, checking `/scope-control` to document non-goals and later ideas.
 3. `/integration-test` to add coverage for the new flow, then `/regression-guard` to verify no unrelated files drifted.
-4. `/version-control-guide` to clean the final diff, followed by `/pr-desc` or `/release-notes` via `/gemini-map` for communication.
+4. `/version-control-guide` to clean the final diff, followed by `/pr-desc` or `/release-notes` to communicate the change.
 
 ## Mermaid flowchart
 
