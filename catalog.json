@@ -187,7 +187,7 @@
       "phase": "P2 App Scaffold & Contracts",
       "command": "/scaffold-fullstack <stack>",
       "title": "Scaffold Full‑Stack App",
-      "purpose": "Create a minimal, production‑ready monorepo template with app, API, tests, CI seeds, and infra stubs.",
+      "purpose": "Create a minimal, production-ready monorepo template with app, API, tests, CI seeds, and infra stubs.",
       "gate": "Test Gate lite",
       "status": "ensure lint/build scripts execute on the generated scaffold.",
       "previous": [
@@ -292,7 +292,7 @@
       "phase": "P5 Quality Gates & Tests",
       "command": "/coverage-guide",
       "title": "Coverage Guide",
-      "purpose": "",
+      "purpose": "Propose high-ROI tests to raise coverage using uncovered areas.",
       "gate": "Test Gate",
       "status": "coverage targets and regression guard plan recorded.",
       "previous": [
@@ -308,7 +308,7 @@
       "phase": "P5 Quality Gates & Tests",
       "command": "/e2e-runner-setup <playwright|cypress>",
       "title": "E2E Runner Setup",
-      "purpose": "Configure an end‑to‑end test runner with fixtures and data sandbox.",
+      "purpose": "Configure an end-to-end test runner with fixtures and a data sandbox.",
       "gate": "Test Gate",
       "status": "runner green locally and wired into CI before expanding coverage.",
       "previous": [
@@ -323,9 +323,9 @@
     },
     {
       "phase": "P5 Quality Gates & Tests",
-      "command": "/generate",
-      "title": "Generate",
-      "purpose": "",
+      "command": "/generate <source-file>",
+      "title": "Generate Unit Tests",
+      "purpose": "Generate unit tests for a given source file.",
       "gate": "Test Gate",
       "status": "targeted unit tests authored for the specified module.",
       "previous": [
@@ -391,7 +391,7 @@
       "phase": "P6 CI/CD & Env",
       "command": "/env-setup",
       "title": "Env Setup",
-      "purpose": "Create `.env.example`, runtime schema validation, and per‑env overrides.",
+      "purpose": "Create .env.example, runtime schema validation, and per-env overrides.",
       "gate": "Review Gate",
       "status": "environment schemas enforced and CI respects strict loading.",
       "previous": [
@@ -407,7 +407,7 @@
       "phase": "P6 CI/CD & Env",
       "command": "/iac-bootstrap <aws|gcp|azure|fly|render>",
       "title": "IaC Bootstrap",
-      "purpose": "Create minimal Infrastructure‑as‑Code for chosen platform plus CI pipeline hooks.",
+      "purpose": "Create minimal Infrastructure-as-Code for the chosen platform plus CI hooks.",
       "gate": "Review Gate",
       "status": "IaC applied in staging with drift detection configured.",
       "previous": [
@@ -423,7 +423,7 @@
       "phase": "P6 CI/CD & Env",
       "command": "/secrets-manager-setup <provider>",
       "title": "Secrets Manager Setup",
-      "purpose": "Provision secret store and map app variables to it.",
+      "purpose": "Provision a secrets store and map application variables to it.",
       "gate": "Review Gate",
       "status": "secret paths mapped and least-privilege policies drafted.",
       "previous": [
@@ -520,9 +520,9 @@
     },
     {
       "phase": "P7 Release & Ops",
-      "command": "/owners",
+      "command": "/owners <path>",
       "title": "Owners",
-      "purpose": "",
+      "purpose": "Suggest likely owners or reviewers for the specified path.",
       "gate": "Review Gate",
       "status": "confirm approvers and escalation paths before PR submission.",
       "previous": [
@@ -537,9 +537,9 @@
     },
     {
       "phase": "P7 Release & Ops",
-      "command": "/pr-desc",
-      "title": "Pr Desc",
-      "purpose": "",
+      "command": "/pr-desc <context>",
+      "title": "PR Description",
+      "purpose": "Draft a PR description from the branch diff.",
       "gate": "Review Gate",
       "status": "PR narrative ready for approvals and release prep.",
       "previous": [
@@ -553,9 +553,9 @@
     },
     {
       "phase": "P7 Release & Ops",
-      "command": "/release-notes",
+      "command": "/release-notes <git-range>",
       "title": "Release Notes",
-      "purpose": "",
+      "purpose": "Generate human-readable release notes from recent commits.",
       "gate": "Release Gate",
       "status": "notes compiled for staging review and production rollout.",
       "previous": [
@@ -569,9 +569,9 @@
     },
     {
       "phase": "P7 Release & Ops",
-      "command": "/review",
+      "command": "/review <pattern>",
       "title": "Review",
-      "purpose": "",
+      "purpose": "Review code matching a pattern and deliver actionable feedback.",
       "gate": "Review Gate",
       "status": "peer review coverage met before merging.",
       "previous": [
@@ -587,7 +587,7 @@
       "phase": "P7 Release & Ops",
       "command": "/review-branch",
       "title": "Review Branch",
-      "purpose": "",
+      "purpose": "Provide a high-level review of the current branch versus origin/main.",
       "gate": "Review Gate",
       "status": "branch scope validated before PR submission.",
       "previous": [
@@ -619,7 +619,7 @@
       "phase": "P7 Release & Ops",
       "command": "/version-proposal",
       "title": "Version Proposal",
-      "purpose": "",
+      "purpose": "Propose the next semantic version based on commit history.",
       "gate": "Release Gate",
       "status": "version bump decision recorded before deployment.",
       "previous": [
@@ -637,7 +637,7 @@
       "phase": "P8 Post-release Hardening",
       "command": "/cleanup-branches",
       "title": "Cleanup Branches",
-      "purpose": "",
+      "purpose": "Recommend which local branches are safe to delete and which to keep.",
       "gate": "Post-release cleanup",
       "status": "repo tidy with stale branches archived.",
       "previous": [
@@ -653,7 +653,7 @@
       "phase": "P8 Post-release Hardening",
       "command": "/dead-code-scan",
       "title": "Dead Code Scan",
-      "purpose": "",
+      "purpose": "Identify likely dead or unused files and exports using static signals.",
       "gate": "Post-release cleanup",
       "status": "ensure code removals keep prod stable.",
       "previous": [
@@ -686,7 +686,7 @@
       "phase": "P8 Post-release Hardening",
       "command": "/feature-flags <provider>",
       "title": "Feature Flags",
-      "purpose": "Integrate a flag provider, wire SDK, and enforce guardrails.",
+      "purpose": "Integrate a flag provider, wire the SDK, and enforce guardrails.",
       "gate": "Post-release cleanup",
       "status": "guardrails added before toggling new flows.",
       "previous": [
@@ -716,9 +716,9 @@
     },
     {
       "phase": "P8 Post-release Hardening",
-      "command": "/fix",
+      "command": "/fix \"<bug summary>\"",
       "title": "Fix",
-      "purpose": "",
+      "purpose": "Propose a minimal, correct fix with diff-style patches.",
       "gate": "Post-release cleanup",
       "status": "validated fix with regression coverage before closing incident.",
       "previous": [

@@ -57,105 +57,107 @@ Commands are grouped by development phase. Stage headings link back to
 
 | Command | What it does |
 | --- | --- |
-| /instruction-file | Generate or update `cursor.rules`, `windsurf.rules`, or `claude.md` so DocFetchReport captures current guardrails. |
+| /instruction-file | Generate or update `cursor.rules`, `windsurf.rules`, or `claude.md` with project-specific instructions. |
 
 ### [P1 Plan & Scope](WORKFLOW.md#p1-plan--scope) — pass the [Scope Gate](WORKFLOW.md#scope-gate)
 
 | Command | What it does |
 | --- | --- |
-| /planning-process | Draft, refine, and execute a feature plan with strict scope control. |
-| /scope-control | Enforce explicit scope boundaries plus “won’t do” and “ideas for later” lists. |
-| /stack-evaluation | Evaluate language/framework choices relative to AI familiarity and roadmap goals. |
+| /planning-process | Draft, refine, and execute a feature plan with strict scope control and progress tracking. |
+| /prototype-feature | Spin up a standalone prototype in a clean repo before merging into main. |
+| /scope-control | Enforce explicit scope boundaries and maintain "won't do" and "ideas for later" lists. |
+| /stack-evaluation | Evaluate language/framework choices relative to AI familiarity and repo goals. |
 
 ### [P2 App Scaffold & Contracts](WORKFLOW.md#p2-app-scaffold--contracts) — clear Test Gate lite
 
 | Command | What it does |
 | --- | --- |
-| /scaffold-fullstack | Create a minimal full-stack workspace with CI seeds. |
-| /api-contract | Author an initial OpenAPI/GraphQL contract from requirements. |
-| /openapi-generate | Generate server stubs or typed clients from an OpenAPI spec. |
-| /modular-architecture | Enforce module boundaries; revisit during P4 for UI seams. |
+| /api-contract "<feature or domain>" | Author an initial OpenAPI 3.1 or GraphQL SDL contract from requirements. |
+| /api-docs-local | Fetch API docs and store locally for offline, deterministic reference. |
+| /openapi-generate <server\|client> <lang> <spec-path> | Generate server stubs or typed clients from an OpenAPI spec. |
+| /prototype-feature | Spin up a standalone prototype in a clean repo before merging into main. |
 | /reference-implementation | Mimic the style and API of a known working example. |
-| /api-docs-local | Fetch API docs and store locally for deterministic reference. |
+| /scaffold-fullstack <stack> | Create a minimal, production-ready monorepo template with app, API, tests, CI seeds, and infra stubs. |
 
 ### [P3 Data & Auth](WORKFLOW.md#p3-data--auth) — migrations must dry-run cleanly
 
 | Command | What it does |
 | --- | --- |
-| /db-bootstrap | Pick a database, initialize migrations, and seed scripts. |
-| /migration-plan | Produce safe up/down migration steps with rollback notes. |
-| /auth-scaffold | Scaffold auth flows, threat model, and secure session storage. |
+| /auth-scaffold <oauth\|email\|oidc> | Scaffold auth flows, routes, storage, and a basic threat model. |
+| /db-bootstrap <postgres\|mysql\|sqlite\|mongodb> | Pick a database, initialize migrations, local compose, and seed scripts. |
+| /migration-plan "<change summary>" | Produce safe up/down migration steps with checks and rollback notes. |
 
 ### [P4 Frontend UX](WORKFLOW.md#p4-frontend-ux) — queue accessibility checks
 
 | Command | What it does |
 | --- | --- |
-| /design-assets | Generate favicons and lightweight visual assets from your product brand. |
-| /ui-screenshots | Analyze screenshots for UI bugs or inspiration and propose actionable fixes. |
+| /design-assets | Generate favicons and small design snippets from product brand. |
+| /ui-screenshots | Analyze screenshots for UI bugs or inspiration and propose actionable UI changes. |
 
 ### [P5 Quality Gates & Tests](WORKFLOW.md#p5-quality-gates--tests) — meet the [Test Gate](WORKFLOW.md#test-gate)
 
 | Command | What it does |
 | --- | --- |
-| /e2e-runner-setup | Configure Playwright/Cypress with fixtures and CI jobs. |
-| /integration-test | Generate end-to-end tests that simulate real user flows. |
-| /coverage-guide | Suggest a plan to raise coverage based on uncovered areas. |
+| /coverage-guide | Propose high-ROI tests to raise coverage using uncovered areas. |
+| /e2e-runner-setup <playwright\|cypress> | Configure an end-to-end test runner with fixtures and a data sandbox. |
+| /generate <source-file> | Generate unit tests for a given source file. |
+| /integration-test | Generate E2E tests that simulate real user flows. |
 | /regression-guard | Detect unrelated changes and add tests to prevent regressions. |
 
 ### [P6 CI/CD & Env](WORKFLOW.md#p6-cicd--env) — satisfy the [Review Gate](WORKFLOW.md#review-gate)
 
 | Command | What it does |
 | --- | --- |
-| /version-control-guide | Enforce clean incremental commits and clean-room re-implementation before merge. |
-| /devops-automation | Configure servers, DNS, SSL, and CI/CD with pragmatic defaults. |
-| /env-setup | Create `.env.example`, runtime validation, and per-environment overrides. |
-| /secrets-manager-setup | Provision a secret store and map application variables. |
-| /iac-bootstrap | Create minimal IaC stacks with plan/apply pipelines. |
+| /devops-automation | Configure servers, DNS, SSL, CI/CD at a pragmatic level. |
+| /env-setup | Create .env.example, runtime schema validation, and per-env overrides. |
+| /iac-bootstrap <aws\|gcp\|azure\|fly\|render> | Create minimal Infrastructure-as-Code for the chosen platform plus CI hooks. |
+| /secrets-manager-setup <provider> | Provision a secrets store and map application variables to it. |
+| /version-control-guide | Enforce clean incremental commits and clean-room re-implementation when finalizing. |
+| commit | Generate a conventional, review-ready commit message from the currently staged changes. |
 
 ### [P7 Release & Ops](WORKFLOW.md#p7-release--ops) — clear the [Release Gate](WORKFLOW.md#release-gate)
 
 | Command | What it does |
 | --- | --- |
-| /owners | Suggest owners and reviewers for a path using CODEOWNERS and history. |
-| /review | Review code matching a pattern and provide actionable feedback. |
-| /review-branch | Provide a high-level review of the branch compared to `origin/main`. |
-| /pr-desc | Draft a PR description from the branch diff. |
-| /release-notes | Convert recent commits into human-readable release notes. |
-| /version-proposal | Propose the next semantic version based on commit history. |
+| /audit | Audit repository hygiene and suggest improvements. |
+| /explain-code | Provide line-by-line explanations for a given file or diff. |
 | /monitoring-setup | Bootstrap logs, metrics, and traces with dashboards per domain. |
-| /slo-setup | Define SLOs, burn alerts, and supporting runbooks. |
-| /logging-strategy | Add or remove diagnostic logging with structured levels and privacy considerations. |
+| /owners <path> | Suggest likely owners or reviewers for the specified path. |
+| /pr-desc <context> | Draft a PR description from the branch diff. |
+| /release-notes <git-range> | Generate human-readable release notes from recent commits. |
+| /review <pattern> | Review code matching a pattern and deliver actionable feedback. |
+| /review-branch | Provide a high-level review of the current branch versus origin/main. |
+| /slo-setup | Define Service Level Objectives, burn alerts, and runbooks. |
+| /version-proposal | Propose the next semantic version based on commit history. |
 
 ### [P8 Post-release Hardening](WORKFLOW.md#p8-post-release-hardening) — resolve Sev-1 issues
 
 | Command | What it does |
 | --- | --- |
+| /cleanup-branches | Recommend which local branches are safe to delete and which to keep. |
+| /dead-code-scan | Identify likely dead or unused files and exports using static signals. |
 | /error-analysis | Analyze error logs and enumerate likely root causes with fixes. |
-| /fix | Propose a minimal, correct fix with patch hunks. |
-| /refactor-suggestions | Propose repo-wide refactoring opportunities once tests exist. |
+| /feature-flags <provider> | Integrate a flag provider, wire the SDK, and enforce guardrails. |
 | /file-modularity | Enforce smaller files and propose safe splits for giant files. |
-| /dead-code-scan | Flag likely dead files and exports using static signals. |
-| /cleanup-branches | Recommend local branches that are merged or stale and safe to delete. |
-| /feature-flags | Integrate a flag provider, wire SDK, and enforce guardrails. |
+| /fix "<bug summary>" | Propose a minimal, correct fix with diff-style patches. |
+| /refactor-suggestions | Propose repo-wide refactoring opportunities after tests exist. |
 
 ### [P9 Model Tactics](WORKFLOW.md#p9-model-tactics-cross-cutting) — document uplift before switching defaults
 
 | Command | What it does |
 | --- | --- |
-| /model-strengths | Route work by model strengths for faster delegation. |
+| /compare-outputs | Run multiple models or tools on the same prompt and summarize best output. |
 | /model-evaluation | Try a new model and compare outputs against a baseline. |
-| /compare-outputs | Run multiple models or tools on the same prompt and summarize the best output. |
+| /model-strengths | Choose model per task type. |
 | /switch-model | Decide when to try a different AI backend and how to compare. |
 
 ### [Reset Playbook](WORKFLOW.md#reset-playbook) and other cross-cutting helpers
 
 | Command | Stage tie-in | What it does |
 | --- | --- | --- |
-| /reset-strategy | Reset path | Decide when to hard reset and start clean to avoid layered bad diffs. |
-| /prototype-feature | P1–P2 sandbox | Spin up a standalone prototype before merging into main. |
-| /content-generation | Support | Draft docs, blog posts, or marketing copy aligned with the codebase. |
-| /explain-code | Support | Provide line-by-line explanations for a given file or diff. |
-| /voice-input | Support | Convert speech to structured prompts for Codex. |
+| /content-generation | 11) Evidence Log | Draft docs, blog posts, or marketing copy aligned with the codebase. |
+| /reset-strategy | Reset Playbook | Decide when to hard reset and start clean to avoid layered bad diffs. |
+| /voice-input | Support | Support interaction from voice capture and convert to structured prompts. |
 
 ## Reference assets
 
