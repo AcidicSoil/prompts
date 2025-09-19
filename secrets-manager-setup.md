@@ -1,3 +1,14 @@
+---
+phase: "P6 CI/CD & Env"
+gate: "Review Gate"
+status: "secret paths mapped and least-privilege policies drafted."
+previous:
+  - "/env-setup"
+next:
+  - "/iac-bootstrap"
+  - "/owners"
+---
+
 # Secrets Manager Setup
 
 **Trigger:** `/secrets-manager-setup <provider>`
@@ -16,9 +27,3 @@
 
 **Notes:** Never echo secret values. Include rotation policy.
 
-## Stage alignment
-
-- **Phase**: [P6 CI/CD & Env](WORKFLOW.md#p6-cicd--env)
-- **Gate**: Review Gate — secret paths mapped and least-privilege policies drafted.
-- **Previous prompts**: `/env-setup`
-- **Next prompts**: `/iac-bootstrap`, `/owners`

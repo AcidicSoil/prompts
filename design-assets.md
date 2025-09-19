@@ -1,3 +1,14 @@
+---
+phase: "P4 Frontend UX"
+gate: "Accessibility checks queued"
+status: "ensure assets support design review."
+previous:
+  - "/modular-architecture"
+next:
+  - "/ui-screenshots"
+  - "/logging-strategy"
+---
+
 # Design Assets
 
 Trigger: /design-assets
@@ -14,9 +25,3 @@ Purpose: Generate favicons and small design snippets from product brand.
 
 - Asset checklist and generation commands.
 
-## Stage alignment
-
-- **Phase**: [P4 Frontend UX](WORKFLOW.md#p4-frontend-ux)
-- **Gate**: Accessibility checks queued — ensure assets support design review.
-- **Previous prompts**: `/modular-architecture`
-- **Next prompts**: `/ui-screenshots`, `/logging-strategy`

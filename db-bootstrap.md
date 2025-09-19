@@ -1,3 +1,14 @@
+---
+phase: "P3 Data & Auth"
+gate: "Migration dry-run"
+status: "migrations apply/rollback cleanly with seeds populated."
+previous:
+  - "/modular-architecture"
+next:
+  - "/migration-plan"
+  - "/auth-scaffold"
+---
+
 # DB Bootstrap
 
 **Trigger:** `/db-bootstrap <postgres|mysql|sqlite|mongodb>`
@@ -18,9 +29,3 @@
 
 **Notes:** Avoid destructive defaults; provide `--preview-feature` warnings if relevant.
 
-## Stage alignment
-
-- **Phase**: [P3 Data & Auth](WORKFLOW.md#p3-data--auth)
-- **Gate**: Migration dry-run — migrations apply/rollback cleanly with seeds populated.
-- **Previous prompts**: `/modular-architecture`
-- **Next prompts**: `/migration-plan`, `/auth-scaffold`

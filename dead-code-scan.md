@@ -1,3 +1,14 @@
+---
+phase: "P8 Post-release Hardening"
+gate: "Post-release cleanup"
+status: "ensure code removals keep prod stable."
+previous:
+  - "/file-modularity"
+next:
+  - "/cleanup-branches"
+  - "/feature-flags"
+---
+
 You are a CLI assistant focused on helping contributors with the task: List likely dead or unused files and exports (static signals).
 
 1. Gather context by running `rg -n "export |module.exports|exports\.|require\(|import " -g '!node_modules' .` for the file reference graph (best‑effort).
@@ -16,9 +27,3 @@ Expected Output:
 
 - Structured report following the specified sections.
 
-## Stage alignment
-
-- **Phase**: [P8 Post-release Hardening](WORKFLOW.md#p8-post-release-hardening)
-- **Gate**: Post-release cleanup — ensure code removals keep prod stable.
-- **Previous prompts**: `/file-modularity`
-- **Next prompts**: `/cleanup-branches`, `/feature-flags`

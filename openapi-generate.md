@@ -1,3 +1,14 @@
+---
+phase: "P2 App Scaffold & Contracts"
+gate: "Test Gate lite"
+status: "generated code builds and CI checks cover the new scripts."
+previous:
+  - "/api-contract"
+next:
+  - "/modular-architecture"
+  - "/db-bootstrap"
+---
+
 # OpenAPI Generate
 
 **Trigger:** `/openapi-generate <server|client> <lang> <spec-path>`
@@ -18,9 +29,3 @@
 
 **Notes:** Prefer openapi-typescript + zod for TS clients when possible.
 
-## Stage alignment
-
-- **Phase**: [P2 App Scaffold & Contracts](WORKFLOW.md#p2-app-scaffold--contracts)
-- **Gate**: Test Gate lite — generated code builds and CI checks cover the new scripts.
-- **Previous prompts**: `/api-contract`
-- **Next prompts**: `/modular-architecture`, `/db-bootstrap`

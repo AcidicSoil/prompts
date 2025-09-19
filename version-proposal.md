@@ -1,3 +1,14 @@
+---
+phase: "P7 Release & Ops"
+gate: "Release Gate"
+status: "version bump decision recorded before deployment."
+previous:
+  - "/release-notes"
+next:
+  - "/monitoring-setup"
+  - "/slo-setup"
+---
+
 You are a CLI assistant focused on helping contributors with the task: Propose next version (major/minor/patch) from commit history.
 
 1. Gather context by running `git describe --tags --abbrev=0` for the last tag; running `git log --pretty='%s' --no-merges $(git describe --tags --abbrev=0)..HEAD` for the commits since last tag (no merges).
@@ -17,9 +28,3 @@ Expected Output:
 
 - Structured report following the specified sections.
 
-## Stage alignment
-
-- **Phase**: [P7 Release & Ops](WORKFLOW.md#p7-release--ops)
-- **Gate**: Release Gate — version bump decision recorded before deployment.
-- **Previous prompts**: `/release-notes`
-- **Next prompts**: `/monitoring-setup`, `/slo-setup`

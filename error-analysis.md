@@ -1,3 +1,15 @@
+---
+phase: "P8 Post-release Hardening"
+gate: "Post-release cleanup"
+status: "Sev-1 incidents triaged with fixes scheduled."
+previous:
+  - "/logging-strategy"
+  - "/audit"
+next:
+  - "/fix"
+  - "/refactor-suggestions"
+---
+
 # Error Analysis
 
 Trigger: /error-analysis
@@ -19,9 +31,3 @@ Purpose: Analyze error logs and enumerate likely root causes with fixes.
 
 - "TypeError: x is not a function" → wrong import, circular dep, stale build.
 
-## Stage alignment
-
-- **Phase**: [P8 Post-release Hardening](WORKFLOW.md#p8-post-release-hardening)
-- **Gate**: Post-release cleanup — Sev-1 incidents triaged with fixes scheduled.
-- **Previous prompts**: `/logging-strategy`, `/audit`
-- **Next prompts**: `/fix`, `/refactor-suggestions`

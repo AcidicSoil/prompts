@@ -1,3 +1,14 @@
+---
+phase: "P8 Post-release Hardening"
+gate: "Post-release cleanup"
+status: "structure debt addressed without destabilizing prod."
+previous:
+  - "/refactor-suggestions"
+next:
+  - "/dead-code-scan"
+  - "/cleanup-branches"
+---
+
 # File Modularity
 
 Trigger: /file-modularity
@@ -14,9 +25,3 @@ Purpose: Enforce smaller files and propose safe splits for giant files.
 
 - Refactor plan with patches for file splits.
 
-## Stage alignment
-
-- **Phase**: [P8 Post-release Hardening](WORKFLOW.md#p8-post-release-hardening)
-- **Gate**: Post-release cleanup — structure debt addressed without destabilizing prod.
-- **Previous prompts**: `/refactor-suggestions`
-- **Next prompts**: `/dead-code-scan`, `/cleanup-branches`

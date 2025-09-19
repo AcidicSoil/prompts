@@ -1,3 +1,14 @@
+---
+phase: "P6 CI/CD & Env"
+gate: "Review Gate"
+status: "environment schemas enforced and CI respects strict loading."
+previous:
+  - "/devops-automation"
+next:
+  - "/secrets-manager-setup"
+  - "/iac-bootstrap"
+---
+
 # Env Setup
 
 **Trigger:** `/env-setup`
@@ -17,9 +28,3 @@
 
 **Notes:** Do not include real credentials. Enforce `STRICT_ENV=true` in CI.
 
-## Stage alignment
-
-- **Phase**: [P6 CI/CD & Env](WORKFLOW.md#p6-cicd--env)
-- **Gate**: Review Gate — environment schemas enforced and CI respects strict loading.
-- **Previous prompts**: `/devops-automation`
-- **Next prompts**: `/secrets-manager-setup`, `/iac-bootstrap`

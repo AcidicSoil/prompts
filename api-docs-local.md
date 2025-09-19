@@ -1,3 +1,14 @@
+---
+phase: "P2 App Scaffold & Contracts"
+gate: "Test Gate lite"
+status: "contracts cached locally for repeatable generation."
+previous:
+  - "/scaffold-fullstack"
+next:
+  - "/api-contract"
+  - "/openapi-generate"
+---
+
 # API Docs Local
 
 Trigger: /api-docs-local
@@ -14,9 +25,3 @@ Purpose: Fetch API docs and store locally for offline, deterministic reference.
 
 - Command list and file paths to place docs under `docs/apis/`.
 
-## Stage alignment
-
-- **Phase**: [P2 App Scaffold & Contracts](WORKFLOW.md#p2-app-scaffold--contracts)
-- **Gate**: Test Gate lite — contracts cached locally for repeatable generation.
-- **Previous prompts**: `/scaffold-fullstack`
-- **Next prompts**: `/api-contract`, `/openapi-generate`

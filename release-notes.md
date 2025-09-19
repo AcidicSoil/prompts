@@ -1,3 +1,14 @@
+---
+phase: "P7 Release & Ops"
+gate: "Release Gate"
+status: "notes compiled for staging review and production rollout."
+previous:
+  - "/pr-desc"
+next:
+  - "/version-proposal"
+  - "/monitoring-setup"
+---
+
 You are a CLI assistant focused on helping contributors with the task: Generate human‑readable release notes from recent commits.
 
 1. Gather context by running `git log --pretty='* %s (%h) — %an' --no-merges {{args}}` for the commit log (no merges).
@@ -21,9 +32,3 @@ Expected Output:
 
 - Resolve logout crash (PR #57)
 
-## Stage alignment
-
-- **Phase**: [P7 Release & Ops](WORKFLOW.md#p7-release--ops)
-- **Gate**: Release Gate — notes compiled for staging review and production rollout.
-- **Previous prompts**: `/pr-desc`
-- **Next prompts**: `/version-proposal`, `/monitoring-setup`

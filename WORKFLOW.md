@@ -277,6 +277,12 @@ flowchart TD
 **When**: Contentious generation, flaky refactors, new model availability.
 **Steps**: `/model-strengths` → route candidates. `/model-evaluation` → baseline vs new. `/compare-outputs` → pick best. `/switch-model` → roll change with guardrails. Success = higher test pass rate or smaller diff with same tests.&#x20;
 
+## Support
+
+**Purpose**: Cross-cutting helpers that smooth transitions between gated stages.
+**Steps**: `/voice-input` → turn transcripts into structured prompts. `/content-generation` → broadcast updates aligned with the Evidence Log.
+**Gate**: Clarify requests before triggering lifecycle prompts and keep documentation current with delivered work.
+
 ---
 
 **Notes**

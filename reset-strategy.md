@@ -1,3 +1,13 @@
+---
+phase: "Reset Playbook"
+gate: "Clean restart"
+status: "triggered when gate criteria stall for >60 minutes."
+previous:
+  - "Any blocked stage"
+next:
+  - "Restart with /planning-process then follow the gated flow"
+---
+
 # Reset Strategy
 
 Trigger: /reset-strategy
@@ -23,9 +33,3 @@ Purpose: Decide when to hard reset and start clean to avoid layered bad diffs.
 
 - Warn about destructive nature. Require user confirmation.
 
-## Stage alignment
-
-- **Phase**: [Reset Playbook](WORKFLOW.md#reset-playbook)
-- **Gate**: Clean restart — triggered when gate criteria stall for >60 minutes.
-- **Previous prompts**: Any blocked stage
-- **Next prompts**: Restart with `/planning-process` then follow the gated flow

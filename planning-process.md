@@ -1,3 +1,14 @@
+---
+phase: "P1 Plan & Scope"
+gate: "Scope Gate"
+status: "confirm problem, users, Done criteria, and stack risks are logged."
+previous:
+  - "Preflight Docs (AGENTS baseline)"
+next:
+  - "/scope-control"
+  - "/stack-evaluation"
+---
+
 # Planning Process
 
 Trigger: /planning-process
@@ -34,9 +45,3 @@ Purpose: Draft, refine, and execute a feature plan with strict scope control and
 - Planning only. No code edits.
 - Assume a Git repo with test runner available.
 
-## Stage alignment
-
-- **Phase**: [P1 Plan & Scope](WORKFLOW.md#p1-plan--scope)
-- **Gate**: Scope Gate — confirm problem, users, Done criteria, and stack risks are logged.
-- **Previous prompts**: Preflight Docs (AGENTS baseline)
-- **Next prompts**: `/scope-control`, `/stack-evaluation`

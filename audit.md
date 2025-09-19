@@ -1,3 +1,14 @@
+---
+phase: "P7 Release & Ops"
+gate: "Release Gate"
+status: "readiness criteria before shipping."
+previous:
+  - "/logging-strategy"
+next:
+  - "/error-analysis"
+  - "/fix"
+---
+
 # Audit
 
 Trigger: /audit
@@ -25,9 +36,3 @@ Purpose: Audit repository hygiene and suggest improvements.
 
 - Structured report following the specified sections.
 
-## Stage alignment
-
-- **Phase**: [P7 Release & Ops](WORKFLOW.md#p7-release--ops)
-- **Gate**: Release Gate — readiness criteria before shipping.
-- **Previous prompts**: `/logging-strategy`
-- **Next prompts**: `/error-analysis`, `/fix`

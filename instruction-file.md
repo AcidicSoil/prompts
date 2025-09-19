@@ -1,3 +1,14 @@
+---
+phase: "P0 Preflight Docs"
+gate: "DocFetchReport"
+status: "capture approved instructions before proceeding."
+previous:
+  - "Preflight discovery (AGENTS baseline)"
+next:
+  - "/planning-process"
+  - "/scope-control"
+---
+
 # Instruction File
 
 Trigger: /instruction-file
@@ -15,9 +26,3 @@ Purpose: Generate or update `cursor.rules`, `windsurf.rules`, or `claude.md` wit
 
 - Markdown instruction file with stable headings.
 
-## Stage alignment
-
-- **Phase**: [P0 Preflight Docs](WORKFLOW.md#p0-preflight-docs-blocking)
-- **Gate**: DocFetchReport — capture approved instructions before proceeding.
-- **Previous prompts**: Preflight discovery (AGENTS baseline)
-- **Next prompts**: `/planning-process`, `/scope-control`

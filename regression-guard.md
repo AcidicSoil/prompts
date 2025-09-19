@@ -1,3 +1,14 @@
+---
+phase: "P5 Quality Gates & Tests"
+gate: "Test Gate"
+status: "regression coverage in place before CI hand-off."
+previous:
+  - "/coverage-guide"
+next:
+  - "/version-control-guide"
+  - "/devops-automation"
+---
+
 # Regression Guard
 
 Trigger: /regression-guard
@@ -18,9 +29,3 @@ Purpose: Detect unrelated changes and add tests to prevent regressions.
 
 - Keep proposed tests minimal and focused.
 
-## Stage alignment
-
-- **Phase**: [P5 Quality Gates & Tests](WORKFLOW.md#p5-quality-gates--tests)
-- **Gate**: Test Gate — regression coverage in place before CI hand-off.
-- **Previous prompts**: `/coverage-guide`
-- **Next prompts**: `/version-control-guide`, `/devops-automation`
