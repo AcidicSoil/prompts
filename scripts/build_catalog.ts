@@ -3,6 +3,9 @@ import path from 'path';
 
 import { MetadataValue, parseFrontMatter } from './front_matter';
 import { collectMarkdownFiles, loadPhases } from './markdown_utils';
+import { PromptCatalog, PromptCatalogEntry, normalizePhaseLabel } from './catalog_types';
+import { writeFileAtomic } from './file_utils';
+import { generateDocs } from './generate_docs';
 
 type PromptMetadata = Record<string, MetadataValue | undefined> & {
   phase?: MetadataValue;
@@ -12,19 +15,9 @@ type PromptMetadata = Record<string, MetadataValue | undefined> & {
   next?: MetadataValue;
 };
 
-interface PromptCatalogEntry {
-  phase: string;
-  command: string;
-  title: string;
-  purpose: string;
-  gate: string;
-  status: string;
-  previous: string[];
-  next: string[];
-  path: string;
-}
-
 async function main(): Promise<void> {
+  const args = new Set(process.argv.slice(2));
+  const updateWorkflow = args.has('--update-workflow');
   const repoRoot = path.resolve(__dirname, '..');
   const workflowPath = path.join(repoRoot, 'WORKFLOW.md');
   const validPhases = await loadPhases(workflowPath);
@@ -68,7 +61,7 @@ async function main(): Promise<void> {
         errors.push(`${relativePath}: phase "${phaseLabel}" not found in WORKFLOW.md.`);
         continue;
       }
-      const normalized = normalizePhase(phaseLabel);
+      const normalized = normalizePhaseLabel(phaseLabel);
       const entry: PromptCatalogEntry = {
         phase: phaseLabel,
         command,
@@ -99,7 +92,7 @@ async function main(): Promise<void> {
   }
 
   const sortedPhases = Array.from(phaseBuckets.keys()).sort((a, b) => a.localeCompare(b));
-  const ordered: Record<string, PromptCatalogEntry[]> = {};
+  const ordered: PromptCatalog = {};
   for (const phase of sortedPhases) {
     const prompts = phaseBuckets.get(phase);
     if (!prompts) {
@@ -110,8 +103,15 @@ async function main(): Promise<void> {
   }
 
   const catalogPath = path.join(repoRoot, 'catalog.json');
-  await fs.writeFile(catalogPath, `${JSON.stringify(ordered, null, 2)}\n`, 'utf8');
-  console.log(`Wrote catalog with ${sortedPhases.length} phase group(s) to ${catalogPath}`);
+  const catalogPayload = `${JSON.stringify(ordered, null, 2)}\n`;
+  const catalogUpdated = await writeFileAtomic(catalogPath, catalogPayload);
+  if (catalogUpdated) {
+    console.log(`Wrote catalog with ${sortedPhases.length} phase group(s) to ${catalogPath}`);
+  } else {
+    console.log(`Catalog already up to date at ${catalogPath}`);
+  }
+
+  await generateDocs(repoRoot, ordered, { updateWorkflow });
 }
 
 function extractPhases(
@@ -240,15 +240,6 @@ function registerCommand(
     return;
   }
   commandIndex.set(command, file);
-}
-
-function normalizePhase(phase: string): string {
-  return phase
-    .trim()
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/-+/g, '-')
-    .replace(/^-|-$/g, '');
 }
 
 function phaseExists(phase: string, validPhases: Set<string>): boolean {
