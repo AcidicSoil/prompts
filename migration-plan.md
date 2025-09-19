@@ -11,9 +11,9 @@ next:
 
 # Migration Plan
 
-**Trigger:** `/migration-plan "<change summary>"`
+Trigger: /migration-plan "<change summary>"
 
-**Purpose:** Produce safe up/down migration steps with checks and rollback notes.
+Purpose: Produce safe up/down migration steps with checks and rollback notes.
 
 **Steps:**
 

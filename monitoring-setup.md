@@ -11,9 +11,9 @@ next:
 
 # Monitoring Setup
 
-**Trigger:** `/monitoring-setup`
+Trigger: /monitoring-setup
 
-**Purpose:** Bootstrap logs, metrics, and traces with dashboards per domain.
+Purpose: Bootstrap logs, metrics, and traces with dashboards per domain.
 
 **Steps:**
 

@@ -9,6 +9,12 @@ next:
   - "/monitoring-setup"
 ---
 
+# Release Notes
+
+Trigger: /release-notes <git-range>
+
+Purpose: Generate human-readable release notes from recent commits.
+
 You are a CLI assistant focused on helping contributors with the task: Generate human‑readable release notes from recent commits.
 
 1. Gather context by running `git log --pretty='* %s (%h) — %an' --no-merges {{args}}` for the commit log (no merges).

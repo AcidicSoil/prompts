@@ -11,9 +11,9 @@ next:
 
 # Env Setup
 
-**Trigger:** `/env-setup`
+Trigger: /env-setup
 
-**Purpose:** Create `.env.example`, runtime schema validation, and per‑env overrides.
+Purpose: Create .env.example, runtime schema validation, and per-env overrides.
 
 **Steps:**
 

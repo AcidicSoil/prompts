@@ -8,6 +8,12 @@ next:
   - "/regression-guard"
 ---
 
+# Generate Unit Tests
+
+Trigger: /generate <source-file>
+
+Purpose: Generate unit tests for a given source file.
+
 You are a CLI assistant focused on helping contributors with the task: Generate unit tests for a given source file.
 
 ## Steps

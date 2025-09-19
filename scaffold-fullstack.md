@@ -12,9 +12,9 @@ next:
 
 # Scaffold Full‑Stack App
 
-**Trigger:** `/scaffold-fullstack <stack>`
+Trigger: /scaffold-fullstack <stack>
 
-**Purpose:** Create a minimal, production‑ready monorepo template with app, API, tests, CI seeds, and infra stubs.
+Purpose: Create a minimal, production-ready monorepo template with app, API, tests, CI seeds, and infra stubs.
 
 **Steps:**
 

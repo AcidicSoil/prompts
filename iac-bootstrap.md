@@ -11,9 +11,9 @@ next:
 
 # IaC Bootstrap
 
-**Trigger:** `/iac-bootstrap <aws|gcp|azure|fly|render>`
+Trigger: /iac-bootstrap <aws|gcp|azure|fly|render>
 
-**Purpose:** Create minimal Infrastructure‑as‑Code for chosen platform plus CI pipeline hooks.
+Purpose: Create minimal Infrastructure-as-Code for the chosen platform plus CI hooks.
 
 **Steps:**
 

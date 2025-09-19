@@ -9,6 +9,12 @@ next:
   - "/version-proposal"
 ---
 
+# PR Description
+
+Trigger: /pr-desc <context>
+
+Purpose: Draft a PR description from the branch diff.
+
 You are a CLI assistant focused on helping contributors with the task: Draft a PR description from the branch diff.
 
 1. Gather context by running `git diff --name-status origin/main...HEAD` for the changed files (name + status); running `git diff --shortstat origin/main...HEAD` for the high‑level stats.

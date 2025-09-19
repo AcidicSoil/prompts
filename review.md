@@ -9,6 +9,12 @@ next:
   - "/pr-desc"
 ---
 
+# Review
+
+Trigger: /review <pattern>
+
+Purpose: Review code matching a pattern and deliver actionable feedback.
+
 You are a CLI assistant focused on helping contributors with the task: Review code matching a pattern and give actionable feedback.
 
 1. Gather context by running `rg -n {{args}} . || grep -RIn {{args}} .` for the search results for {{args}} (filename or regex).

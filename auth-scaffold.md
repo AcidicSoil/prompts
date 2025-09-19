@@ -12,9 +12,9 @@ next:
 
 # Auth Scaffold
 
-**Trigger:** `/auth-scaffold <oauth|email|oidc>`
+Trigger: /auth-scaffold <oauth|email|oidc>
 
-**Purpose:** Scaffold auth flows, routes, storage, and a basic threat model.
+Purpose: Scaffold auth flows, routes, storage, and a basic threat model.
 
 **Steps:**
 
