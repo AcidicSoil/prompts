@@ -13,24 +13,29 @@ A viable path is to wrap each Markdown playbook as an MCP **prompt/tool**, add a
 ## 2) MCP-Native Patterns to Reuse
 
 ### A. Prompts-as-Tools
+
 - Expose each Markdown playbook as an MCP **prompt** and/or **tool** (name, description, inputs).
 - Optional: Read YAML front‑matter for metadata (phase tags, gates, inputs, outputs).
 - Provide list/get/run endpoints: `list_prompts`, `get_prompt`, `run_prompt` or a single `run_{slug}` tool.
 
 ### B. Local-First over STDIO
+
 - Package the server as a CLI (Node/TS or Python) that speaks MCP over **stdio**.
 - Ship a minimal config example for Claude Desktop / MCP Inspector.
 
 ### C. Persistent Project State
+
 - Maintain a simple SQLite/JSON store of: `phase`, `tasks`, `decisions`, `artifacts`, and `gate_status`.
 - Provide tools: `get_state`, `set_state`, `advance_phase`, `add_task`, `complete_task`, `log_decision`.
 
 ### D. Diagram-Aware Planner (Mermaid)
+
 - Parse `workflow.mmd` and build a DAG: nodes = phases/steps, edges = transitions (with optional condition tags).
 - Compute **eligible next steps** as nodes with satisfied predecessors and unmet outputs.
 - Map nodes → prompt/tool slugs, so planner can suggest or trigger the right command.
 
 ### E. Proactive Guidance
+
 - Implement `next_step_recommendation(state)` returning: next node(s), rationale, required inputs, and candidate tools.
 - Optionally send **server notifications** to nudge when a gate is cleared, or auto‑call follow‑ups when user toggles an `auto_advance` flag.
 
@@ -62,6 +67,7 @@ A viable path is to wrap each Markdown playbook as an MCP **prompt/tool**, add a
 ```
 
 **Core modules**
+
 - `server.ts` / `main.py`: stdio transport, tool & prompt registry
 - `registry/`: loads Markdown prompts + front‑matter → tool descriptors
 - `state/`: persistence (SQLite/SQLModel or JSON + locks)
@@ -117,6 +123,7 @@ A viable path is to wrap each Markdown playbook as an MCP **prompt/tool**, add a
 ---
 
 ## 9) Risks & Limitations
+
 - **Ecosystem flux**: MCP SDK revisions may change prompt/tool registration APIs.
 - **Diagram fidelity**: Mermaid → DAG parsing may miss semantics (conditions, loops) without conventions.
 - **Autonomy boundaries**: aggressive auto‑advance can surprise users; keep a toggle and confirmations.
@@ -137,6 +144,7 @@ A viable path is to wrap each Markdown playbook as an MCP **prompt/tool**, add a
 ---
 
 ## 11) Deliverables
+
 - MCP server (stdio) with prompt registry, state store, Mermaid planner.
 - Inspector scripts & fixtures for reproducible tests.
 - Sample client configs (Claude Desktop / Inspector).
@@ -144,13 +152,13 @@ A viable path is to wrap each Markdown playbook as an MCP **prompt/tool**, add a
 
 **Sources used (high-signal):**
 
-* MCP Prompts concept & API (protocol site). ([Model Context Protocol][1])
-* MCP architecture (local/STDIO vs remote/HTTP). ([Model Context Protocol][2])
-* MCP Inspector docs & GitHub (testing stdio servers, notifications view). ([Model Context Protocol][3])
-* Mermaid-focused MCP servers (features, analysis): Lobehub page; GitHub impl; marketplace entry. ([LobeHub][4])
-* Project/persistent-context MCP servers (state, planning): discovery pages/articles. ([LobeChat][5])
-* How-to guides for building MCP servers (quickstart, prompts in servers, notifications). ([Medium][6])
-* Overview/tutorials of MCP features (prompts/resources/tools, practical server build). ([WorkOS][7])
+- MCP Prompts concept & API (protocol site). ([Model Context Protocol][1])
+- MCP architecture (local/STDIO vs remote/HTTP). ([Model Context Protocol][2])
+- MCP Inspector docs & GitHub (testing stdio servers, notifications view). ([Model Context Protocol][3])
+- Mermaid-focused MCP servers (features, analysis): Lobehub page; GitHub impl; marketplace entry. ([LobeHub][4])
+- Project/persistent-context MCP servers (state, planning): discovery pages/articles. ([LobeChat][5])
+- How-to guides for building MCP servers (quickstart, prompts in servers, notifications). ([Medium][6])
+- Overview/tutorials of MCP features (prompts/resources/tools, practical server build). ([WorkOS][7])
 
 [1]: https://modelcontextprotocol.io/docs/concepts/prompts?utm_source=chatgpt.com "Prompts"
 [2]: https://modelcontextprotocol.io/docs/concepts/architecture?utm_source=chatgpt.com "Architecture overview"

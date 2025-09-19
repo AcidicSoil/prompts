@@ -1,0 +1,1291 @@
+{
+  "master": {
+    "tasks": [
+      {
+        "id": 1,
+        "title": "Project Setup and Server Bootstrap",
+        "description": "Initialize a Node.js TypeScript project and set up the basic MCP server using stdio transport. This includes creating the main entry point, configuring graceful shutdown, and establishing structured NDJSON logging.",
+        "details": "Create a `package.json` with dependencies like `@modelcontextprotocol/sdk` and `typescript`. Set up `tsconfig.json` for compilation to `dist/`. Implement the main server file (`src/index.ts`) to instantiate `StdioServerTransport`, register server info (name, version), and handle SIGINT/SIGTERM for graceful shutdown. Implement a basic structured logger that outputs NDJSON.",
+        "testStrategy": "Manually start the server and connect with an MCP client like MCP Inspector. Verify that the server reports its name and version. Send a SIGINT signal and confirm the server logs a 'server_stop' message and exits cleanly.",
+        "priority": "high",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Configure package.json and tsconfig.json",
+            "description": "Update the project's package.json to include necessary dependencies and scripts. Configure tsconfig.json to define the TypeScript compilation settings, ensuring output is directed to the dist/ directory.",
+            "dependencies": [],
+            "details": "In `package.json`, add `@modelcontextprotocol/sdk` to `dependencies`. Add `typescript`, `ts-node`, and `@types/node` to `devDependencies`. Add a `build` script (`\"tsc\"`) and a `start` script (`\"node dist/index.js\"`). In `tsconfig.json`, set `compilerOptions.outDir` to `./dist`, `rootDir` to `./src`, and ensure `moduleResolution` is `node`.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Implement a Structured NDJSON Logger",
+            "description": "Create a simple logger in `src/logger.ts` that writes structured log messages to `stdout` in NDJSON (Newline Delimited JSON) format. This utility will be used for all server logging.",
+            "dependencies": [],
+            "details": "Implement a `Logger` class or object in `src/logger.ts` with `info`, `warn`, and `error` methods. Each method should accept a message and an optional metadata object. The output for each log entry must be a single-line JSON string containing a timestamp, log level, message, and any metadata, written to `process.stdout`.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Bootstrap MCP Server with Stdio Transport",
+            "description": "In the main entry point `src/index.ts`, initialize the core server components by instantiating the MCP server and the standard I/O transport layer.",
+            "dependencies": [
+              "1.1",
+              "1.2"
+            ],
+            "details": "In `src/index.ts`, import the logger from `./logger.ts`. Import `MCPServer` and `StdioServerTransport` from `@modelcontextprotocol/sdk`. Inside a `main` async function, instantiate the logger, then the `StdioServerTransport`, and finally the `MCPServer`, passing the transport and logger to its constructor.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 4,
+            "title": "Register Server Information and Start Listening",
+            "description": "Configure the server with its identity by registering its name and version, and then start the server to begin listening for client connections over stdio.",
+            "dependencies": [
+              "1.3"
+            ],
+            "details": "In the `main` function of `src/index.ts`, read the `version` from `package.json`. Call the `server.info.register()` method with a server name (e.g., \"MCP Reference Server\") and the version. After registration, call `server.start()` and log a confirmation message indicating the server is running.",
+            "status": "pending",
+            "testStrategy": "After completing this subtask, run the `start` script. Use an MCP client like MCP Inspector to connect to the running process and verify that the server's name and version are correctly reported."
+          },
+          {
+            "id": 5,
+            "title": "Implement Graceful Shutdown and Top-Level Error Handling",
+            "description": "Add signal handlers in `src/index.ts` to ensure the server shuts down cleanly on SIGINT/SIGTERM signals and that any uncaught exceptions are logged before exiting.",
+            "dependencies": [
+              "1.3"
+            ],
+            "details": "Add listeners for `process.on('SIGINT', ...)` and `process.on('SIGTERM', ...)`. The handler should invoke `await server.stop()`, log a 'server_stop' message, and exit with `process.exit(0)`. Also, implement a `process.on('uncaughtException', ...)` handler to log the fatal error using the NDJSON logger before exiting with a non-zero status code.",
+            "status": "pending",
+            "testStrategy": "With the server running, send a SIGINT signal (Ctrl+C). Verify that the 'server_stop' message is logged in NDJSON format and the process exits cleanly without an error code."
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "title": "Implement Safety Control Utilities",
+        "description": "Create utility functions for redacting secrets in logs and capping payload sizes to prevent data leakage and excessive resource usage.",
+        "details": "Create a logging utility that wraps the base logger. This utility should scan log objects for keys matching the regex `/(key|secret|token)/i` and replace their values with `[redacted]`. Create a `capPayload` function that truncates strings larger than ~1 MB and appends a note like `[truncated N bytes]`. These utilities should be pure functions and easily testable.",
+        "testStrategy": "Unit test the redaction logic by passing objects with keys like `API_KEY` and `SECRET_TOKEN`. Unit test the `capPayload` function with strings smaller than, equal to, and larger than the 1 MB threshold to verify correct truncation and messaging.",
+        "priority": "high",
+        "dependencies": [
+          1
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create `redactSecrets` Utility Function",
+            "description": "Implement a pure function to recursively scan an object and redact values for keys matching a specific regex.",
+            "dependencies": [],
+            "details": "In a new file, `src/utils/safety.ts`, create and export a pure function `redactSecrets(data: any)`. This function should recursively traverse any given object or array. If it encounters an object key that matches the case-insensitive regex `/(key|secret|token)/i`, it must replace the corresponding value with the string `[redacted]`. The function should handle nested objects and arrays without modifying the original input object (i.e., it should return a new, deep-cloned object).",
+            "status": "pending",
+            "testStrategy": "This function will be tested in a subsequent subtask. Focus on a clean, recursive implementation."
+          },
+          {
+            "id": 2,
+            "title": "Create `capPayload` Utility Function",
+            "description": "Implement a pure function to truncate large strings to a specified maximum size.",
+            "dependencies": [],
+            "details": "In the same `src/utils/safety.ts` file, create and export a pure function `capPayload(payload: string, maxSize: number = 1024 * 1024)`. This function will check if the input string's size exceeds `maxSize`. If it does, the function should truncate the string to `maxSize` bytes and append a message indicating how many bytes were removed, e.g., `[truncated 42 bytes]`. If the string is within the limit, it should be returned unmodified.",
+            "status": "pending",
+            "testStrategy": "Testing for this function will be defined in a separate subtask."
+          },
+          {
+            "id": 3,
+            "title": "Implement Unit Tests for `redactSecrets`",
+            "description": "Create a suite of unit tests to validate the behavior of the `redactSecrets` function.",
+            "dependencies": [
+              "2.1"
+            ],
+            "details": "In a new test file, `src/utils/safety.test.ts`, write comprehensive unit tests for the `redactSecrets` function. Test cases should include: an object with sensitive keys (`apiKey`, `SECRET_TOKEN`), a deeply nested object with sensitive keys, an array of objects, an object with no sensitive keys (to ensure it remains unchanged), and non-object inputs to ensure graceful handling.",
+            "status": "pending",
+            "testStrategy": "Use a testing framework like Jest or Vitest. Assert that the original object is not mutated and that the returned object has the correct values redacted."
+          },
+          {
+            "id": 4,
+            "title": "Implement Unit Tests for `capPayload`",
+            "description": "Create a suite of unit tests to validate the behavior of the `capPayload` function.",
+            "dependencies": [
+              "2.2"
+            ],
+            "details": "In the `src/utils/safety.test.ts` file, add unit tests for the `capPayload` function. Cover the main scenarios: a string smaller than the 1MB threshold, a string larger than the threshold (verifying correct truncation and the appended message), and edge cases like an empty string or a string exactly at the threshold.",
+            "status": "pending",
+            "testStrategy": "Verify both the returned string's content and its length to confirm the truncation logic is working as expected."
+          },
+          {
+            "id": 5,
+            "title": "Create and Integrate Secure Logger Wrapper",
+            "description": "Create a logging utility that wraps the base logger to automatically redact secrets from log objects.",
+            "dependencies": [
+              "2.1"
+            ],
+            "details": "Based on the existing logging implementation, create a secure logger wrapper. This wrapper will expose standard logging methods (e.g., `info`, `warn`, `error`). Before passing a log object to the base logger, it must first process the object with the `redactSecrets` function created in subtask 2.1. This ensures that no sensitive data is ever written to the logs. This new utility should be exported for use throughout the application.",
+            "status": "pending",
+            "testStrategy": "Manually inspect log output after integrating the new logger in a test script or a single application entry point to confirm that objects containing keys like 'token' are correctly redacted."
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "title": "Implement Resource Exposure",
+        "description": "Load prompt metadata from `resources/prompts.meta.yaml` and expose each prompt's Markdown file as a `file://` resource.",
+        "details": "On server startup, parse `prompts.meta.yaml`. For each entry, register a resource with the MCP server. The resource should have a human-friendly name (from the `title` field) and a `file://` URI pointing to the absolute path of the corresponding Markdown file. The resource content preview should be capped using the utility from task 2.",
+        "testStrategy": "Start the server and use an MCP client to list resources. Verify that each prompt from the metadata file is listed with the correct name and a valid `file://` URI. Check that reading an oversized resource returns truncated content.",
+        "priority": "high",
+        "dependencies": [
+          1,
+          2
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create a utility to parse `prompts.meta.yaml`",
+            "description": "Add the `js-yaml` dependency to the project. Create a new utility function that reads the `resources/prompts.meta.yaml` file, parses its content, and returns a structured object. This function should handle potential file read or parsing errors gracefully.",
+            "dependencies": [],
+            "details": "Create a new file, e.g., `src/prompts/loader.ts`. Add a function `loadPromptMetadata()` that uses `fs.readFileSync` and `yaml.load`. Define a TypeScript interface for the expected structure of the YAML file (e.g., `{ prompts: [...] }`).",
+            "status": "pending",
+            "testStrategy": "Add a unit test that uses a mock YAML file to ensure the parsing logic correctly converts YAML content to a JavaScript object."
+          },
+          {
+            "id": 2,
+            "title": "Implement logic to transform metadata into resource objects",
+            "description": "Create a function that takes the parsed prompt metadata, iterates through each prompt entry, and transforms it into a `Resource` object as expected by the MCP server. This includes resolving the file path to an absolute `file://` URI.",
+            "dependencies": [
+              "3.1"
+            ],
+            "details": "In `src/prompts/loader.ts`, create a function like `preparePromptResources(metadata)`. For each prompt, use the `path` module to resolve the relative file path from `prompts.meta.yaml` to an absolute path. Format the absolute path as a `file://` URI. The resulting object should conform to the `Resource` interface, which includes `name` (from `title`) and `uri`.",
+            "status": "pending",
+            "testStrategy": "Unit test this transformation logic to ensure file paths are correctly resolved to absolute `file://` URIs on different operating systems."
+          },
+          {
+            "id": 3,
+            "title": "Generate and cap content previews for each resource",
+            "description": "Enhance the resource preparation logic to read the content of each prompt's Markdown file and generate a capped content preview using the utility from task 2.",
+            "dependencies": [
+              "3.2"
+            ],
+            "details": "Modify the function from the previous subtask. For each prompt, read the content of its Markdown file using `fs.readFileSync`. Import and use the `capContent` utility (assuming it's in `src/util/content.ts`) to truncate the file content. Add the resulting string to the `contentPreview` field of the `Resource` object.",
+            "status": "pending",
+            "testStrategy": "Verify that a test resource with content larger than the cap is correctly truncated, and one with smaller content remains unchanged."
+          },
+          {
+            "id": 4,
+            "title": "Integrate resource registration into the server startup sequence",
+            "description": "In the main server entry point, call the new functions to load, prepare, and register the prompt resources with the MCP server instance after it has been initialized.",
+            "dependencies": [
+              "3.2",
+              "3.3"
+            ],
+            "details": "Modify `src/main.ts`. After the `MCPServer` instance is created, call the prompt loading and preparation functions. Iterate over the generated list of `Resource` objects and call `mcpServer.registerResource()` for each one. This should happen before the server starts listening for connections.",
+            "status": "pending",
+            "testStrategy": "Manually run the server and check the startup logs for any errors related to resource registration."
+          },
+          {
+            "id": 5,
+            "title": "Add an integration test to validate resource exposure",
+            "description": "Create a new integration test that starts the server, uses an MCP client to request the list of all available resources, and validates that the prompts from `prompts.meta.yaml` are present with the correct details.",
+            "dependencies": [
+              "3.4"
+            ],
+            "details": "In a new test file, e.g., `test/integration/resource.test.ts`, write a test case that connects to the running server. It should call the `list_resources` tool. The test will then assert that the returned list contains entries corresponding to the prompts, verifying the `name`, `uri` (is a valid `file://` URI), and `contentPreview` (is a non-empty, capped string).",
+            "status": "pending",
+            "testStrategy": "This subtask is the test itself. Ensure it covers at least two different prompts from the metadata file."
+          }
+        ]
+      },
+      {
+        "id": 4,
+        "title": "Implement Dynamic Prompt Tools",
+        "description": "Expose each prompt defined in `resources/prompts.meta.yaml` as a dynamically generated MCP tool.",
+        "details": "During server startup, iterate through the entries in `prompts.meta.yaml`. For each entry, dynamically register an MCP tool with an `id` matching the metadata. Generate input/output schemas based on the metadata. The tool's handler should read the corresponding Markdown file from `resources/prompts/`, append a rendered footer, and return the content, applying the payload cap from task 2.",
+        "testStrategy": "Use an MCP client to list tools and verify that a tool exists for each prompt in the metadata file. Invoke a tool and confirm the response contains the correct Markdown content. Test with a prompt file larger than 1 MB to ensure the response is truncated.",
+        "priority": "high",
+        "dependencies": [
+          2,
+          3
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create a Utility to Load and Parse Prompt Metadata",
+            "description": "Implement a function that reads `resources/prompts.meta.yaml`, parses it, and returns a validated, typed array of prompt metadata objects. This will serve as the single source of truth for prompt definitions.",
+            "dependencies": [],
+            "details": "Create a new file `src/lib/prompt-loader.ts`. Add an exported function `loadPromptDefinitions()`. This function should use the `fs` module to read `resources/prompts.meta.yaml` and the `js-yaml` library to parse its content. Define a TypeScript interface for the prompt metadata structure (e.g., `PromptDefinition`) and ensure the parsed data conforms to this type before returning it. This utility will be called during server startup.",
+            "status": "pending",
+            "testStrategy": "Add a unit test to verify that the function correctly parses a sample YAML string and returns the expected array of objects."
+          },
+          {
+            "id": 2,
+            "title": "Develop a Generic Handler for Prompt Tools",
+            "description": "Create a generic handler function that can be used by all dynamically generated prompt tools. The handler will be responsible for reading the prompt content, appending a footer, and applying the payload cap.",
+            "dependencies": [],
+            "details": "In a new file, e.g., `src/tools/prompt-handler.ts`, create a factory function `createPromptHandler(promptFilePath: string)`. This function should return an async `ToolHandler` function. The handler will read the file content from the provided `promptFilePath`, append a standard rendered footer (a simple string for now), and then apply the payload capping utility from Task 2 to the final content. The handler should return an object like `{ content: '...' }`.",
+            "status": "pending",
+            "testStrategy": "Unit test the created handler to ensure it reads a file, appends the footer, and correctly truncates content that exceeds the payload cap."
+          },
+          {
+            "id": 3,
+            "title": "Implement Dynamic Schema Generation from Metadata",
+            "description": "Create a function that generates JSON schemas for a tool's input and output based on the `variables` defined in its metadata.",
+            "dependencies": [
+              "4.1"
+            ],
+            "details": "In a new utility file, e.g., `src/lib/schema-generator.ts`, create a function `generateSchemas(metadata: PromptDefinition)`. This function will generate the `inputSchema` by creating a JSON Schema `object` with `properties` corresponding to each item in the metadata's `variables` array. The `outputSchema` should be a static JSON Schema defining an object with a single string property named `content`.",
+            "status": "pending",
+            "testStrategy": "Unit test the schema generator with sample prompt metadata to ensure it produces valid input and output JSON schemas."
+          },
+          {
+            "id": 4,
+            "title": "Integrate Dynamic Tool Registration into Server Startup",
+            "description": "Modify the server's startup sequence to iterate through the loaded prompt definitions and register an MCP tool for each one.",
+            "dependencies": [
+              "4.1",
+              "4.2",
+              "4.3"
+            ],
+            "details": "In the primary tool registration file (e.g., `src/tools/tool-registry.ts`), create a new async function `registerPromptTools(mcpServer: McpServer)`. This function will call `loadPromptDefinitions()` (from subtask 4.1). It will then loop through each definition, calling `generateSchemas()` (subtask 4.3) and `createPromptHandler()` (subtask 4.2) for each. Finally, it will construct the complete `ToolDefinition` object (with `id`, schemas, and handler) and register it using `mcpServer.registerTool()`. Call this new function from the main server entry point (`src/server.ts`) during initialization.",
+            "status": "pending",
+            "testStrategy": "After implementation, manually start the server and check the logs or use an MCP client to confirm that tools corresponding to `prompts.meta.yaml` are being registered without errors."
+          },
+          {
+            "id": 5,
+            "title": "Add Integration Tests for Dynamic Prompt Tools",
+            "description": "Implement integration tests to verify that the dynamic tools are correctly exposed and functional through the MCP server.",
+            "dependencies": [
+              "4.4"
+            ],
+            "details": "In a new test file under `test/integration/`, write tests that use an MCP client to interact with the running server. One test should list all available tools and assert that a tool exists for each entry in `prompts.meta.yaml`. Another test should invoke a specific prompt tool and validate that the response body contains the expected markdown content. Add a final test using a large (>1MB) prompt file to ensure the response content is correctly truncated by the payload cap.",
+            "status": "pending",
+            "testStrategy": "These are the validation tests themselves. Success is defined by all tests passing in the CI/CD pipeline."
+          }
+        ]
+      },
+      {
+        "id": 5,
+        "title": "Implement Atomic State Store",
+        "description": "Create a `StateStore` class to manage workflow state persistence in `.mcp/state.json` using atomic file writes.",
+        "details": "Implement a class responsible for reading and writing the `ProjectState` JSON object. The `save` method must be atomic to prevent corruption. This should be achieved by writing the new state to a temporary file in the `.mcp/` directory and then using an atomic `rename` operation to replace the existing `state.json`. The store should also handle creating the `.mcp/` directory if it doesn't exist.",
+        "testStrategy": "Write a test that simulates concurrent calls to the `save` method to ensure the final `state.json` file is always valid JSON and not a corrupted, partially written file. Verify that the directory is created if it's missing.",
+        "priority": "high",
+        "dependencies": [
+          1
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create StateStore Class and Directory Initialization Logic",
+            "description": "Create the file `src/state/StateStore.ts` and define the `StateStore` class. The constructor should accept a project root path and ensure the `.mcp` directory exists.",
+            "dependencies": [],
+            "details": "Define the `StateStore` class in a new file `src/state/StateStore.ts`. The constructor will take `projectRoot: string`. It should define and store private properties for the paths to the `.mcp` directory, `state.json`, and a temporary file like `state.json.tmp`. Implement a private async method that is called by the constructor to create the `.mcp` directory using `fs.promises.mkdir(mcpDir, { recursive: true })`. This ensures all subsequent file operations have a valid directory to work in.",
+            "status": "pending",
+            "testStrategy": "In a unit test, instantiate the class with a path to a temporary directory and assert that the `.mcp` subdirectory is created."
+          },
+          {
+            "id": 2,
+            "title": "Implement `load` Method to Read State from Disk",
+            "description": "Implement an asynchronous `load` method to read and parse `.mcp/state.json`. It should handle cases where the file doesn't exist by providing a default initial state.",
+            "dependencies": [
+              "5.1"
+            ],
+            "details": "Add a public async `load` method to the `StateStore` class. This method will attempt to read `.mcp/state.json` using `fs.promises.readFile`. If the file doesn't exist (catch the 'ENOENT' error), it should initialize a default `ProjectState` object: `{ completedTools: [], artifacts: {} }`. The loaded or default state should be stored in a private property (e.g., `_state`). The method should return the state.",
+            "status": "pending",
+            "testStrategy": "Test that `load` returns the default state when `state.json` is missing. Create a mock `state.json` file and test that `load` correctly reads and parses its content."
+          },
+          {
+            "id": 3,
+            "title": "Implement In-Memory State Accessors and Mutators",
+            "description": "Add methods to get the current state and to update it in memory, specifically by recording the completion of a tool. This prepares the store for use by other components like the `advance_state` tool.",
+            "dependencies": [
+              "5.1"
+            ],
+            "details": "Based on the `ProjectState` interface in `src/state/ProjectState.ts`, add a public getter `getState(): ProjectState` that returns a deep copy of the internal `_state` to prevent outside mutation. Also, add a public method `recordCompletion(completion: ToolCompletion)` which updates the internal `_state` by adding the new completion record to the `completedTools` array and merging the new artifacts into the top-level `artifacts` map.",
+            "status": "pending",
+            "testStrategy": "Write a unit test that loads an initial state, calls `recordCompletion` with a mock `ToolCompletion` object, and then uses `getState` to verify that the in-memory state has been correctly updated."
+          },
+          {
+            "id": 4,
+            "title": "Implement Atomic `save` Method Using a Temporary File and Rename",
+            "description": "Implement the `save` method to atomically persist the current in-memory state to `.mcp/state.json`.",
+            "dependencies": [
+              "5.3"
+            ],
+            "details": "Create a public async `save` method. This method will take the current in-memory state from the `_state` property, stringify it with `JSON.stringify`, and write it to the temporary file path (`.mcp/state.json.tmp`) using `fs.promises.writeFile`. Upon successful write, it will use `fs.promises.rename` to atomically move the temporary file to the final `state.json` path, overwriting any existing file. This two-step process prevents file corruption.",
+            "status": "pending",
+            "testStrategy": "Verify that calling `save` creates `state.json` with the correct content. Check that the temporary file is created during the operation and removed after the rename is complete."
+          },
+          {
+            "id": 5,
+            "title": "Create Comprehensive Unit Tests for StateStore",
+            "description": "Develop a suite of unit tests in `test/state/StateStore.test.ts` to validate all public methods and behaviors of the `StateStore` class.",
+            "dependencies": [
+              "5.1",
+              "5.2",
+              "5.3",
+              "5.4"
+            ],
+            "details": "Using a testing framework like Jest and a temporary file system utility, create a test file for the `StateStore`. The tests should cover: 1. Directory creation on instantiation. 2. Loading from a non-existent file. 3. Correctly saving state via `recordCompletion` and `save`. 4. Correctly loading a previously saved state. 5. Ensure the `getState` method returns a value-identical but not reference-identical object.",
+            "status": "pending",
+            "testStrategy": "Execute the full test suite to ensure all features work as expected and are isolated from the actual project's file system. Mock the `fs` module to confirm the sequence of `writeFile` then `rename` is called for atomicity."
+          }
+        ]
+      },
+      {
+        "id": 6,
+        "title": "Implement Planner `suggest_next_calls` Tool",
+        "description": "Implement the `suggest_next_calls` tool to rank and suggest runnable tools based on DAG dependencies and available artifacts.",
+        "details": "Create a `Planner` class that loads `resources/default-graph.json` and the current state from the `StateStore`. Implement the logic for the `suggest_next_calls` tool. This logic should compute which nodes in the DAG are 'ready' by checking if their `dependsOn` nodes are complete and their `requiresArtifacts` are present in the state. Return a ranked list of candidates, sorted by `phase` and then `id`.",
+        "testStrategy": "Unit test the planner logic. Given an empty state, verify it returns `discover_research`. Simulate the completion of `discover_research` with a `research_summary` artifact and verify `define_prd` is now suggested. Test that a node with unmet artifact requirements is not returned.",
+        "priority": "high",
+        "dependencies": [
+          4,
+          5
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create Planner Class and Load `default-graph.json`",
+            "description": "Create a new file `src/planner.ts` and define a `Planner` class. The constructor should read `resources/default-graph.json`, parse it, and store the graph nodes in a private member. Also, define the necessary types for graph nodes in `src/types.ts`.",
+            "dependencies": [],
+            "details": "The class should have a private field `private graph: { nodes: any[] }`. The constructor will use `fs.readFileSync` and `JSON.parse` to load the graph data. The path to the graph file should be passed into the constructor. Add a `GraphNode` type definition to `src/types.ts` to represent the structure of nodes in the JSON file.",
+            "status": "pending",
+            "testStrategy": "Unit test the constructor to ensure it correctly loads and parses the JSON file, and that the `graph` member is populated. Test for error handling if the file does not exist."
+          },
+          {
+            "id": 2,
+            "title": "Integrate `StateStore` into the `Planner` Class",
+            "description": "Modify the `Planner` class to accept a `StateStore` instance in its constructor. Store the `StateStore` instance as a private member to allow access to the current project state for subsequent logic.",
+            "dependencies": [
+              "6.1"
+            ],
+            "details": "Update the `Planner` constructor signature to accept an instance of `StateStore` (from Task 5). Store the passed `stateStore` in a `private readonly stateStore: StateStore` field. This will be used by other methods to query the project's state.",
+            "status": "pending",
+            "testStrategy": "Update the `Planner` unit tests to mock the `StateStore` and pass it to the constructor. Verify the instance is stored correctly within the `Planner` object."
+          },
+          {
+            "id": 3,
+            "title": "Implement `dependsOn` Completion Check in `Planner`",
+            "description": "Create a private helper method within the `Planner` class, e.g., `areDependenciesMet(node: GraphNode): boolean`. This method should check if all task IDs listed in the node's `dependsOn` array are present in the list of completed tools from the `StateStore`.",
+            "dependencies": [
+              "6.2"
+            ],
+            "details": "The method will get the set of completed tool IDs from `this.stateStore.getCompletedToolIds()`. It will then iterate through the input node's `dependsOn` array and return `false` if any dependency ID is not in the completed set. If the `dependsOn` array is empty or all dependencies are met, it returns `true`.",
+            "status": "pending",
+            "testStrategy": "Unit test this specific method. Provide a mock `StateStore` with a predefined set of completed tools and test nodes with met, unmet, and empty dependencies to ensure the logic is correct."
+          },
+          {
+            "id": 4,
+            "title": "Implement `requiresArtifacts` Availability Check in `Planner`",
+            "description": "Create a private helper method, e.g., `areArtifactsAvailable(node: GraphNode): boolean`. This method should check if all artifacts listed in the node's `requiresArtifacts` array are available in the current state via the `StateStore`.",
+            "dependencies": [
+              "6.2"
+            ],
+            "details": "The method will get the set of available artifact names from `this.stateStore.getAvailableArtifacts()`. It will then iterate through the input node's `requiresArtifacts` array and return `false` if any required artifact is not in the available set. If `requiresArtifacts` is empty or all are available, it returns `true`.",
+            "status": "pending",
+            "testStrategy": "Unit test this method. Provide a mock `StateStore` with a predefined set of available artifacts and test nodes with met, unmet, and empty artifact requirements."
+          },
+          {
+            "id": 5,
+            "title": "Implement `suggest_next_calls` to Filter and Rank Ready Nodes",
+            "description": "Implement the public `suggest_next_calls` method. This method will iterate through all graph nodes, filter out already completed nodes, and use the `areDependenciesMet` and `areArtifactsAvailable` helpers to find 'ready' nodes. Finally, it will sort the ready nodes by `phase` (ascending) and then by `id` (alphabetical) before returning them.",
+            "dependencies": [
+              "6.3",
+              "6.4"
+            ],
+            "details": "The method should first get the list of completed tool IDs from the state. Then, it will `filter` the graph nodes based on three conditions: 1) The node's ID is not in the completed list. 2) `this.areDependenciesMet(node)` is true. 3) `this.areArtifactsAvailable(node)` is true. The resulting array of nodes should then be sorted using a custom comparator for `phase` then `id`.",
+            "status": "pending",
+            "testStrategy": "Write an integration test for `suggest_next_calls`. Given a graph and a mock `StateStore` in various states (e.g., empty, one task done, one task done with artifacts), verify that the correct list of ranked nodes is returned, respecting the sorting order."
+          }
+        ]
+      },
+      {
+        "id": 7,
+        "title": "Implement `advance_state` Tool",
+        "description": "Create the `advance_state` MCP tool to mark a tool as complete and record its outputs and artifacts in the state file.",
+        "details": "Register a new MCP tool named `advance_state`. Its handler will accept a tool `id`, `outputs`, and a list of `artifacts`. The handler will call a `recordCompletion` method on the `StateStore` instance, which updates the in-memory state by adding the completed tool and merging the new artifacts. The handler then triggers the `StateStore` to save the updated state to disk. It should return `{ ok: true }` and the path to the state file on success.",
+        "testStrategy": "Call `advance_state` with a valid tool ID and artifact mapping. Inspect the resulting `.mcp/state.json` file to confirm it contains the new completion record with a timestamp, outputs, and the correct artifact paths.",
+        "priority": "high",
+        "dependencies": [
+          5,
+          6
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Implement `recordCompletion` Method in `StateStore`",
+            "description": "Add a new public method `recordCompletion` to the `StateStore` class in `src/state/state-store.ts`. This method will accept a tool `id`, `outputs`, and a list of `artifacts`. It should create a `ToolCompletion` object with a new timestamp, add it to the `completedTools` map, and merge the new artifacts into the main `artifacts` map within the in-memory `ProjectState` object.",
+            "dependencies": [],
+            "details": "The method signature should be `recordCompletion(id: string, outputs: Record<string, any>, artifacts: Artifact[])`. It should not call `save()` itself; that responsibility will lie with the tool handler. The new artifacts should overwrite any existing artifacts with the same name. This method directly modifies the in-memory state managed by the `StateStore` instance.",
+            "status": "pending",
+            "testStrategy": "Unit test the `recordCompletion` method. Initialize a `StateStore` with a blank state, call `recordCompletion` with sample data, and then inspect the internal `state` property to verify that `completedTools` and `artifacts` have been updated correctly and a timestamp has been added."
+          },
+          {
+            "id": 2,
+            "title": "Define `advance_state` Tool and Zod Input Schema",
+            "description": "Create a new file `src/tools/definitions/advance-state.ts`. In this file, define and export the Zod schema for the `advance_state` tool's input, which includes a string `id`, a `z.record(z.any())` for `outputs`, and an array of `artifact` objects for `artifacts`. Also, define the `McpTool` object with the name `advance_state`, a suitable description, and a reference to the schema.",
+            "dependencies": [],
+            "details": "The artifact schema within the input array should validate `source`, `name`, and `uri` as strings, consistent with the `Artifact` type in `src/state/state-types.ts`. The main tool object will be exported to be used for registration later. The handler function can be a placeholder for now.",
+            "status": "pending",
+            "testStrategy": "No dedicated test is needed for the definition itself, as it will be validated by the tool registry and tested implicitly by the handler's tests."
+          },
+          {
+            "id": 3,
+            "title": "Implement `advance_state` Handler to Call `recordCompletion`",
+            "description": "In `src/tools/definitions/advance-state.ts`, implement the body of the `handler` function for the `advance_state` tool. The handler will use the `stateStore` from its context to call the `recordCompletion` method, passing the validated `id`, `outputs`, and `artifacts` from its input.",
+            "dependencies": [
+              "7.1",
+              "7.2"
+            ],
+            "details": "The handler will receive `context: McpToolContext` and `input: { id: string, ... }`. It should destructure these arguments and call `context.stateStore.recordCompletion(input.id, input.outputs, input.artifacts)`. The handler function should be marked as `async`.",
+            "status": "pending",
+            "testStrategy": "Using a mock `StateStore` in a unit test, verify that the handler correctly calls the `recordCompletion` method with the exact arguments passed into the tool."
+          },
+          {
+            "id": 4,
+            "title": "Add State Persistence and Success Response to `advance_state` Handler",
+            "description": "Extend the `advance_state` handler in `src/tools/definitions/advance-state.ts`. After calling `recordCompletion`, the handler must call `await context.stateStore.save()` to persist the updated state to disk. On success, it should return an object `{ ok: true, statePath: <path_to_state.json> }`.",
+            "dependencies": [
+              "7.3"
+            ],
+            "details": "The `save()` method on `StateStore` is asynchronous and must be awaited. The path to the state file can be retrieved from a property on the `stateStore` instance (e.g., `context.stateStore.statePath`). This completes the core logic of the tool.",
+            "status": "pending",
+            "testStrategy": "In an integration test, call the tool handler and verify that the `save` method on the `StateStore` mock is called. Also, check that the handler's return value matches the specified success format."
+          },
+          {
+            "id": 5,
+            "title": "Register `advance_state` Tool with the MCP Server",
+            "description": "Import the `advance_state` tool definition from `src/tools/definitions/advance-state.ts` into the main tool registration location (likely `src/mcp/mcp-server.ts` or a dedicated tool loading module). Register the tool with the `ToolRegistry` instance so it becomes available to the MCP server.",
+            "dependencies": [
+              "7.2"
+            ],
+            "details": "Locate the code block where other tools are registered, which is typically in the `McpServer` constructor or an initialization method. Add a line like `this.toolRegistry.registerTool(advanceStateTool);` to include the new tool in the server's list of available tools.",
+            "status": "pending",
+            "testStrategy": "Start the server and use an MCP client or a test utility to list available tools. Verify that `advance_state` is present in the list."
+          }
+        ]
+      },
+      {
+        "id": 8,
+        "title": "Implement `export_task_list` Tool",
+        "description": "Create the `export_task_list` tool to emit a compact task list for interoperability with external systems.",
+        "details": "Register a new MCP tool named `export_task_list`. The handler will read `resources/prompts.meta.yaml` and map its contents to a JSON array. Each element in the array should contain `id`, `title`, `dependsOn`, and a default `status: 'pending'`. This provides a simple, structured view of the entire workflow.",
+        "testStrategy": "Call the `export_task_list` tool. Validate that the returned JSON array contains an entry for every prompt defined in the metadata file and that the `id`, `title`, and `dependsOn` fields correctly match the source data.",
+        "priority": "medium",
+        "dependencies": [
+          3
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create `export_task_list` Tool Skeleton",
+            "description": "Create the file `src/tools/export_task_list.ts` and define the basic structure for the new tool, including the factory function `createExportTaskListTool` and a placeholder implementation.",
+            "dependencies": [],
+            "details": "Following the existing pattern in `src/tools`, create a new file for the `export_task_list` tool. It should export a factory function that returns a `Tool` object with the name 'export_task_list', a clear description, an empty input schema, and a handler that currently returns an empty array. This establishes the boilerplate for the tool.",
+            "status": "pending",
+            "testStrategy": "Verify the new file `src/tools/export_task_list.ts` exists and exports the `createExportTaskListTool` function. Ensure the returned tool object has the correct name."
+          },
+          {
+            "id": 2,
+            "title": "Implement YAML File Reading and Parsing",
+            "description": "Update the `export_task_list` tool handler to read and parse the `resources/prompts.meta.yaml` file.",
+            "dependencies": [
+              "8.1"
+            ],
+            "details": "Use the `fs` module to read the contents of `resources/prompts.meta.yaml`. Add the `js-yaml` library as a dependency if it's not already part of the project. Use the library to parse the YAML content into a JavaScript array of objects. Implement basic error handling for file-not-found scenarios.",
+            "status": "pending",
+            "testStrategy": "In a test environment, mock `fs.readFileSync` to return a sample YAML string. Call the handler and assert that it correctly parses the string into a JavaScript object without errors."
+          },
+          {
+            "id": 3,
+            "title": "Map Parsed YAML to the Specified JSON Array Format",
+            "description": "Transform the parsed data from `prompts.meta.yaml` into the final JSON array structure required by the task.",
+            "dependencies": [
+              "8.2"
+            ],
+            "details": "Within the tool's handler, iterate over the array of parsed prompt objects. For each object, create a new object containing the `id`, `title`, and `dependsOn` fields from the source. Add a `status` field with a default value of 'pending'. The handler should return this newly created array.",
+            "status": "pending",
+            "testStrategy": "Write a unit test for the handler that provides a pre-parsed array of prompt objects. Verify that the returned array has the correct length and that each element contains the `id`, `title`, `dependsOn`, and `status` fields with the expected values."
+          },
+          {
+            "id": 4,
+            "title": "Register the Tool with the MCP Server",
+            "description": "Integrate the newly created `export_task_list` tool into the main application by registering it with the MCP server on startup.",
+            "dependencies": [
+              "8.1"
+            ],
+            "details": "In `src/main.ts`, import the `createExportTaskListTool` factory function. In the main server initialization block, call the factory and pass the resulting tool object to the `server.registerTool()` method. This will make the tool available via the MCP.",
+            "status": "pending",
+            "testStrategy": "After starting the server, use an MCP client or a test utility to list all available tools. Confirm that `export_task_list` appears in the list of registered tools."
+          },
+          {
+            "id": 5,
+            "title": "Create an Integration Test for the `export_task_list` Tool",
+            "description": "Write a test that invokes the complete `export_task_list` tool and validates its output against a known `prompts.meta.yaml` file.",
+            "dependencies": [
+              "8.3",
+              "8.4"
+            ],
+            "details": "Create a test file `src/tools/export_task_list.test.ts`. The test should execute the tool's handler. It should use a test-specific version of `prompts.meta.yaml` to ensure a stable test environment. The test will assert that the returned JSON array correctly reflects the contents of the test YAML file, verifying the entire flow from file reading to data transformation.",
+            "status": "pending",
+            "testStrategy": "Run the test suite. The test should pass if the handler correctly reads a mock YAML file, transforms its content, and returns a JSON array matching the expected structure and values."
+          }
+        ]
+      },
+      {
+        "id": 9,
+        "title": "Implement Token Bucket Rate Limiter Utility",
+        "description": "Provide a `TokenBucket` utility for rate limiting, intended for future use with external HTTP integrations.",
+        "status": "pending",
+        "dependencies": [
+          1
+        ],
+        "priority": "low",
+        "details": "Create a `TokenBucket` class with a constructor that accepts `capacity` and `refillPerSec`. Implement a `take(count)` method that decrements the token count. If not enough tokens are available, the method should asynchronously wait for the required number of tokens to be refilled before resolving. This is a foundational component for future safety controls.",
+        "testStrategy": "Unit test the `TokenBucket`. Verify that calling `take(1)` when the bucket is empty causes a delay approximately equal to `1 / refillPerSec`. Test that taking the full capacity immediately depletes the tokens and that they recover over time as expected.",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create `TokenBucket.ts` with Class Skeleton and Constructor",
+            "description": "Create the file `src/utils/TokenBucket.ts`. Define the `TokenBucket` class with a constructor that accepts `capacity` and `refillPerSec`. Initialize class properties for `capacity`, `refillPerSec`, `tokens`, and `lastRefillTime`.",
+            "dependencies": [],
+            "details": "This subtask establishes the foundational file and class structure. The constructor should initialize `this.tokens` to `this.capacity` and `this.lastRefillTime` to the current time (`Date.now()`). Also, create the corresponding test file `tests/TokenBucket.test.ts` with a placeholder test suite.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Implement Private `_refill` Method for Token Replenishment",
+            "description": "Implement a private helper method, `_refill()`, inside the `TokenBucket` class. This method will calculate the number of new tokens to add based on the time elapsed since `lastRefillTime` and the `refillPerSec` rate.",
+            "dependencies": [
+              "9.1"
+            ],
+            "details": "The `_refill` method should calculate elapsed time since the last refill, determine the number of tokens to add, and update `this.lastRefillTime` to the current time. It must ensure that the number of tokens does not exceed the `capacity`. This isolates the core state update logic.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Implement Synchronous Path for `take(count)` Method",
+            "description": "Implement the `take(count)` method. It should first call the `_refill()` method to ensure the token count is up-to-date. Then, it should handle the synchronous case where sufficient tokens are available.",
+            "dependencies": [
+              "9.2"
+            ],
+            "details": "The `take` method will be `async`. After calling `_refill()`, if `this.tokens >= count`, the method should decrement `this.tokens` by `count` and resolve immediately. This covers the 'happy path' where no waiting is necessary.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 4,
+            "title": "Implement Asynchronous Waiting Logic in `take(count)`",
+            "description": "Enhance the `take(count)` method to handle cases where there are insufficient tokens. The method should calculate the necessary delay until enough tokens are available and wait asynchronously before proceeding.",
+            "dependencies": [
+              "9.3"
+            ],
+            "details": "When `this.tokens < count`, calculate the `tokensNeeded` and the `waitTime` in milliseconds. Use `new Promise(resolve => setTimeout(resolve, waitTime))` to pause execution. After the delay, recursively call `this.take(count)` to re-evaluate and consume the tokens.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 5,
+            "title": "Write Comprehensive Unit Tests in `tests/TokenBucket.test.ts`",
+            "description": "Implement unit tests in `tests/TokenBucket.test.ts` to validate the `TokenBucket` functionality, including asynchronous behavior.",
+            "dependencies": [
+              "9.4"
+            ],
+            "details": "Tests should cover: 1. Initial state (full bucket). 2. Immediate depletion of tokens. 3. Correct asynchronous delay when taking from an empty bucket. 4. Gradual refill over time. Use a testing framework like Jest with fake timers to control time during tests and make assertions on wait times.",
+            "status": "pending",
+            "testStrategy": "Using a test runner like Jest, mock timers to verify that `take(1)` on an empty bucket with `refillPerSec: 10` waits approximately 100ms. Test that taking full capacity works, and subsequent takes wait for the correct refill duration."
+          }
+        ]
+      },
+      {
+        "id": 10,
+        "title": "Implement Prompt Metadata Validation Script",
+        "description": "Flesh out the `scripts/validate_metadata.ts` script to parse YAML front matter from all markdown prompt files and validate it against a strict schema.",
+        "details": "The script must be executed via `npm run validate:metadata`. It should read all `.md` files in the prompts directory, extract the YAML front matter, and ensure required fields (e.g., `id`, `title`, `phase`, `description`) are present and correctly typed. The script should exit with a non-zero code if validation fails, logging clear error messages about which file and field are invalid. This aligns with the 'Prompt Metadata Automation' feature and is a prerequisite for building the catalog.",
+        "testStrategy": "Create a temporary valid prompt file and an invalid one (e.g., missing a required field). Run the script against them. Verify the script passes for the valid file and fails with a descriptive error for the invalid one. Ensure it correctly handles various data types.",
+        "priority": "high",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Add Dependencies and Configure `validate:metadata` NPM Script",
+            "description": "Add `zod`, `gray-matter`, and `glob` as development dependencies to `package.json`. Ensure the `validate:metadata` script in `package.json` is correctly configured to execute `scripts/validate_metadata.ts` using `ts-node`.",
+            "dependencies": [],
+            "details": "This foundational step ensures all required tools are available before writing the core logic. The command should be `npm install zod gray-matter glob --save-dev`. The script should be `\"validate:metadata\": \"ts-node scripts/validate_metadata.ts\"`.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Define Prompt Metadata Schema using Zod",
+            "description": "In `scripts/validate_metadata.ts`, define a strict Zod schema for the prompt's YAML front matter. The schema must enforce the presence and correct types for `id` (string), `title` (string), `phase` (number), and `description` (string).",
+            "dependencies": [
+              "10.1"
+            ],
+            "details": "Create a `const promptMetadataSchema = z.object({...})`. This schema will be the single source of truth for metadata validation and should be placed at the top of the script file for clarity.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Implement File Discovery for Prompt Markdown Files",
+            "description": "In `scripts/validate_metadata.ts`, use the `glob` library to implement a function that finds and returns a list of all `.md` file paths within the `prompts/` directory and its subdirectories.",
+            "dependencies": [
+              "10.1"
+            ],
+            "details": "The function should asynchronously find all files matching the pattern `prompts/**/*.md`. This isolates the file system interaction from the parsing and validation logic. The main script function will await the result of this discovery.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 4,
+            "title": "Implement Main Loop to Parse and Validate Front Matter",
+            "description": "Create the main execution logic in `scripts/validate_metadata.ts`. This logic should iterate through the file paths discovered in subtask 3, read each file's content, use `gray-matter` to parse the YAML front matter, and then validate the resulting object against the Zod schema defined in subtask 2.",
+            "dependencies": [
+              "10.2",
+              "10.3"
+            ],
+            "details": "This subtask ties together file discovery, parsing, and validation. It will form the core of the script's functionality. Use `fs.readFileSync` to get file content and `matter()` from `gray-matter` to extract the `data` object for validation.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 5,
+            "title": "Implement Error Reporting and Non-Zero Exit Code on Failure",
+            "description": "Enhance the validation loop to handle validation failures. When a file's metadata is invalid, log a clear error message to the console specifying the file path and the nature of the validation error. The script must exit with `process.exit(1)` if any validation errors are found.",
+            "dependencies": [
+              "10.4"
+            ],
+            "details": "Use a `try...catch` block around the Zod `safeParse` method. If the parse result is not successful, format the `ZodError` into a user-friendly message. Track a global error flag or a count of errors to determine the final exit code after checking all files.",
+            "status": "pending",
+            "testStrategy": ""
+          }
+        ]
+      },
+      {
+        "id": 11,
+        "title": "Implement Catalog and README Build Script",
+        "description": "Develop the `scripts/build_catalog.ts` script to automatically generate `catalog.json` and update the prompt tables in `README.md` based on the metadata from all prompt files.",
+        "details": "This script, run via `npm run build:catalog`, will consume the validated metadata from all `.md` prompt files. It will then generate a `catalog.json` file containing an array of all prompt metadata objects. Concurrently, it will parse `README.md`, find placeholder tags, and inject updated markdown tables, ensuring the README stays synchronized with the prompt library. This fulfills a core requirement of 'Prompt Metadata Automation'.",
+        "testStrategy": "After creating a few sample prompts, run the script. Check that `catalog.json` is created or updated correctly. Inspect `README.md` to confirm the prompt tables are accurately regenerated. Verify that running the script a second time without changes results in no file modifications.",
+        "priority": "high",
+        "dependencies": [
+          10
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create a Utility to Discover All Prompt Markdown Files",
+            "description": "Within the new `scripts/build_catalog.ts` file, implement a utility function that finds all prompt markdown files. This function will use a glob pattern to recursively search the `prompts/` directory for all files ending in `.md` and return an array of their full paths.",
+            "dependencies": [],
+            "details": "This is the initial step for gathering the source files. A library like `glob` or `fast-glob` should be added as a dev dependency to handle the file system traversal. The function should be designed to be reusable within the script.",
+            "status": "pending",
+            "testStrategy": "Create a temporary directory with a few nested `.md` files and some other file types. Assert that the utility function returns the correct paths for only the `.md` files."
+          },
+          {
+            "id": 2,
+            "title": "Implement a Parser to Extract and Validate Prompt Front-Matter",
+            "description": "Create a function that accepts a file path, reads the markdown file's content, and parses its YAML front-matter using the `gray-matter` library. The extracted metadata object should then be validated against a predefined schema to ensure it contains all required fields (e.g., id, title, description).",
+            "dependencies": [
+              "11.1"
+            ],
+            "details": "This function is critical for consuming the prompt files discovered in the previous subtask. A validation library like `zod` should be used to define and enforce the metadata structure. The function should throw a clear error or log a warning if a file is missing front-matter or if the metadata is invalid.",
+            "status": "pending",
+            "testStrategy": "Test with a valid prompt file and assert the metadata is parsed correctly. Test with a file missing front-matter and another with invalid/missing fields to ensure errors are handled gracefully."
+          },
+          {
+            "id": 3,
+            "title": "Develop Main Script Logic to Aggregate Metadata from All Prompts",
+            "description": "Implement the main execution logic in `scripts/build_catalog.ts`. This logic will use the discovery utility (11.1) to get all prompt file paths, then iterate through them, calling the parser (11.2) on each. All successfully parsed and validated metadata objects should be collected into a single in-memory array.",
+            "dependencies": [
+              "11.1",
+              "11.2"
+            ],
+            "details": "This subtask orchestrates the data collection process. The main function should handle errors from the parsing step by logging the problematic file and continuing, ensuring that one bad file doesn't halt the entire process. The final result is a complete, in-memory representation of the prompt catalog.",
+            "status": "pending",
+            "testStrategy": "Using a set of mock prompt files (including one invalid one), run the aggregation logic and assert that the final array contains the correct metadata for the valid files and that a warning was logged for the invalid one."
+          },
+          {
+            "id": 4,
+            "title": "Implement `catalog.json` Generation from Aggregated Metadata",
+            "description": "Create a function that takes the aggregated array of prompt metadata (from 11.3), sorts it by prompt ID, serializes it into a human-readable JSON string, and writes it to the `catalog.json` file in the project root.",
+            "dependencies": [
+              "11.3"
+            ],
+            "details": "This function is responsible for the first major output of the script. It should use `JSON.stringify` with an indentation setting for pretty-printing. The file write operation should overwrite the existing `catalog.json` to ensure it's always up-to-date.",
+            "status": "pending",
+            "testStrategy": "Provide a sample metadata array to the function. After it runs, read the generated `catalog.json` and assert that its content matches the expected formatted JSON output and is correctly sorted."
+          },
+          {
+            "id": 5,
+            "title": "Implement README.md Update with Auto-Generated Prompt Table",
+            "description": "Develop a function that generates a Markdown table from the aggregated prompt metadata. This function must then read `README.md`, find the `<!-- PROMPT_TABLE_START -->` and `<!-- PROMPT_TABLE_END -->` comment tags, and replace all content between them with the newly generated table.",
+            "dependencies": [
+              "11.3"
+            ],
+            "details": "This function ensures the project's documentation stays synchronized with the prompt library. The table should include columns for ID, Title, and Description. The file update logic must be precise, likely using a regular expression, to avoid modifying any other part of the `README.md` file.",
+            "status": "pending",
+            "testStrategy": "Create a mock `README.md` file with the placeholder comments and surrounding text. Run the function with sample metadata and assert that only the content between the placeholders is replaced with the correct markdown table."
+          }
+        ]
+      },
+      {
+        "id": 12,
+        "title": "Create DocFetch Preflight Guardrail Prompt",
+        "description": "Author the primary slash-command prompt that enforces the DocFetch preflight check before planning or coding can proceed.",
+        "details": "Create a markdown prompt file (e.g., `prompts/preflight/docfetch-check.md`) with appropriate YAML front matter. The prompt's content should instruct the user on how to run the DocFetch tooling, validate the status of the `DocFetchReport`, and provide clear, actionable remediation steps if documentation sources are missing or stale. This directly implements the 'DocFetch Preflight Guardrails' feature.",
+        "testStrategy": "Execute the prompt via the Codex CLI. Verify that its output clearly states the success criteria (an OK DocFetchReport) and provides a clear remediation path for failure cases. Ensure the prompt's metadata is correctly processed by the validation and build scripts.",
+        "priority": "high",
+        "dependencies": [
+          11
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create `docfetch-check.md` and Define YAML Front Matter",
+            "description": "Create the markdown file for the DocFetch preflight prompt and add the necessary YAML front matter to define its metadata, following the structure suggested in the task description.",
+            "dependencies": [],
+            "details": "Create the file at `prompts/preflight/docfetch-check.md`. Based on the parent task and similar prompts, the YAML front matter should include `id`, `title`, `description`, and `phase: preflight`. This establishes the prompt's identity within the system and associates it with the preflight check phase of the workflow.",
+            "status": "pending",
+            "testStrategy": "Verify the file `prompts/preflight/docfetch-check.md` is created. Manually inspect the YAML front matter to ensure it contains the required keys (`id`, `title`, `description`, `phase`) with appropriate values."
+          },
+          {
+            "id": 2,
+            "title": "Draft Introduction Explaining the DocFetch Check's Purpose",
+            "description": "Write the introductory section of the prompt that explains to the user why the DocFetch preflight check is a necessary guardrail before proceeding with planning or coding.",
+            "dependencies": [
+              "12.1"
+            ],
+            "details": "In `prompts/preflight/docfetch-check.md`, add a section below the front matter. This content should clearly explain that planning and coding require up-to-date project context from documentation, and that the DocFetch tool is designed to validate this context automatically.",
+            "status": "pending",
+            "testStrategy": "Read the rendered markdown. The introduction should be clear, concise, and effectively communicate the importance of having fresh documentation context for the AI to perform its tasks."
+          },
+          {
+            "id": 3,
+            "title": "Add Instructions for Executing the DocFetch Tool",
+            "description": "Add a section to the prompt detailing the specific command(s) required to run the DocFetch tool and generate the `DocFetchReport`.",
+            "dependencies": [
+              "12.2"
+            ],
+            "details": "In `prompts/preflight/docfetch-check.md`, create a clear, user-friendly section titled 'How to Run the Check'. Provide the exact command-line instruction to trigger the documentation fetching and analysis process. Use markdown code blocks for the command to make it easy to copy and paste.",
+            "status": "pending",
+            "testStrategy": "Review the prompt to ensure the command for running the DocFetch tool is present, correct, and clearly formatted within a code block."
+          },
+          {
+            "id": 4,
+            "title": "Document How to Interpret the `DocFetchReport`",
+            "description": "Add content that guides the user on how to find and interpret the `DocFetchReport` to determine if the check passed or failed.",
+            "dependencies": [
+              "12.3"
+            ],
+            "details": "In `prompts/preflight/docfetch-check.md`, add a section explaining where the `DocFetchReport` is located (e.g., `.codex/reports/docfetch-report.json`). Describe what a successful report looks like (e.g., `status: 'OK'`) versus what a failure looks like (e.g., `status: 'STALE'`, `missingSources: [...]`). This section is crucial for user self-service.",
+            "status": "pending",
+            "testStrategy": "Verify the prompt clearly explains the location of the report and provides distinct examples of 'success' and 'failure' states based on the report's content."
+          },
+          {
+            "id": 5,
+            "title": "Author Remediation Steps for Failed DocFetch Checks",
+            "description": "Write the final section of the prompt, providing clear, actionable steps to resolve a failed DocFetch check based on the report's findings.",
+            "dependencies": [
+              "12.4"
+            ],
+            "details": "In `prompts/preflight/docfetch-check.md`, create a 'Remediation Steps' or 'What to Do If It Fails' section. This should provide specific instructions for different failure scenarios, such as how to add missing documentation paths to the project's configuration file or how to force-refresh stale sources before re-running the DocFetch tool.",
+            "status": "pending",
+            "testStrategy": "Check that the remediation steps are actionable and cover the likely failure modes (e.g., missing sources, stale files). The instructions should be clear enough for a user to follow without assistance."
+          }
+        ]
+      },
+      {
+        "id": 13,
+        "title": "Author Planning Phase Prompts",
+        "description": "Create at least one slash-command prompt for the 'planning' phase of the development lifecycle.",
+        "details": "As part of the 'Lifecycle Prompt Library', author a markdown prompt with YAML front matter indicating `phase: planning`. The prompt should guide a user through a planning activity, such as breaking down a feature or defining acceptance criteria, consistent with the `WORKFLOW.md` document.",
+        "testStrategy": "Run the prompt and check that its output is directive, concise, and aligns with the planning stage. Verify its metadata is correctly added to `catalog.json` and the `README.md` tables after running the build scripts.",
+        "priority": "medium",
+        "dependencies": [
+          11
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Research Planning Phase Requirements in WORKFLOW.md",
+            "description": "Analyze the 'Planning' section of WORKFLOW.md to understand the key activities, such as feature breakdown and defining acceptance criteria. This research will define the scope and purpose of the new planning prompt.",
+            "dependencies": [],
+            "details": "Read the WORKFLOW.md file to identify the specific goals and outputs expected during the planning phase of the development lifecycle. This will ensure the prompt aligns with the established process.",
+            "status": "pending",
+            "testStrategy": "Confirm that the documented planning activities in WORKFLOW.md are understood and can be translated into a prompt."
+          },
+          {
+            "id": 2,
+            "title": "Create Initial Draft of `feature-breakdown.md` Prompt",
+            "description": "Create a new markdown file at `src/prompts/commands/planning/feature-breakdown.md`. Draft the initial version of the prompt's instructional text to guide a user through breaking down a feature into actionable tasks.",
+            "dependencies": [
+              "13.1"
+            ],
+            "details": "Based on the research from the previous subtask, write the main body of the prompt. The text should instruct the AI on how to analyze a feature request and output a structured plan.",
+            "status": "pending",
+            "testStrategy": "Review the draft to ensure it contains clear instructions for an AI to follow."
+          },
+          {
+            "id": 3,
+            "title": "Add YAML Front Matter to `feature-breakdown.md`",
+            "description": "Add the required YAML front matter to the `src/prompts/commands/planning/feature-breakdown.md` file. This includes a `title`, `description`, and `phase: planning`.",
+            "dependencies": [
+              "13.2"
+            ],
+            "details": "The front matter is critical for the prompt to be recognized by the system. The title should be actionable, like 'Feature Breakdown', and the description should clearly state its purpose. The `phase` must be set to `planning`.",
+            "status": "pending",
+            "testStrategy": "Inspect the raw markdown file to ensure the YAML front matter is present, correctly formatted, and contains all required fields."
+          },
+          {
+            "id": 4,
+            "title": "Refine and Test the Feature Breakdown Prompt",
+            "description": "Iteratively test the `feature-breakdown.md` prompt by running it with a sample feature description. Refine the prompt's text to ensure the output is structured, clear, and consistently provides actionable subtasks and acceptance criteria.",
+            "dependencies": [
+              "13.3"
+            ],
+            "details": "This step involves practical testing of the prompt's effectiveness. The goal is to fine-tune the instructions until the AI's output reliably meets the standards defined in WORKFLOW.md for the planning phase.",
+            "status": "pending",
+            "testStrategy": "Execute the prompt with a sample input and verify the output is a well-structured plan with clear subtasks and acceptance criteria."
+          },
+          {
+            "id": 5,
+            "title": "Run Build Scripts and Verify Prompt Integration",
+            "description": "Execute the project's build scripts to update the prompt catalog and documentation. Verify that the new 'Feature Breakdown' prompt is correctly added to `catalog.json` and the relevant tables in `README.md`.",
+            "dependencies": [
+              "13.4"
+            ],
+            "details": "The final step is to ensure the new prompt is properly integrated into the project's ecosystem. This involves running any scripts responsible for cataloging and documenting available prompts.",
+            "status": "pending",
+            "testStrategy": "After running the build scripts, check the contents of `catalog.json` and `README.md` to confirm the new prompt is listed with the correct metadata."
+          }
+        ]
+      },
+      {
+        "id": 14,
+        "title": "Author Scaffolding Phase Prompts",
+        "description": "Create at least one slash-command prompt for the 'scaffolding' phase of the development lifecycle.",
+        "details": "As part of the 'Lifecycle Prompt Library', author a markdown prompt with YAML front matter indicating `phase: scaffolding`. The prompt should assist a developer in generating boilerplate code, setting up file structures, or creating initial components based on a plan.",
+        "testStrategy": "Run the prompt and check that its output helps accelerate initial code creation. Verify its metadata is correctly added to `catalog.json` and the `README.md` tables after running the build scripts.",
+        "priority": "medium",
+        "dependencies": [
+          11
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Define Scope for '/scaffold-component' Prompt",
+            "description": "Define the specific scope and target for the new scaffolding prompt. Decide on the component type, language, and framework to be scaffolded, as recommended by the complexity report. This initial definition will guide the subsequent implementation.",
+            "dependencies": [],
+            "details": "Based on the complexity report's recommendation, the target will be a React functional component using TypeScript. Document the expected inputs (e.g., component name, list of props) and the desired output structure (e.g., a single `.tsx` file with boilerplate code, prop types, and basic JSX). This definition serves as the design document for the prompt.",
+            "status": "pending",
+            "testStrategy": "Review the definition to ensure it is specific enough to create a concrete and useful scaffolding prompt."
+          },
+          {
+            "id": 2,
+            "title": "Create 'scaffold-component.md' with YAML Frontmatter",
+            "description": "Create the new prompt file at 'prompts/library/scaffolding/scaffold-component.md' and add the YAML frontmatter based on the scope defined in the previous subtask.",
+            "dependencies": [
+              "14.1"
+            ],
+            "details": "Create the file `prompts/library/scaffolding/scaffold-component.md`. The YAML frontmatter should include `title: Scaffold Component`, `description`, `author`, `tags: [\"scaffolding\", \"react\", \"typescript\", \"component\"]`, and `phase: scaffolding`. The description should clearly state that it generates a React functional component with TypeScript.",
+            "status": "pending",
+            "testStrategy": "Verify the file is created in the correct directory and the YAML frontmatter is valid and contains all required fields."
+          },
+          {
+            "id": 3,
+            "title": "Write the Main Prompt Body for '/scaffold-component'",
+            "description": "Write the main body of the prompt in 'scaffold-component.md'. This section should contain the core instructions for the AI on how to generate the component.",
+            "dependencies": [
+              "14.2"
+            ],
+            "details": "In the markdown file, add 'System' and 'Instructions' sections. The instructions should guide the AI to: 1. Accept a component name and a list of props as input. 2. Generate a TypeScript interface for the props. 3. Create a React functional component using the provided name and props interface. 4. Include basic JSX structure. 5. Return the output as a single, formatted code block.",
+            "status": "pending",
+            "testStrategy": "Read through the instructions to ensure they are clear, unambiguous, and logically lead to the desired code output."
+          },
+          {
+            "id": 4,
+            "title": "Add a Detailed Example to 'scaffold-component.md'",
+            "description": "Add a comprehensive 'Example' section to the 'scaffold-component.md' prompt file to demonstrate its usage and expected output.",
+            "dependencies": [
+              "14.3"
+            ],
+            "details": "Append an '## Example' section to the markdown file. The example should show a sample user request (e.g., `/scaffold-component name:UserProfile props:name:string,age:number`) and the corresponding complete AI response, including the generated `.tsx` code for the `UserProfile` component.",
+            "status": "pending",
+            "testStrategy": "Verify the example clearly illustrates the prompt's functionality and the format of the expected output code."
+          },
+          {
+            "id": 5,
+            "title": "Test and Verify '/scaffold-component' Prompt Integration",
+            "description": "Test the completed prompt by running it in a development environment. Verify the generated code is correct and that the prompt is correctly integrated into the project's documentation.",
+            "dependencies": [
+              "14.4"
+            ],
+            "details": "Execute the `/scaffold-component` prompt with the example inputs. Check if the output is a valid React/TypeScript component. After confirming functionality, run the project's build scripts. Verify that the new prompt is added to the `catalog.json` file and appears in the appropriate table in the `README.md`.",
+            "status": "pending",
+            "testStrategy": "The generated code from the prompt should be syntactically correct. The `catalog.json` and `README.md` files must reflect the addition of the new prompt after the build scripts are run."
+          }
+        ]
+      },
+      {
+        "id": 15,
+        "title": "Author Testing Phase Prompts",
+        "description": "Create at least one slash-command prompt for the 'testing' phase of the development lifecycle.",
+        "details": "As part of the 'Lifecycle Prompt Library', author a markdown prompt with YAML front matter indicating `phase: testing`. The prompt should guide a developer in writing unit tests, integration tests, or generating test case tables.",
+        "testStrategy": "Run the prompt and confirm its output provides useful guidance for creating tests. Verify its metadata is correctly added to `catalog.json` and the `README.md` tables after running the build scripts.",
+        "priority": "medium",
+        "dependencies": [
+          11
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create initial prompt file for test case generation",
+            "description": "Following the pattern observed in `prompts/lifecycle/`, create the initial markdown file for the test case generation prompt.",
+            "dependencies": [],
+            "details": "Create a new file at `prompts/lifecycle/testing-generate-cases.md`. Add the standard YAML front matter including `name: /test/generate-cases`, a suitable `description`, and `phase: testing`. The main body of the prompt can be a placeholder for now.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Develop prompt content for generating test case tables in 'testing-generate-cases.md'",
+            "description": "Flesh out the markdown content for the `testing-generate-cases.md` prompt to guide an AI in creating structured test case tables.",
+            "dependencies": [
+              "15.1"
+            ],
+            "details": "In the file `prompts/lifecycle/testing-generate-cases.md`, write a detailed prompt that instructs the AI to analyze user stories, requirements, or code snippets and produce a markdown table of test cases. The table should include columns for Test ID, Description, Steps, Expected Result, and Type (e.g., Happy Path, Edge Case, Error).",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Create and author the 'write-unit-tests' prompt",
+            "description": "Create a new, self-contained prompt file dedicated to generating unit tests for a specific function or module.",
+            "dependencies": [],
+            "details": "Create the file `prompts/lifecycle/testing-unit-tests.md`. Add YAML front matter with `name: /test/unit-tests`, a description, and `phase: testing`. The prompt content should guide the AI to write unit tests for a provided code snippet, including instructions on mocking dependencies and asserting expected outcomes using a common testing framework like Jest or Pytest.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 4,
+            "title": "Create and author the 'write-integration-tests' prompt",
+            "description": "Create a new, self-contained prompt file for generating integration tests between multiple components.",
+            "dependencies": [],
+            "details": "Create the file `prompts/lifecycle/testing-integration-tests.md`. Add YAML front matter with `name: /test/integration-tests`, a description, and `phase: testing`. The prompt content should instruct the AI to write tests that verify the interaction, data flow, and contract between two or more specified components or services.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 5,
+            "title": "Run build scripts and verify all new testing prompts in catalog",
+            "description": "After the three new testing prompts are authored, run the build process to update the prompt catalog and documentation, and verify their inclusion.",
+            "dependencies": [
+              "15.2",
+              "15.3",
+              "15.4"
+            ],
+            "details": "Execute the `npm run build:prompts` script (or equivalent build script). Check the generated `prompts/catalog.json` file to ensure the three new prompts (`/test/generate-cases`, `/test/unit-tests`, `/test/integration-tests`) are present with correct metadata. Also, verify they are listed in the appropriate table in the main `README.md`.",
+            "status": "pending",
+            "testStrategy": ""
+          }
+        ]
+      },
+      {
+        "id": 16,
+        "title": "Author Release Phase Prompts",
+        "description": "Create at least one slash-command prompt for the 'release' phase of the development lifecycle.",
+        "details": "As part of the 'Lifecycle Prompt Library', author a markdown prompt with YAML front matter indicating `phase: release`. The prompt should assist with release-gating activities like generating release notes, creating a changelog, or verifying final checks.",
+        "testStrategy": "Run the prompt and check that its output supports pre-release activities. Verify its metadata is correctly added to `catalog.json` and the `README.md` tables after running the build scripts.",
+        "priority": "medium",
+        "dependencies": [
+          11
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create /generate-release-notes prompt file with initial YAML front matter",
+            "description": "Based on the analysis of existing prompts, create a new markdown file at `prompts/library/release/generate-release-notes.md`. Populate this file with the initial YAML front matter, including `title`, `description`, and `phase: release`.",
+            "dependencies": [],
+            "details": "The file should be created in the `prompts/library/release/` directory. The YAML front matter should define the prompt's metadata. For example:\n---\ntitle: Generate Release Notes\ndescription: Creates a draft of release notes or a changelog from git history and guides through pre-release checks.\nphase: release\n---",
+            "status": "pending",
+            "testStrategy": "Verify the file `prompts/library/release/generate-release-notes.md` exists and contains valid YAML front matter with `phase: release`."
+          },
+          {
+            "id": 2,
+            "title": "Draft the initial prompt logic to gather raw data for release notes",
+            "description": "Following the guidance from the task complexity report, write the first part of the prompt. This section should instruct the AI on how to gather the raw data needed for release notes, such as by requesting the user to provide `git log` output between two release tags.",
+            "dependencies": [
+              "16.1"
+            ],
+            "details": "Edit `prompts/library/release/generate-release-notes.md`. The prompt should ask the user to provide a list of commits or a git log. It should set the context for the AI to act as a release manager.",
+            "status": "pending",
+            "testStrategy": "Review the prompt to ensure it clearly asks for commit history or a similar raw input."
+          },
+          {
+            "id": 3,
+            "title": "Refine the prompt to format raw data into structured release notes",
+            "description": "Enhance the prompt to process the raw input from the previous step. It should include instructions for categorizing commits (e.g., 'Features', 'Bug Fixes', 'Documentation') and formatting the output into a clean, markdown-formatted changelog.",
+            "dependencies": [
+              "16.2"
+            ],
+            "details": "Update `prompts/library/release/generate-release-notes.md`. Add instructions for the AI to parse the provided commit messages, group them by type (e.g., using conventional commit prefixes like 'feat:', 'fix:'), and generate structured markdown output.",
+            "status": "pending",
+            "testStrategy": "Execute the prompt with sample git log data and verify the output is a well-structured markdown changelog with categorized sections."
+          },
+          {
+            "id": 4,
+            "title": "Incorporate a pre-release checklist into the prompt",
+            "description": "As recommended by the complexity report's expansion plan, add a final section to the prompt. This section should guide the user through a series of pre-release verification checks to ensure release readiness.",
+            "dependencies": [
+              "16.3"
+            ],
+            "details": "Append a new section to `prompts/library/release/generate-release-notes.md`. This part of the prompt should generate a checklist for the user, including items like: 'Have version numbers been bumped?', 'Have all automated tests passed?', 'Is the documentation updated?'.",
+            "status": "pending",
+            "testStrategy": "Run the prompt and confirm that its output includes a distinct and actionable pre-release checklist in addition to the release notes."
+          },
+          {
+            "id": 5,
+            "title": "Build and verify the /generate-release-notes prompt integration",
+            "description": "Execute the project's build scripts to update the prompt catalog and documentation. Verify that the new `/generate-release-notes` prompt is correctly integrated into the system.",
+            "dependencies": [
+              "16.4"
+            ],
+            "details": "Run the `npm run build:prompts` command (or equivalent build script). After the script completes, inspect the generated `catalog.json` file to ensure it contains an entry for the new prompt. Also, check the `README.md` file to confirm the prompt appears in the 'Release' phase table.",
+            "status": "pending",
+            "testStrategy": "Confirm the existence of the new prompt's metadata in `catalog.json` and its visibility in the `README.md` tables after running the build process."
+          }
+        ]
+      },
+      {
+        "id": 17,
+        "title": "Author Post-Release Hardening Prompts",
+        "description": "Create at least one slash-command prompt for the 'post-release' phase of the development lifecycle.",
+        "details": "As part of the 'Lifecycle Prompt Library', author a markdown prompt with YAML front matter indicating `phase: post-release`. The prompt could guide a user in creating a post-mortem document, identifying areas for technical debt repayment, or hardening a feature based on initial feedback.",
+        "testStrategy": "Run the prompt and confirm its output is relevant to post-release activities. Verify its metadata is correctly added to `catalog.json` and the `README.md` tables after running the build scripts.",
+        "priority": "medium",
+        "dependencies": [
+          11
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Define Scope and Goal for Post-Mortem Prompt",
+            "description": "Brainstorm and select a specific post-release activity for the new prompt. Settle on creating a 'post-mortem analysis' prompt to guide users in documenting and learning from a release cycle.",
+            "dependencies": [],
+            "details": "Based on the parent task, decide on a concrete topic for the post-release prompt. The chosen topic is 'post-mortem analysis'. Define the prompt's primary goal: to help a user generate a structured post-mortem document by asking targeted questions about the release process, what went well, what didn't, and action items for improvement.",
+            "status": "pending",
+            "testStrategy": "Review the defined scope and goals to ensure they align with typical post-release activities and provide clear value to the user."
+          },
+          {
+            "id": 2,
+            "title": "Create 'conduct-post-mortem.md' and YAML Front Matter",
+            "description": "Create the new markdown file for the post-mortem prompt in the correct directory and add the required YAML front matter.",
+            "dependencies": [
+              "17.1"
+            ],
+            "details": "Create a new file at `prompts/lifecycle/post-release/conduct-post-mortem.md`. In this file, add the YAML front matter with the following keys: `name` set to `/conduct-post-mortem`, `description` summarizing its purpose, and `phase` set to `post-release`. This establishes the prompt's metadata for the build system.",
+            "status": "pending",
+            "testStrategy": "Verify the file is created in the correct location (`prompts/lifecycle/post-release/`). Check that the YAML front matter is valid and contains the required `name`, `description`, and `phase` fields."
+          },
+          {
+            "id": 3,
+            "title": "Author System Prompt and Instructions for Post-Mortem Analysis",
+            "description": "Write the system prompt and detailed instructions within 'conduct-post-mortem.md' that define the AI's role and the structure of the post-mortem.",
+            "dependencies": [
+              "17.2"
+            ],
+            "details": "In `prompts/lifecycle/post-release/conduct-post-mortem.md`, write the `# System Prompt` section. Define the AI's persona as an experienced project lead facilitating a blameless post-mortem. Under an `# Instructions` section, outline the steps the AI should take, such as asking for a summary of the release, what went well, what could be improved, and key learnings. The structure should encourage a comprehensive and constructive analysis.",
+            "status": "pending",
+            "testStrategy": "Read the system prompt and instructions to ensure they clearly guide the AI to generate a structured and helpful post-mortem document."
+          },
+          {
+            "id": 4,
+            "title": "Author User Prompt and Finalize 'conduct-post-mortem.md' Content",
+            "description": "Complete the prompt by adding the user prompt section and refining the overall content for clarity and effectiveness.",
+            "dependencies": [
+              "17.3"
+            ],
+            "details": "In `prompts/lifecycle/post-release/conduct-post-mortem.md`, add the `# User Prompt` section. This section should include placeholders like `{{user_input}}` for the user to provide context about the project or release they want to analyze. Review and refine the entire prompt file for grammar, clarity, and flow.",
+            "status": "pending",
+            "testStrategy": "Execute the prompt with sample user input to confirm it generates a well-structured post-mortem document that follows the defined instructions."
+          },
+          {
+            "id": 5,
+            "title": "Verify Prompt Integration via Build Scripts",
+            "description": "Run the project's build scripts and verify that the new '/conduct-post-mortem' prompt is correctly added to 'catalog.json' and the 'README.md' documentation.",
+            "dependencies": [
+              "17.4"
+            ],
+            "details": "Execute the build script responsible for updating the prompt catalog (e.g., `npm run build:prompts`). After the script completes, inspect the `catalog.json` file to ensure an entry for `/conduct-post-mortem` exists with the correct metadata. Also, check the `README.md` file to confirm the prompt is listed in the appropriate table for the 'post-release' phase.",
+            "status": "pending",
+            "testStrategy": "Confirm the existence and correctness of the new prompt's entry in `catalog.json`. Verify the `README.md` is updated and the link to the new prompt is not broken."
+          }
+        ]
+      },
+      {
+        "id": 18,
+        "title": "Integrate and Test Full Metadata Workflow",
+        "description": "Perform an end-to-end test of the metadata automation by editing a prompt, running validation, and rebuilding the catalog and README.",
+        "details": "This task verifies that the core automation loop is robust. Make a change to a prompt's YAML front matter (e.g., edit its title). Run `npm run validate:metadata` and confirm it passes. Then run `npm run build:catalog`. Verify that `catalog.json` and the `README.md` tables reflect the change. This satisfies the acceptance criteria for 'Prompt Metadata Automation'.",
+        "testStrategy": "Follow the steps in the details. Introduce an invalid change to a prompt's metadata and confirm `npm run validate:metadata` fails as expected. Fix the error and confirm both scripts succeed and update the artifacts correctly.",
+        "priority": "high",
+        "dependencies": [
+          12,
+          13,
+          14,
+          15,
+          16,
+          17
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create Test Branch for Metadata Workflow Verification",
+            "description": "Set up a dedicated git branch to isolate the end-to-end testing of the metadata workflow, as recommended by the task expansion plan.",
+            "dependencies": [],
+            "details": "Create a new git branch named `test/metadata-workflow` from the current main branch. This ensures that the main branch remains clean during the test cycle and provides an isolated environment for making and reverting changes.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Execute 'Happy Path' Test: Modify Metadata and Run Build",
+            "description": "Perform a 'happy path' test by modifying a prompt's metadata, running validation and build scripts, and committing the successful changes.",
+            "dependencies": [
+              "18.1"
+            ],
+            "details": "On the `test/metadata-workflow` branch, edit the `title` in the YAML front matter of `prompts/1-analyze-issue.md`. Run `npm run validate:metadata` and confirm it passes. Then, run `npm run build:catalog` to update `catalog.json` and `README.md`. Commit all modified files to the branch.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Verify Artifacts After 'Happy Path' Build",
+            "description": "Inspect `catalog.json` and `README.md` to confirm that the changes from the 'happy path' test were correctly applied.",
+            "dependencies": [
+              "18.2"
+            ],
+            "details": "After the successful build in the previous subtask, manually review `catalog.json` to ensure the `title` for prompt ID 1 has been updated. Also, check the prompt table within `README.md` to verify the new title is correctly reflected there.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 4,
+            "title": "Execute 'Failure Path' Test: Introduce Invalid Metadata",
+            "description": "Test the validation logic by intentionally introducing an invalid change to a prompt's metadata and confirming that the validation script fails as expected.",
+            "dependencies": [
+              "18.3"
+            ],
+            "details": "On the `test/metadata-workflow` branch, edit `prompts/1-analyze-issue.md` again. Remove the `version` field from the YAML front matter. Run `npm run validate:metadata` and confirm that the script exits with a non-zero status code and logs a Zod validation error. Document the specific error message for verification. Do not commit this invalid change.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 5,
+            "title": "Revert Invalid Change, Re-run Build, and Finalize Test",
+            "description": "Revert the invalid metadata change, re-run the build process to ensure the system returns to a valid state, and finalize the end-to-end test.",
+            "dependencies": [
+              "18.4"
+            ],
+            "details": "Revert the change made to `prompts/1-analyze-issue.md` in the previous step by restoring the `version` field. Re-run `npm run validate:metadata` to confirm it passes. This concludes the E2E test, leaving the branch in a clean state with the successful 'happy path' changes.",
+            "status": "pending",
+            "testStrategy": ""
+          }
+        ]
+      },
+      {
+        "id": 19,
+        "title": "Document MCP Evolution Readiness in README",
+        "description": "Update the `README.md` to include the 'Future enhancements' section detailing the MCP evolution path.",
+        "details": "Fulfill the 'MCP Evolution Readiness' requirement by adding a new section to the `README.md`. This section should describe the future-state architecture where the prompt pack is exposed as an MCP server with typed inputs and DocFetch event signals. Crucially, it must also specify the manual fallback paths (using slash commands) that remain functional if MCP is not available.",
+        "testStrategy": "Review the `README.md` file after modification. Confirm the new 'Future enhancements' section exists and contains the required architectural details and a clear statement about the manual fallback workflow, as per the PRD's acceptance criteria.",
+        "priority": "low",
+        "dependencies": [
+          18
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Add 'Future Enhancements' Section to README.md",
+            "description": "Edit the `README.md` file to add a new level-two heading titled '## Future Enhancements'. This section will serve as the container for the MCP evolution documentation.",
+            "dependencies": [],
+            "details": "Locate the appropriate position in `README.md`, likely after the 'Usage' or 'Prompt Catalog' section, and insert the new markdown heading `## Future Enhancements` to create the designated area for the new content.",
+            "status": "pending",
+            "testStrategy": "Verify that the `README.md` file now contains the '## Future Enhancements' heading when viewed in a markdown renderer or text editor."
+          },
+          {
+            "id": 2,
+            "title": "Draft the Core MCP Server Vision",
+            "description": "Under the new 'Future Enhancements' heading, write the primary description of the future-state architecture. This text should explain that the prompt pack will evolve to be exposed as a standalone MCP (Meta-prompt Communication Protocol) server.",
+            "dependencies": [
+              "19.1"
+            ],
+            "details": "Describe the high-level goal: transitioning from a static collection of prompts to a dynamic service. Mention that this aligns with a more robust, service-oriented architecture for interacting with prompts.",
+            "status": "pending",
+            "testStrategy": "Review the added text in `README.md` to confirm it clearly articulates the vision of the prompt pack becoming an MCP server."
+          },
+          {
+            "id": 3,
+            "title": "Detail Typed Inputs and DocFetch Event Signals",
+            "description": "Expand on the MCP server vision by detailing its key technical features. Specifically, describe how the server will utilize typed inputs for prompts and emit DocFetch event signals.",
+            "dependencies": [
+              "19.2"
+            ],
+            "details": "Explain that typed inputs will provide a structured and validated way to invoke prompts, replacing free-form text. Describe how DocFetch event signals will allow the server to communicate its state and requirements regarding documentation freshness to other development tools.",
+            "status": "pending",
+            "testStrategy": "Check the `README.md` section to ensure the concepts of 'typed inputs' and 'DocFetch event signals' are present and explained in the context of the MCP server."
+          },
+          {
+            "id": 4,
+            "title": "Document the Manual Slash Command Fallback Path",
+            "description": "Add a paragraph to the 'Future Enhancements' section that explicitly states the manual fallback mechanism. This must clarify that the current slash command interface will remain functional.",
+            "dependencies": [
+              "19.3"
+            ],
+            "details": "This is a critical requirement. The text must reassure users that even if the MCP server is not available or integrated, the prompts can still be used via the existing, simpler slash command workflow. This ensures backward compatibility and usability in diverse environments.",
+            "status": "pending",
+            "testStrategy": "Verify that the `README.md` contains a clear and unambiguous statement about the persistence of slash commands as a fallback option."
+          },
+          {
+            "id": 5,
+            "title": "Review and Finalize MCP Evolution Section",
+            "description": "Perform a comprehensive review of the entire 'Future Enhancements' section. Check for clarity, consistency in tone with the rest of the `README.md`, and ensure all requirements from the parent task are fully met.",
+            "dependencies": [
+              "19.4"
+            ],
+            "details": "Read through the newly added section from the perspective of a new developer. Ensure the evolution path is easy to understand, the technical terms are used correctly, and the fallback mechanism is clearly highlighted. Correct any typos or grammatical errors.",
+            "status": "pending",
+            "testStrategy": "Have a peer or lead review the final `README.md` changes to confirm it meets the acceptance criteria of the parent task: the section exists, describes the MCP architecture, and specifies the manual fallback."
+          }
+        ]
+      }
+    ],
+    "metadata": {
+      "created": "2025-09-18T19:25:07.429Z",
+      "updated": "2025-09-19T23:02:59.702Z",
+      "description": "Tasks for master context"
+    }
+  }
+}
