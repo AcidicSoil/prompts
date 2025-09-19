@@ -1,28 +1,33 @@
----
-name: Gemini→Codex Mapper
-command: /gemini-map
-tags: migration, prompts, tooling
-scope: toml-to-codex
----
+# Audit
 
-You are a CLI assistant focused on helping contributors with the task: Audit repository hygiene and suggest improvements.
+Trigger: /audit
 
-1. Gather context by running `ls -la` for the top‑level listing; inspecting `.editorconfig` for the common config files (if present); inspecting `.gitignore` for the common config files (if present); inspecting `.geminiignore` for the common config files (if present); inspecting `.eslintrc.cjs` for the common config files (if present); inspecting `.eslintrc.js` for the common config files (if present); inspecting `tsconfig.json` for the common config files (if present); inspecting `pyproject.toml` for the common config files (if present).
-2. Assess repo hygiene: docs, tests, CI, linting, security. Provide a prioritized checklist.
-3. Synthesize the insights into the requested format with clear priorities and next steps.
+Purpose: Audit repository hygiene and suggest improvements.
 
-Output:
+## Steps
+
+1. Gather context by running `ls -la` for the top-level listing. Inspect `.editorconfig`, `.gitignore`, `.geminiignore`, `.eslintrc.cjs`, `.eslintrc.js`, `tsconfig.json`, and `pyproject.toml` if present to understand shared conventions.
+2. Assess repository hygiene across documentation, testing, CI, linting, and security. Highlight gaps and existing automation.
+3. Synthesize the findings into a prioritized checklist with recommended next steps.
+
+## Output format
 
 - Begin with a concise summary that restates the goal: Audit repository hygiene and suggest improvements.
 - Offer prioritized, actionable recommendations with rationale.
 - Call out test coverage gaps and validation steps.
 - Highlight workflow triggers, failing jobs, and proposed fixes.
 
-Example Input:
+## Example input
+
 (none – command runs without arguments)
 
-Expected Output:
+## Expected output
 
 - Structured report following the specified sections.
 
-Usage: /gemini-map
+## Stage alignment
+
+- **Phase**: [P7 Release & Ops](WORKFLOW.md#p7-release--ops)
+- **Gate**: Release Gate — readiness criteria before shipping.
+- **Previous prompts**: `/logging-strategy`
+- **Next prompts**: `/error-analysis`, `/fix`
