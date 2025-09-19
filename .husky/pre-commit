@@ -1,0 +1,5 @@
+#!/bin/sh
+set -e
+
+npm run build:catalog
+git add catalog.json README.md workflow.mmd

@@ -1,0 +1,910 @@
+{
+  "phases": [
+    {
+      "name": "P0 Preflight Docs",
+      "anchor": "p0-preflight-docs-blocking",
+      "prompts": [
+        {
+          "file": "instruction-file.md",
+          "title": "Instruction File",
+          "trigger": "/instruction-file",
+          "purpose": "Generate or update `cursor.rules`, `windsurf.rules`, or `claude.md` with project-specific instructions.",
+          "gate": "DocFetchReport",
+          "status": "capture approved instructions before proceeding.",
+          "previous": [
+            "Preflight discovery (AGENTS baseline)"
+          ],
+          "next": [
+            "/planning-process",
+            "/scope-control"
+          ],
+          "phases": [
+            {
+              "name": "P0 Preflight Docs",
+              "anchor": "p0-preflight-docs-blocking"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "P1 Plan & Scope",
+      "anchor": "p1-plan-scope",
+      "prompts": [
+        {
+          "file": "planning-process.md",
+          "title": "Planning Process",
+          "trigger": "/planning-process",
+          "purpose": "Draft, refine, and execute a feature plan with strict scope control and progress tracking.",
+          "gate": "Scope Gate",
+          "status": "confirm problem, users, Done criteria, and stack risks are logged.",
+          "previous": [
+            "Preflight Docs (AGENTS baseline)"
+          ],
+          "next": [
+            "/scope-control",
+            "/stack-evaluation"
+          ],
+          "phases": [
+            {
+              "name": "P1 Plan & Scope",
+              "anchor": "p1-plan-scope"
+            }
+          ]
+        },
+        {
+          "file": "prototype-feature.md",
+          "title": "Prototype Feature",
+          "trigger": "/prototype-feature",
+          "purpose": "Spin up a standalone prototype in a clean repo before merging into main.",
+          "gate": "Prototype review",
+          "status": "Validate spike outcomes before committing to scope.",
+          "previous": [
+            "/planning-process"
+          ],
+          "next": [
+            "/scaffold-fullstack",
+            "/api-contract"
+          ],
+          "phases": [
+            {
+              "name": "P1 Plan & Scope",
+              "anchor": "p1-plan-scope"
+            },
+            {
+              "name": "P2 App Scaffold & Contracts",
+              "anchor": "p2-app-scaffold-contracts"
+            }
+          ]
+        },
+        {
+          "file": "scope-control.md",
+          "title": "Scope Control",
+          "trigger": "/scope-control",
+          "purpose": "Enforce explicit scope boundaries and maintain \"won't do\" and \"ideas for later\" lists.",
+          "gate": "Scope Gate",
+          "status": "Done criteria, scope lists, and stack choices are committed.",
+          "previous": [
+            "/planning-process"
+          ],
+          "next": [
+            "/stack-evaluation",
+            "/scaffold-fullstack"
+          ],
+          "phases": [
+            {
+              "name": "P1 Plan & Scope",
+              "anchor": "p1-plan-scope"
+            }
+          ]
+        },
+        {
+          "file": "stack-evaluation.md",
+          "title": "Stack Evaluation",
+          "trigger": "/stack-evaluation",
+          "purpose": "Evaluate language/framework choices relative to AI familiarity and repo goals.",
+          "gate": "Scope Gate",
+          "status": "record recommended stack and top risks before building.",
+          "previous": [
+            "/scope-control"
+          ],
+          "next": [
+            "/scaffold-fullstack",
+            "/api-contract"
+          ],
+          "phases": [
+            {
+              "name": "P1 Plan & Scope",
+              "anchor": "p1-plan-scope"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "P2 App Scaffold & Contracts",
+      "anchor": "p2-app-scaffold-contracts",
+      "prompts": [
+        {
+          "file": "api-contract.md",
+          "title": "API Contract",
+          "trigger": "/api-contract \"<feature or domain>\"",
+          "purpose": "Author an initial OpenAPI 3.1 or GraphQL SDL contract from requirements.",
+          "gate": "Test Gate lite",
+          "status": "contract checked into repo with sample generation running cleanly.",
+          "previous": [
+            "/scaffold-fullstack"
+          ],
+          "next": [
+            "/openapi-generate",
+            "/modular-architecture"
+          ],
+          "phases": [
+            {
+              "name": "P2 App Scaffold & Contracts",
+              "anchor": "p2-app-scaffold-contracts"
+            }
+          ]
+        },
+        {
+          "file": "api-docs-local.md",
+          "title": "API Docs Local",
+          "trigger": "/api-docs-local",
+          "purpose": "Fetch API docs and store locally for offline, deterministic reference.",
+          "gate": "Test Gate lite",
+          "status": "contracts cached locally for repeatable generation.",
+          "previous": [
+            "/scaffold-fullstack"
+          ],
+          "next": [
+            "/api-contract",
+            "/openapi-generate"
+          ],
+          "phases": [
+            {
+              "name": "P2 App Scaffold & Contracts",
+              "anchor": "p2-app-scaffold-contracts"
+            }
+          ]
+        },
+        {
+          "file": "openapi-generate.md",
+          "title": "OpenAPI Generate",
+          "trigger": "/openapi-generate <server|client> <lang> <spec-path>",
+          "purpose": "Generate server stubs or typed clients from an OpenAPI spec.",
+          "gate": "Test Gate lite",
+          "status": "generated code builds and CI checks cover the new scripts.",
+          "previous": [
+            "/api-contract"
+          ],
+          "next": [
+            "/modular-architecture",
+            "/db-bootstrap"
+          ],
+          "phases": [
+            {
+              "name": "P2 App Scaffold & Contracts",
+              "anchor": "p2-app-scaffold-contracts"
+            }
+          ]
+        },
+        {
+          "file": "reference-implementation.md",
+          "title": "Reference Implementation",
+          "trigger": "/reference-implementation",
+          "purpose": "Mimic the style and API of a known working example.",
+          "gate": "Test Gate lite",
+          "status": "align new modules with proven patterns before deeper work.",
+          "previous": [
+            "/scaffold-fullstack",
+            "/api-contract"
+          ],
+          "next": [
+            "/modular-architecture",
+            "/openapi-generate"
+          ],
+          "phases": [
+            {
+              "name": "P2 App Scaffold & Contracts",
+              "anchor": "p2-app-scaffold-contracts"
+            }
+          ]
+        },
+        {
+          "file": "scaffold-fullstack.md",
+          "title": "Scaffold Full‑Stack App",
+          "trigger": "/scaffold-fullstack <stack>",
+          "purpose": "Create a minimal, production‑ready monorepo template with app, API, tests, CI seeds, and infra stubs.",
+          "gate": "Test Gate lite",
+          "status": "ensure lint/build scripts execute on the generated scaffold.",
+          "previous": [
+            "/stack-evaluation"
+          ],
+          "next": [
+            "/api-contract",
+            "/openapi-generate",
+            "/modular-architecture"
+          ],
+          "phases": [
+            {
+              "name": "P2 App Scaffold & Contracts",
+              "anchor": "p2-app-scaffold-contracts"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "P3 Data & Auth",
+      "anchor": "p3-data-auth",
+      "prompts": [
+        {
+          "file": "auth-scaffold.md",
+          "title": "Auth Scaffold",
+          "trigger": "/auth-scaffold <oauth|email|oidc>",
+          "purpose": "Scaffold auth flows, routes, storage, and a basic threat model.",
+          "gate": "Migration dry-run",
+          "status": "auth flows threat-modeled and test accounts wired.",
+          "previous": [
+            "/migration-plan"
+          ],
+          "next": [
+            "/modular-architecture",
+            "/ui-screenshots",
+            "/e2e-runner-setup"
+          ],
+          "phases": [
+            {
+              "name": "P3 Data & Auth",
+              "anchor": "p3-data-auth"
+            }
+          ]
+        },
+        {
+          "file": "db-bootstrap.md",
+          "title": "DB Bootstrap",
+          "trigger": "/db-bootstrap <postgres|mysql|sqlite|mongodb>",
+          "purpose": "Pick a database, initialize migrations, local compose, and seed scripts.",
+          "gate": "Migration dry-run",
+          "status": "migrations apply/rollback cleanly with seeds populated.",
+          "previous": [
+            "/modular-architecture"
+          ],
+          "next": [
+            "/migration-plan",
+            "/auth-scaffold"
+          ],
+          "phases": [
+            {
+              "name": "P3 Data & Auth",
+              "anchor": "p3-data-auth"
+            }
+          ]
+        },
+        {
+          "file": "migration-plan.md",
+          "title": "Migration Plan",
+          "trigger": "/migration-plan \"<change summary>\"",
+          "purpose": "Produce safe up/down migration steps with checks and rollback notes.",
+          "gate": "Migration dry-run",
+          "status": "validated rollback steps and safety checks documented.",
+          "previous": [
+            "/db-bootstrap"
+          ],
+          "next": [
+            "/auth-scaffold",
+            "/e2e-runner-setup"
+          ],
+          "phases": [
+            {
+              "name": "P3 Data & Auth",
+              "anchor": "p3-data-auth"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "P4 Frontend UX",
+      "anchor": "p4-frontend-ux",
+      "prompts": [
+        {
+          "file": "design-assets.md",
+          "title": "Design Assets",
+          "trigger": "/design-assets",
+          "purpose": "Generate favicons and small design snippets from product brand.",
+          "gate": "Accessibility checks queued",
+          "status": "ensure assets support design review.",
+          "previous": [
+            "/modular-architecture"
+          ],
+          "next": [
+            "/ui-screenshots",
+            "/logging-strategy"
+          ],
+          "phases": [
+            {
+              "name": "P4 Frontend UX",
+              "anchor": "p4-frontend-ux"
+            }
+          ]
+        },
+        {
+          "file": "ui-screenshots.md",
+          "title": "UI Screenshots",
+          "trigger": "/ui-screenshots",
+          "purpose": "Analyze screenshots for UI bugs or inspiration and propose actionable UI changes.",
+          "gate": "Accessibility checks queued",
+          "status": "capture UX issues and backlog fixes.",
+          "previous": [
+            "/design-assets",
+            "/modular-architecture"
+          ],
+          "next": [
+            "/logging-strategy",
+            "/e2e-runner-setup"
+          ],
+          "phases": [
+            {
+              "name": "P4 Frontend UX",
+              "anchor": "p4-frontend-ux"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "P5 Quality Gates & Tests",
+      "anchor": "p5-quality-gates-tests",
+      "prompts": [
+        {
+          "file": "e2e-runner-setup.md",
+          "title": "E2E Runner Setup",
+          "trigger": "/e2e-runner-setup <playwright|cypress>",
+          "purpose": "Configure an end‑to‑end test runner with fixtures and data sandbox.",
+          "gate": "Test Gate",
+          "status": "runner green locally and wired into CI before expanding coverage.",
+          "previous": [
+            "/auth-scaffold",
+            "/ui-screenshots"
+          ],
+          "next": [
+            "/integration-test",
+            "/coverage-guide"
+          ],
+          "phases": [
+            {
+              "name": "P5 Quality Gates & Tests",
+              "anchor": "p5-quality-gates-tests"
+            }
+          ]
+        },
+        {
+          "file": "integration-test.md",
+          "title": "Integration Test",
+          "trigger": "/integration-test",
+          "purpose": "Generate E2E tests that simulate real user flows.",
+          "gate": "Test Gate",
+          "status": "happy path E2E must pass locally and in CI.",
+          "previous": [
+            "/e2e-runner-setup"
+          ],
+          "next": [
+            "/coverage-guide",
+            "/regression-guard"
+          ],
+          "phases": [
+            {
+              "name": "P5 Quality Gates & Tests",
+              "anchor": "p5-quality-gates-tests"
+            }
+          ]
+        },
+        {
+          "file": "regression-guard.md",
+          "title": "Regression Guard",
+          "trigger": "/regression-guard",
+          "purpose": "Detect unrelated changes and add tests to prevent regressions.",
+          "gate": "Test Gate",
+          "status": "regression coverage in place before CI hand-off.",
+          "previous": [
+            "/coverage-guide"
+          ],
+          "next": [
+            "/version-control-guide",
+            "/devops-automation"
+          ],
+          "phases": [
+            {
+              "name": "P5 Quality Gates & Tests",
+              "anchor": "p5-quality-gates-tests"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "P6 CI/CD & Env",
+      "anchor": "p6-cicd-env",
+      "prompts": [
+        {
+          "file": "devops-automation.md",
+          "title": "DevOps Automation",
+          "trigger": "/devops-automation",
+          "purpose": "Configure servers, DNS, SSL, CI/CD at a pragmatic level.",
+          "gate": "Review Gate",
+          "status": "CI pipeline codified, rollback steps rehearsed.",
+          "previous": [
+            "/version-control-guide"
+          ],
+          "next": [
+            "/env-setup",
+            "/secrets-manager-setup",
+            "/iac-bootstrap"
+          ],
+          "phases": [
+            {
+              "name": "P6 CI/CD & Env",
+              "anchor": "p6-cicd-env"
+            }
+          ]
+        },
+        {
+          "file": "env-setup.md",
+          "title": "Env Setup",
+          "trigger": "/env-setup",
+          "purpose": "Create `.env.example`, runtime schema validation, and per‑env overrides.",
+          "gate": "Review Gate",
+          "status": "environment schemas enforced and CI respects strict loading.",
+          "previous": [
+            "/devops-automation"
+          ],
+          "next": [
+            "/secrets-manager-setup",
+            "/iac-bootstrap"
+          ],
+          "phases": [
+            {
+              "name": "P6 CI/CD & Env",
+              "anchor": "p6-cicd-env"
+            }
+          ]
+        },
+        {
+          "file": "iac-bootstrap.md",
+          "title": "IaC Bootstrap",
+          "trigger": "/iac-bootstrap <aws|gcp|azure|fly|render>",
+          "purpose": "Create minimal Infrastructure‑as‑Code for chosen platform plus CI pipeline hooks.",
+          "gate": "Review Gate",
+          "status": "IaC applied in staging with drift detection configured.",
+          "previous": [
+            "/secrets-manager-setup"
+          ],
+          "next": [
+            "/owners",
+            "/review"
+          ],
+          "phases": [
+            {
+              "name": "P6 CI/CD & Env",
+              "anchor": "p6-cicd-env"
+            }
+          ]
+        },
+        {
+          "file": "secrets-manager-setup.md",
+          "title": "Secrets Manager Setup",
+          "trigger": "/secrets-manager-setup <provider>",
+          "purpose": "Provision secret store and map app variables to it.",
+          "gate": "Review Gate",
+          "status": "secret paths mapped and least-privilege policies drafted.",
+          "previous": [
+            "/env-setup"
+          ],
+          "next": [
+            "/iac-bootstrap",
+            "/owners"
+          ],
+          "phases": [
+            {
+              "name": "P6 CI/CD & Env",
+              "anchor": "p6-cicd-env"
+            }
+          ]
+        },
+        {
+          "file": "version-control-guide.md",
+          "title": "Version Control Guide",
+          "trigger": "/version-control-guide",
+          "purpose": "Enforce clean incremental commits and clean-room re-implementation when finalizing.",
+          "gate": "Review Gate",
+          "status": "clean diff, CI green, and approvals ready.",
+          "previous": [
+            "/regression-guard"
+          ],
+          "next": [
+            "/devops-automation",
+            "/env-setup"
+          ],
+          "phases": [
+            {
+              "name": "P6 CI/CD & Env",
+              "anchor": "p6-cicd-env"
+            }
+          ]
+        },
+        {
+          "file": "commit.md",
+          "title": "Commit Message Assistant",
+          "trigger": "commit",
+          "purpose": "Generate a conventional, review-ready commit message from the currently staged changes.",
+          "gate": "Review Gate",
+          "status": "clean diff, CI green, and approvals ready.",
+          "previous": [
+            "/version-control-guide"
+          ],
+          "next": [
+            "/devops-automation",
+            "/env-setup"
+          ],
+          "phases": [
+            {
+              "name": "P6 CI/CD & Env",
+              "anchor": "p6-cicd-env"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "P7 Release & Ops",
+      "anchor": "p7-release-ops",
+      "prompts": [
+        {
+          "file": "audit.md",
+          "title": "Audit",
+          "trigger": "/audit",
+          "purpose": "Audit repository hygiene and suggest improvements.",
+          "gate": "Release Gate",
+          "status": "readiness criteria before shipping.",
+          "previous": [
+            "/logging-strategy"
+          ],
+          "next": [
+            "/error-analysis",
+            "/fix"
+          ],
+          "phases": [
+            {
+              "name": "P7 Release & Ops",
+              "anchor": "p7-release-ops"
+            }
+          ]
+        },
+        {
+          "file": "explain-code.md",
+          "title": "Explain Code",
+          "trigger": "/explain-code",
+          "purpose": "Provide line-by-line explanations for a given file or diff.",
+          "gate": "Review Gate",
+          "status": "Improve reviewer comprehension before approvals.",
+          "previous": [
+            "/owners",
+            "/review"
+          ],
+          "next": [
+            "/review-branch",
+            "/pr-desc"
+          ],
+          "phases": [
+            {
+              "name": "P7 Release & Ops",
+              "anchor": "p7-release-ops"
+            }
+          ]
+        },
+        {
+          "file": "monitoring-setup.md",
+          "title": "Monitoring Setup",
+          "trigger": "/monitoring-setup",
+          "purpose": "Bootstrap logs, metrics, and traces with dashboards per domain.",
+          "gate": "Release Gate",
+          "status": "observability baselines ready before rollout.",
+          "previous": [
+            "/version-proposal"
+          ],
+          "next": [
+            "/slo-setup",
+            "/logging-strategy"
+          ],
+          "phases": [
+            {
+              "name": "P7 Release & Ops",
+              "anchor": "p7-release-ops"
+            }
+          ]
+        },
+        {
+          "file": "slo-setup.md",
+          "title": "SLO Setup",
+          "trigger": "/slo-setup",
+          "purpose": "Define Service Level Objectives, burn alerts, and runbooks.",
+          "gate": "Release Gate",
+          "status": "SLOs and alerts reviewed before production rollout.",
+          "previous": [
+            "/monitoring-setup"
+          ],
+          "next": [
+            "/logging-strategy",
+            "/audit"
+          ],
+          "phases": [
+            {
+              "name": "P7 Release & Ops",
+              "anchor": "p7-release-ops"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "P8 Post-release Hardening",
+      "anchor": "p8-post-release-hardening",
+      "prompts": [
+        {
+          "file": "error-analysis.md",
+          "title": "Error Analysis",
+          "trigger": "/error-analysis",
+          "purpose": "Analyze error logs and enumerate likely root causes with fixes.",
+          "gate": "Post-release cleanup",
+          "status": "Sev-1 incidents triaged with fixes scheduled.",
+          "previous": [
+            "/logging-strategy",
+            "/audit"
+          ],
+          "next": [
+            "/fix",
+            "/refactor-suggestions"
+          ],
+          "phases": [
+            {
+              "name": "P8 Post-release Hardening",
+              "anchor": "p8-post-release-hardening"
+            }
+          ]
+        },
+        {
+          "file": "feature-flags.md",
+          "title": "Feature Flags",
+          "trigger": "/feature-flags <provider>",
+          "purpose": "Integrate a flag provider, wire SDK, and enforce guardrails.",
+          "gate": "Post-release cleanup",
+          "status": "guardrails added before toggling new flows.",
+          "previous": [
+            "/cleanup-branches"
+          ],
+          "next": [
+            "/model-strengths",
+            "/model-evaluation"
+          ],
+          "phases": [
+            {
+              "name": "P8 Post-release Hardening",
+              "anchor": "p8-post-release-hardening"
+            }
+          ]
+        },
+        {
+          "file": "file-modularity.md",
+          "title": "File Modularity",
+          "trigger": "/file-modularity",
+          "purpose": "Enforce smaller files and propose safe splits for giant files.",
+          "gate": "Post-release cleanup",
+          "status": "structure debt addressed without destabilizing prod.",
+          "previous": [
+            "/refactor-suggestions"
+          ],
+          "next": [
+            "/dead-code-scan",
+            "/cleanup-branches"
+          ],
+          "phases": [
+            {
+              "name": "P8 Post-release Hardening",
+              "anchor": "p8-post-release-hardening"
+            }
+          ]
+        },
+        {
+          "file": "refactor-suggestions.md",
+          "title": "Refactor Suggestions",
+          "trigger": "/refactor-suggestions",
+          "purpose": "Propose repo-wide refactoring opportunities after tests exist.",
+          "gate": "Post-release cleanup",
+          "status": "plan high-leverage refactors once Sev-1 issues settle.",
+          "previous": [
+            "/fix"
+          ],
+          "next": [
+            "/file-modularity",
+            "/dead-code-scan"
+          ],
+          "phases": [
+            {
+              "name": "P8 Post-release Hardening",
+              "anchor": "p8-post-release-hardening"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "P9 Model Tactics",
+      "anchor": "p9-model-tactics-cross-cutting",
+      "prompts": [
+        {
+          "file": "compare-outputs.md",
+          "title": "Compare Outputs",
+          "trigger": "/compare-outputs",
+          "purpose": "Run multiple models or tools on the same prompt and summarize best output.",
+          "gate": "Model uplift",
+          "status": "comparative data compiled before switching defaults.",
+          "previous": [
+            "/model-evaluation"
+          ],
+          "next": [
+            "/switch-model"
+          ],
+          "phases": [
+            {
+              "name": "P9 Model Tactics",
+              "anchor": "p9-model-tactics-cross-cutting"
+            }
+          ]
+        },
+        {
+          "file": "model-evaluation.md",
+          "title": "Model Evaluation",
+          "trigger": "/model-evaluation",
+          "purpose": "Try a new model and compare outputs against a baseline.",
+          "gate": "Model uplift",
+          "status": "experiments must beat baseline quality metrics.",
+          "previous": [
+            "/model-strengths"
+          ],
+          "next": [
+            "/compare-outputs",
+            "/switch-model"
+          ],
+          "phases": [
+            {
+              "name": "P9 Model Tactics",
+              "anchor": "p9-model-tactics-cross-cutting"
+            }
+          ]
+        },
+        {
+          "file": "model-strengths.md",
+          "title": "Model Strengths",
+          "trigger": "/model-strengths",
+          "purpose": "Choose model per task type.",
+          "gate": "Model uplift",
+          "status": "capture baseline routing before experimentation.",
+          "previous": [
+            "/feature-flags (optional)",
+            "Stage-specific blockers"
+          ],
+          "next": [
+            "/model-evaluation",
+            "/compare-outputs"
+          ],
+          "phases": [
+            {
+              "name": "P9 Model Tactics",
+              "anchor": "p9-model-tactics-cross-cutting"
+            }
+          ]
+        },
+        {
+          "file": "switch-model.md",
+          "title": "Switch Model",
+          "trigger": "/switch-model",
+          "purpose": "Decide when to try a different AI backend and how to compare.",
+          "gate": "Model uplift",
+          "status": "document rollback/guardrails before flipping defaults.",
+          "previous": [
+            "/compare-outputs"
+          ],
+          "next": [
+            "Return to the blocked stage (e.g., /integration-test) to apply learnings"
+          ],
+          "phases": [
+            {
+              "name": "P9 Model Tactics",
+              "anchor": "p9-model-tactics-cross-cutting"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "11) Evidence Log",
+      "anchor": "11-evidence-log",
+      "prompts": [
+        {
+          "file": "content-generation.md",
+          "title": "Content Generation",
+          "trigger": "/content-generation",
+          "purpose": "Draft docs, blog posts, or marketing copy aligned with the codebase.",
+          "gate": "Evidence Log",
+          "status": "Ensure docs stay synced with current phase deliverables.",
+          "previous": [
+            "Stage-specific work just completed"
+          ],
+          "next": [
+            "/release-notes",
+            "/summary (if sharing updates)"
+          ],
+          "phases": [
+            {
+              "name": "11) Evidence Log",
+              "anchor": "11-evidence-log"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Reset Playbook",
+      "anchor": "reset-playbook",
+      "prompts": [
+        {
+          "file": "reset-strategy.md",
+          "title": "Reset Strategy",
+          "trigger": "/reset-strategy",
+          "purpose": "Decide when to hard reset and start clean to avoid layered bad diffs.",
+          "gate": "Clean restart",
+          "status": "triggered when gate criteria stall for >60 minutes.",
+          "previous": [
+            "Any blocked stage"
+          ],
+          "next": [
+            "Restart with /planning-process then follow the gated flow"
+          ],
+          "phases": [
+            {
+              "name": "Reset Playbook",
+              "anchor": "reset-playbook"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Support",
+      "anchor": "support",
+      "prompts": [
+        {
+          "file": "voice-input.md",
+          "title": "Voice Input",
+          "trigger": "/voice-input",
+          "purpose": "Support interaction from voice capture and convert to structured prompts.",
+          "gate": "Support intake",
+          "status": "Clarify voice-derived requests before invoking gated prompts.",
+          "previous": [
+            "Voice transcript capture"
+          ],
+          "next": [
+            "Any stage-specific command (e.g., /planning-process)"
+          ],
+          "phases": [
+            {
+              "name": "Support",
+              "anchor": "support"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

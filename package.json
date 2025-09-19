@@ -2,9 +2,12 @@
   "name": "prompts",
   "private": true,
   "scripts": {
-    "validate:metadata": "ts-node scripts/validate_metadata.ts"
+    "validate:metadata": "ts-node scripts/validate_metadata.ts",
+    "build:catalog": "npm run validate:metadata && ts-node scripts/build_catalog.ts",
+    "prepare": "husky install"
   },
   "devDependencies": {
+    "husky": "^9.1.6",
     "ts-node": "^10.9.2",
     "typescript": "^5.4.0"
   }
