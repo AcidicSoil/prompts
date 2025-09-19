@@ -1,0 +1,165 @@
+{
+	"meta": {
+		"generatedAt": "2025-09-19T23:04:04.198Z",
+		"tasksAnalyzed": 19,
+		"totalTasks": 19,
+		"analysisCount": 19,
+		"thresholdScore": 5,
+		"projectName": "Taskmaster",
+		"usedResearch": true
+	},
+	"complexityAnalysis": [
+		{
+			"taskId": 1,
+			"taskTitle": "Project Setup and Server Bootstrap",
+			"complexityScore": 4,
+			"recommendedSubtasks": 4,
+			"expansionPrompt": "Expand this task to set up the Node.js/TypeScript project. Create subtasks for: 1. Configuring `package.json` with necessary scripts (build, start, dev) and installing dependencies (`@modelcontextprotocol/sdk`, `typescript`, `ts-node`, etc.). 2. Configuring `tsconfig.json` for compilation into the `dist` directory. 3. Creating the main server entry point `src/index.ts` that initializes the `StdioServerTransport` and registers server info. 4. Implementing a basic NDJSON logger and adding graceful shutdown handlers for SIGINT and SIGTERM signals.",
+			"reasoning": "Codebase analysis shows this is a greenfield task. The `package.json` and `tsconfig.json` are skeletons, and the `src` directory is empty. The task requires creating the core project configuration, the main application entry point, and foundational features like logging and process handling. These are four distinct areas of setup that can be worked on sequentially, making them ideal subtasks."
+		},
+		{
+			"taskId": 2,
+			"taskTitle": "Implement Safety Control Utilities",
+			"complexityScore": 3,
+			"recommendedSubtasks": 2,
+			"expansionPrompt": "Expand this task into two subtasks for creating safety utilities. The first subtask should be to implement and unit test the `redactSecrets` function, which takes a log object and redacts values for keys matching a specific regex. The second subtask should be to implement and unit test the `capPayload` function, which truncates large strings and adds a truncation notice.",
+			"reasoning": "Codebase analysis confirms no utility files or functions for redaction or payload capping exist. This is greenfield development of two distinct, pure functions. They have no dependencies on each other and can be implemented and unit-tested in isolation, making a two-subtask split natural and efficient."
+		},
+		{
+			"taskId": 5,
+			"taskTitle": "Implement Atomic State Store",
+			"complexityScore": 5,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "Expand this task to implement the atomic `StateStore`. Create subtasks for: 1. Defining the `StateStore` class structure, including methods for initializing the `.mcp` directory and loading `state.json` (or a default state if it doesn't exist). 2. Implementing the atomic `save` method using the write-to-temp-then-rename pattern. 3. Writing comprehensive tests to verify that the directory is created, state is saved correctly, and the save operation is atomic and prevents file corruption.",
+			"reasoning": "Codebase analysis shows no existing state management logic. The complexity is not just in creating a class, but in correctly implementing the atomic write-then-rename pattern to prevent data corruption, which requires careful handling of file system operations and errors. Breaking this into class structure, the critical save logic, and dedicated testing is a robust approach."
+		},
+		{
+			"taskId": 9,
+			"taskTitle": "Implement Token Bucket Rate Limiter Utility",
+			"complexityScore": 4,
+			"recommendedSubtasks": 2,
+			"expansionPrompt": "Expand this task to create the `TokenBucket` rate limiter. Create two subtasks: 1. Implement the `TokenBucket` class structure, including the constructor, properties for capacity, refill rate, and the internal token refill logic. 2. Implement the asynchronous `take(count)` method, including the logic to wait for tokens to be refilled if necessary, and write time-sensitive unit tests to verify its correctness.",
+			"reasoning": "This is a greenfield implementation of a classic, self-contained algorithm. No related code exists. The complexity lies in managing the time-based state and the asynchronous waiting logic. Separating the core class and refill mechanism from the async `take` method and its specific testing requirements simplifies development."
+		},
+		{
+			"taskId": 3,
+			"taskTitle": "Implement Resource Exposure",
+			"complexityScore": 4,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "Expand this task to expose prompts as MCP resources. Create subtasks for: 1. Adding a YAML parsing library and creating a utility function to load and parse `resources/prompts.meta.yaml` on server startup. 2. In the main server file, iterating over the parsed prompt metadata and calling the MCP server's `registerResource` method for each, constructing the `file://` URI. 3. Integrating the `capPayload` utility to truncate the content preview for each registered resource.",
+			"reasoning": "Codebase analysis shows `resources/prompts.meta.yaml` exists but there is no server logic to process it. This task involves orchestrating multiple pieces: file I/O, data parsing (YAML), and integration with the MCP SDK. It also depends on the `capPayload` utility from another task. Breaking it down by concern (data loading, resource registration, safety feature integration) makes the implementation more manageable."
+		},
+		{
+			"taskId": 12,
+			"taskTitle": "Create DocFetch Preflight Guardrail Prompt",
+			"complexityScore": 1,
+			"recommendedSubtasks": 1,
+			"expansionPrompt": "Create the `prompts/preflight/docfetch-check.md` file. The file must contain YAML front matter with an appropriate `id`, `title`, and `phase`. The markdown body should instruct the user on how to run DocFetch, what a successful `DocFetchReport` looks like, and the steps to take if the check fails.",
+			"reasoning": "Codebase analysis shows the `prompts` directory does not exist. This task is purely content authoring—creating a single markdown file. It involves no code logic and is an atomic unit of work, so it does not require further subtask breakdown."
+		},
+		{
+			"taskId": 13,
+			"taskTitle": "Author Planning Phase Prompts",
+			"complexityScore": 1,
+			"recommendedSubtasks": 1,
+			"expansionPrompt": "Create a new markdown prompt file in the `prompts/` directory for the 'planning' phase. The file must include YAML front matter with `phase: planning` and a unique `id` and `title`. The prompt's content should guide a user through a specific planning activity, such as feature breakdown or defining acceptance criteria.",
+			"reasoning": "Similar to task 12, this is a content authoring task. It requires creating a new markdown file with specific content and metadata. It is a simple, atomic task with no implementation complexity."
+		},
+		{
+			"taskId": 14,
+			"taskTitle": "Author Scaffolding Phase Prompts",
+			"complexityScore": 1,
+			"recommendedSubtasks": 1,
+			"expansionPrompt": "Create a new markdown prompt file in the `prompts/` directory for the 'scaffolding' phase. The file must include YAML front matter with `phase: scaffolding` and a unique `id` and `title`. The prompt's content should assist a developer in generating boilerplate code or setting up initial file structures for a new feature.",
+			"reasoning": "This is another content authoring task. It involves creating a single markdown file and has no associated coding logic. It is a minimal, atomic piece of work."
+		},
+		{
+			"taskId": 19,
+			"taskTitle": "Document MCP Evolution Readiness in README",
+			"complexityScore": 1,
+			"recommendedSubtasks": 1,
+			"expansionPrompt": "Edit the `README.md` file to add a new H2 section titled 'Future Enhancements'. Under this section, describe the planned evolution to a full MCP server, including typed inputs and event signals. Also, explicitly mention that the current slash-command workflow will remain as a manual fallback.",
+			"reasoning": "Codebase analysis shows `README.md` exists but is minimal. This task is a simple documentation update, requiring editing a single text file. The complexity is in the quality of the writing, not the implementation, making it a very low-complexity task."
+		},
+		{
+			"taskId": 18,
+			"taskTitle": "Integrate and Test Full Metadata Workflow",
+			"complexityScore": 2,
+			"recommendedSubtasks": 1,
+			"expansionPrompt": "This is a manual testing task. The steps are: 1. Modify the YAML front matter of an existing prompt file (e.g., change its `title`). 2. Run the `npm run validate:metadata` script and confirm it passes. 3. Run the `npm run build:catalog` script. 4. Verify that the `catalog.json` file and the prompt tables in `README.md` have been updated to reflect the change. 5. (Optional) Introduce an invalid change to the metadata and confirm the validation script fails with a clear error.",
+			"reasoning": "This task does not involve writing any new code; it is a manual end-to-end testing procedure. While it has many dependencies (the scripts and prompts must exist), the task itself is a single, sequential set of verification steps. The complexity score of 2 reflects the coordination required, but it's not a development task that can be broken down further."
+		},
+		{
+			"taskId": 4,
+			"taskTitle": "Implement Dynamic Prompt Tools",
+			"complexityScore": 5,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "Break down this task with a focus on implement dynamic prompt tools.",
+			"reasoning": "Automatically added due to missing analysis in AI response."
+		},
+		{
+			"taskId": 6,
+			"taskTitle": "Implement Planner `suggest_next_calls` Tool",
+			"complexityScore": 5,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "Break down this task with a focus on implement planner `suggest_next_calls` tool.",
+			"reasoning": "Automatically added due to missing analysis in AI response."
+		},
+		{
+			"taskId": 7,
+			"taskTitle": "Implement `advance_state` Tool",
+			"complexityScore": 5,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "Break down this task with a focus on implement `advance_state` tool.",
+			"reasoning": "Automatically added due to missing analysis in AI response."
+		},
+		{
+			"taskId": 8,
+			"taskTitle": "Implement `export_task_list` Tool",
+			"complexityScore": 5,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "Break down this task with a focus on implement `export_task_list` tool.",
+			"reasoning": "Automatically added due to missing analysis in AI response."
+		},
+		{
+			"taskId": 10,
+			"taskTitle": "Implement Prompt Metadata Validation Script",
+			"complexityScore": 5,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "Break down this task with a focus on implement prompt metadata validation script.",
+			"reasoning": "Automatically added due to missing analysis in AI response."
+		},
+		{
+			"taskId": 11,
+			"taskTitle": "Implement Catalog and README Build Script",
+			"complexityScore": 5,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "Break down this task with a focus on implement catalog and readme build script.",
+			"reasoning": "Automatically added due to missing analysis in AI response."
+		},
+		{
+			"taskId": 15,
+			"taskTitle": "Author Testing Phase Prompts",
+			"complexityScore": 5,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "Break down this task with a focus on author testing phase prompts.",
+			"reasoning": "Automatically added due to missing analysis in AI response."
+		},
+		{
+			"taskId": 16,
+			"taskTitle": "Author Release Phase Prompts",
+			"complexityScore": 5,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "Break down this task with a focus on author release phase prompts.",
+			"reasoning": "Automatically added due to missing analysis in AI response."
+		},
+		{
+			"taskId": 17,
+			"taskTitle": "Author Post-Release Hardening Prompts",
+			"complexityScore": 5,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "Break down this task with a focus on author post-release hardening prompts.",
+			"reasoning": "Automatically added due to missing analysis in AI response."
+		}
+	]
+}

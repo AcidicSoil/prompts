@@ -1,0 +1,67 @@
+# Overview  
+Codex Prompts — Vibe Coding Additions is a curated Codex CLI prompt pack that solves the problem of inconsistent engineering workflows by packaging YC-inspired vibe-coding playbooks. It targets Codex CLI individual contributors, staff leads, and prompt librarians who need deterministic guidance for planning, testing, and release gates without creating prompts from scratch. The pack delivers value by enforcing DocFetch preflight discipline, keeping lifecycle prompts discoverable, and preparing teams for machine-coordination automation.
+
+# Core Features  
+- **DocFetch Preflight Guardrails**
+  - What: Slash-command prompts that enforce completion of DocFetchReport before any planning or coding advances.
+  - Why: Prevents teams from skipping P0 documentation gates highlighted in README and WORKFLOW guidance.
+  - High-level How: Bundle `/instruction-file` and related prompts that call DocFetch tooling, validate status, and surface remediation steps when sources are missing.
+  - Acceptance criteria: Running the preflight prompt yields an OK DocFetchReport or a clear remediation path without manual editing.
+- **Lifecycle Prompt Library**
+  - What: Phase-indexed prompts spanning planning, scaffolding, testing, release, post-release hardening, and model tactics.
+  - Why: Keeps contributors aligned with the WORKFLOW cadence and reduces drift between plan and execution.
+  - High-level How: Maintain markdown prompts with YAML front matter, catalog.json metadata, and README tables for discoverability.
+  - Acceptance criteria: Each phase table lists at least one functioning trigger, and catalog.json plus README tables remain synchronized after validation.
+- **Prompt Metadata Automation**
+  - What: TypeScript tooling that validates front matter and rebuilds catalog.json and README tables via npm scripts.
+  - Why: Ensures prompt metadata stays trustworthy, enabling deterministic automation.
+  - High-level How: Ship scripts under `scripts/**/*.ts` executed with `ts-node` using the repo’s strict `tsconfig.json` (ES2020 target, CommonJS modules, `strict: true`).
+  - Acceptance criteria: After any prompt edit, `npm run validate:metadata` and `npm run build:catalog` complete without errors and update artifacts.
+- **MCP Evolution Readiness**
+  - What: Documentation outlining how to expose the prompt pack as an MCP server with typed inputs, DocFetch event signals, and external triggers.
+  - Why: Future-proofs the catalog for machine coordination while leaving today’s manual workflow intact.
+  - High-level How: Capture architecture in README Future enhancements, detail automation hooks, and specify manual fallbacks when MCP is unavailable.
+  - Acceptance criteria: README Future enhancements section describes MCP capabilities and explicitly notes manual fallback paths.
+
+# User Experience  
+- Personas: Codex CLI ICs executing daily work, prompt librarians curating guardrails, release managers verifying gate completion.
+- Key flows: Install repo into `~/.codex/prompts`; run DocFetch guard prompts before plans; invoke phase-aligned slash commands throughout delivery; execute validation/build scripts after prompt edits to refresh metadata.
+- UI/UX considerations: Slash commands remain discoverable through README tables; prompts keep tone directive and concise; outputs remind users of gate status and recommended next steps.
+
+# Technical Architecture  
+- Components: Markdown prompt files with YAML front matter, catalog.json metadata store, TypeScript scripts under `scripts/**/*.ts`, and local node_modules for deterministic execution.
+- Data model: catalog.json and README tables act as authoritative metadata with no external persistence; prompts reference internal docs such as WORKFLOW.md.
+- Integrations: DocFetch tooling, Codex CLI slash-command resolver, optional future MCP server for typed prompt invocation.
+- Non-functional needs: Deterministic CLI interactions, reproducible catalog builds, strict TypeScript compilation to catch metadata errors early, and offline-friendly execution (no external fetch beyond documentation retrieval).
+- Optional platform-specific feature: MCP server to host prompts with DocFetch signal exposure; fallback requires manual slash commands and local scripts to remain fully functional.
+
+# Development Roadmap  
+- **MVP Phase**
+  - Scope: Deliver DocFetch Preflight Guardrails, Lifecycle Prompt Library, and Prompt Metadata Automation.
+  - Acceptance criteria: Prompts run end-to-end, DocFetch enforcement blocks when sources are stale, validation/build scripts succeed and update metadata artifacts.
+- **Post-MVP Enhancements**
+  - Scope: Implement MCP Evolution Readiness and document automation hooks.
+  - Acceptance criteria: README Future enhancements details the MCP architecture, optional tooling is outlined, and manual workflows remain documented and working.
+
+# Logical Dependency Chain  
+1. Establish repo structure and baseline documentation (README, WORKFLOW).
+2. Author prompts with correct YAML metadata.
+3. Ensure Node/TypeScript tooling runs locally (`npm run validate:metadata`, `npm run build:catalog`).
+4. Enforce DocFetch preflight prompts across workflows.
+5. Publish lifecycle prompts covering all phases.
+6. Document MCP automation path while preserving manual usability.
+
+# Risks and Mitigations  
+- DocFetch misuse: Users might bypass preflight guardrails. Mitigation: Embed DocFetch reminders and remediation steps directly inside P0 prompts.
+- Metadata drift: Catalog or README tables could desync. Mitigation: Require validation/build scripts locally and via CI checks.
+- CLI compatibility changes: Codex CLI updates may alter slash-command behavior. Mitigation: Maintain troubleshooting guidance in README and monitor release notes.
+- TypeScript dependency issues: Tooling relies on strict TypeScript configuration. Mitigation: Pin `strict: true`, ES2020 target, CommonJS modules, and audit dependencies periodically.
+- MCP roadmap uncertainty: Automation timeline may shift. Mitigation: Treat MCP features as optional enhancements with manual fallback documented.
+
+# Appendix  
+Assumptions:
+- Codex CLI resolves prompts placed in `~/.codex/prompts` without additional configuration.
+- Teams can run Node LTS locally to execute validation and catalog scripts.
+- No external data stores or APIs are required beyond internal documentation.
+- MCP server work proceeds only when roadmap resources align; manual prompts remain the primary workflow until then.
+References: README.md, WORKFLOW.md, scripts/validate_metadata.ts, scripts/build_catalog.ts, tsconfig.json.
