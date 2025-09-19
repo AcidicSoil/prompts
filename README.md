@@ -12,6 +12,32 @@ This pack extends the default Codex CLI prompts with vibe-coding playbooks inspi
 - **Direct slash commands**: Invoke the files that declare a `Trigger:` (table below) straight from Codex. Example: `/planning-process Add OAuth login` opens `planning-process.md` and walks through the feature plan template.
 - **Gemini mapper prompt**: `/gemini-map` is a single translator prompt (`gemini-map.md`) that converts Gemini CLI TOML commands into Codex prompt files. Use it only when migrating Gemini content; all other prompts run directly with their own slash commands.
 
+## Prompt metadata
+
+Every lifecycle prompt starts with YAML front matter so docs and tooling stay in sync:
+
+```yaml
+---
+phase: "P5 Quality Gates & Tests"
+gate: "Test Gate"
+status: "Runner green locally and wired into CI before expanding coverage."
+previous:
+  - "/auth-scaffold"
+  - "/ui-screenshots"
+next:
+  - "/integration-test"
+  - "/coverage-guide"
+---
+```
+
+- `phase` — primary stage(s) from [WORKFLOW.md](WORKFLOW.md). Use a string for a single phase or a YAML list for cross-phase helpers.
+- `gate` — named gate or checkpoint the prompt supports.
+- `status` — the success criteria required to pass that gate.
+- `previous` — prerequisite prompts or setup tasks.
+- `next` — recommended follow-up prompts once the gate clears.
+
+Maintainers and the metadata validator rely on this block to keep the stage catalog coherent.
+
 ## Core slash commands
 
 Commands are grouped by development phase. Stage headings link back to

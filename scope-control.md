@@ -1,3 +1,14 @@
+---
+phase: "P1 Plan & Scope"
+gate: "Scope Gate"
+status: "Done criteria, scope lists, and stack choices are committed."
+previous:
+  - "/planning-process"
+next:
+  - "/stack-evaluation"
+  - "/scaffold-fullstack"
+---
+
 # Scope Control
 
 Trigger: /scope-control
@@ -23,9 +34,3 @@ Output: Move to **Ideas for later** with reason "Not needed for OAuth MVP".
 
 - Never add new scope without recording tradeoffs.
 
-## Stage alignment
-
-- **Phase**: [P1 Plan & Scope](WORKFLOW.md#p1-plan--scope)
-- **Gate**: Scope Gate — Done criteria, scope lists, and stack choices are committed.
-- **Previous prompts**: `/planning-process`
-- **Next prompts**: `/stack-evaluation`, `/scaffold-fullstack`

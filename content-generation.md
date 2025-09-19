@@ -1,3 +1,14 @@
+---
+phase: "11) Evidence Log"
+gate: "Evidence Log"
+status: "Ensure docs stay synced with current phase deliverables."
+previous:
+  - "Stage-specific work just completed"
+next:
+  - "/release-notes"
+  - "/summary (if sharing updates)"
+---
+
 # Content Generation
 
 Trigger: /content-generation
@@ -14,10 +25,3 @@ Purpose: Draft docs, blog posts, or marketing copy aligned with the codebase.
 
 - Markdown files with frontmatter and section headings.
 
-## Stage alignment
-
-- **Phase**: Support communications aligned with
-  [Evidence Log](WORKFLOW.md#11-evidence-log)
-- **Gate**: Ensure docs stay synced with current phase deliverables.
-- **Previous prompts**: Stage-specific work just completed
-- **Next prompts**: `/release-notes`, `/summary` (if sharing updates)

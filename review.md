@@ -1,3 +1,14 @@
+---
+phase: "P7 Release & Ops"
+gate: "Review Gate"
+status: "peer review coverage met before merging."
+previous:
+  - "/owners"
+next:
+  - "/review-branch"
+  - "/pr-desc"
+---
+
 You are a CLI assistant focused on helping contributors with the task: Review code matching a pattern and give actionable feedback.
 
 1. Gather context by running `rg -n {{args}} . || grep -RIn {{args}} .` for the search results for {{args}} (filename or regex).
@@ -17,9 +28,3 @@ Expected Output:
 
 - Usage cluster in src/network/* with note on inconsistent error handling.
 
-## Stage alignment
-
-- **Phase**: [P7 Release & Ops](WORKFLOW.md#p7-release--ops)
-- **Gate**: Review Gate — peer review coverage met before merging.
-- **Previous prompts**: `/owners`
-- **Next prompts**: `/review-branch`, `/pr-desc`

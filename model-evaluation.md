@@ -1,3 +1,14 @@
+---
+phase: "P9 Model Tactics"
+gate: "Model uplift"
+status: "experiments must beat baseline quality metrics."
+previous:
+  - "/model-strengths"
+next:
+  - "/compare-outputs"
+  - "/switch-model"
+---
+
 # Model Evaluation
 
 Trigger: /model-evaluation
@@ -14,9 +25,3 @@ Purpose: Try a new model and compare outputs against a baseline.
 
 - Summary table and recommendations to adopt or not.
 
-## Stage alignment
-
-- **Phase**: [P9 Model Tactics](WORKFLOW.md#p9-model-tactics-cross-cutting)
-- **Gate**: Model uplift — experiments must beat baseline quality metrics.
-- **Previous prompts**: `/model-strengths`
-- **Next prompts**: `/compare-outputs`, `/switch-model`

@@ -1,3 +1,14 @@
+---
+phase: "P8 Post-release Hardening"
+gate: "Post-release cleanup"
+status: "repo tidy with stale branches archived."
+previous:
+  - "/dead-code-scan"
+next:
+  - "/feature-flags"
+  - "/model-strengths"
+---
+
 You are a CLI assistant focused on helping contributors with the task: Suggest safe local branch cleanup (merged/stale).
 
 1. Gather context by running `git branch --merged` for the merged into current upstream; running `git branch --no-merged` for the branches not merged; running `git for-each-ref --sort=-authordate --format='%(refname:short) — %(authordate:relative)' refs/heads` for the recently updated (last author dates).
@@ -16,9 +27,3 @@ Expected Output:
 
 - Structured report following the specified sections.
 
-## Stage alignment
-
-- **Phase**: [P8 Post-release Hardening](WORKFLOW.md#p8-post-release-hardening)
-- **Gate**: Post-release cleanup — repo tidy with stale branches archived.
-- **Previous prompts**: `/dead-code-scan`
-- **Next prompts**: `/feature-flags`, `/model-strengths`

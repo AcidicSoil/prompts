@@ -1,3 +1,15 @@
+---
+phase: "P9 Model Tactics"
+gate: "Model uplift"
+status: "capture baseline routing before experimentation."
+previous:
+  - "/feature-flags (optional)"
+  - "Stage-specific blockers"
+next:
+  - "/model-evaluation"
+  - "/compare-outputs"
+---
+
 # Model Strengths
 
 Trigger: /model-strengths
@@ -14,9 +26,3 @@ Purpose: Choose model per task type.
 
 - Routing guide with examples.
 
-## Stage alignment
-
-- **Phase**: [P9 Model Tactics](WORKFLOW.md#p9-model-tactics-cross-cutting)
-- **Gate**: Model uplift — capture baseline routing before experimentation.
-- **Previous prompts**: `/feature-flags` (optional) or stage-specific blockers.
-- **Next prompts**: `/model-evaluation`, `/compare-outputs`

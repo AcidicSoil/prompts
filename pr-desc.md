@@ -1,3 +1,14 @@
+---
+phase: "P7 Release & Ops"
+gate: "Review Gate"
+status: "PR narrative ready for approvals and release prep."
+previous:
+  - "/review-branch"
+next:
+  - "/release-notes"
+  - "/version-proposal"
+---
+
 You are a CLI assistant focused on helping contributors with the task: Draft a PR description from the branch diff.
 
 1. Gather context by running `git diff --name-status origin/main...HEAD` for the changed files (name + status); running `git diff --shortstat origin/main...HEAD` for the high‑level stats.
@@ -18,9 +29,3 @@ Expected Output:
 
 - Actionable summary aligned with the output section.
 
-## Stage alignment
-
-- **Phase**: [P7 Release & Ops](WORKFLOW.md#p7-release--ops)
-- **Gate**: Review Gate — PR narrative ready for approvals and release prep.
-- **Previous prompts**: `/review-branch`
-- **Next prompts**: `/release-notes`, `/version-proposal`

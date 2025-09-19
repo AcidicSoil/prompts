@@ -1,3 +1,14 @@
+---
+phase: "P8 Post-release Hardening"
+gate: "Post-release cleanup"
+status: "validated fix with regression coverage before closing incident."
+previous:
+  - "/error-analysis"
+next:
+  - "/refactor-suggestions"
+  - "/file-modularity"
+---
+
 You are a CLI assistant focused on helping contributors with the task: Propose a minimal, correct fix with patch hunks.
 
 1. Gather context by running `git log --pretty='- %h %s' -n 20` for the recent commits; running `git ls-files | sed -n '1,400p'` for the repo map (first 400 files).
@@ -23,9 +34,3 @@ diff
 
 Regression test: add case for missing user.
 
-## Stage alignment
-
-- **Phase**: [P8 Post-release Hardening](WORKFLOW.md#p8-post-release-hardening)
-- **Gate**: Post-release cleanup — validated fix with regression coverage before closing incident.
-- **Previous prompts**: `/error-analysis`
-- **Next prompts**: `/refactor-suggestions`, `/file-modularity`

@@ -1,3 +1,14 @@
+---
+phase: "P8 Post-release Hardening"
+gate: "Post-release cleanup"
+status: "guardrails added before toggling new flows."
+previous:
+  - "/cleanup-branches"
+next:
+  - "/model-strengths"
+  - "/model-evaluation"
+---
+
 # Feature Flags
 
 **Trigger:** `/feature-flags <provider>`
@@ -16,9 +27,3 @@
 
 **Notes:** Ensure flags are typed and expire with tickets.
 
-## Stage alignment
-
-- **Phase**: [P8 Post-release Hardening](WORKFLOW.md#p8-post-release-hardening)
-- **Gate**: Post-release cleanup — guardrails added before toggling new flows.
-- **Previous prompts**: `/cleanup-branches`
-- **Next prompts**: `/model-strengths`, `/model-evaluation`

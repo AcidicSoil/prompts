@@ -1,3 +1,16 @@
+---
+phase:
+  - "P1 Plan & Scope"
+  - "P2 App Scaffold & Contracts"
+gate: "Prototype review"
+status: "Validate spike outcomes before committing to scope."
+previous:
+  - "/planning-process"
+next:
+  - "/scaffold-fullstack"
+  - "/api-contract"
+---
+
 # Prototype Feature
 
 Trigger: /prototype-feature
@@ -15,10 +28,3 @@ Purpose: Spin up a standalone prototype in a clean repo before merging into main
 
 - Scaffold plan and migration notes.
 
-## Stage alignment
-
-- **Phase**: Sandbox between [P1 Plan & Scope](WORKFLOW.md#p1-plan--scope) and
-  [P2 App Scaffold & Contracts](WORKFLOW.md#p2-app-scaffold--contracts)
-- **Gate**: Validate spike outcomes before committing to scope.
-- **Previous prompts**: `/planning-process`
-- **Next prompts**: `/scaffold-fullstack`, `/api-contract`

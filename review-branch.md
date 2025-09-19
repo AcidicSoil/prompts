@@ -1,3 +1,14 @@
+---
+phase: "P7 Release & Ops"
+gate: "Review Gate"
+status: "branch scope validated before PR submission."
+previous:
+  - "/review"
+next:
+  - "/pr-desc"
+  - "/release-notes"
+---
+
 You are a CLI assistant focused on helping contributors with the task: Provide a high‑level review of the current branch vs origin/main.
 
 1. Gather context by running `git diff --stat origin/main...HEAD` for the diff stats; running `git diff origin/main...HEAD | sed -n '1,200p'` for the ```diff.
@@ -17,9 +28,3 @@ Expected Output:
 
 - Structured report following the specified sections.
 
-## Stage alignment
-
-- **Phase**: [P7 Release & Ops](WORKFLOW.md#p7-release--ops)
-- **Gate**: Review Gate — branch scope validated before PR submission.
-- **Previous prompts**: `/review`
-- **Next prompts**: `/pr-desc`, `/release-notes`

@@ -1,3 +1,14 @@
+---
+phase: "P8 Post-release Hardening"
+gate: "Post-release cleanup"
+status: "plan high-leverage refactors once Sev-1 issues settle."
+previous:
+  - "/fix"
+next:
+  - "/file-modularity"
+  - "/dead-code-scan"
+---
+
 # Refactor Suggestions
 
 Trigger: /refactor-suggestions
@@ -14,9 +25,3 @@ Purpose: Propose repo-wide refactoring opportunities after tests exist.
 
 - Ranked list with owners and effort estimates.
 
-## Stage alignment
-
-- **Phase**: [P8 Post-release Hardening](WORKFLOW.md#p8-post-release-hardening)
-- **Gate**: Post-release cleanup — plan high-leverage refactors once Sev-1 issues settle.
-- **Previous prompts**: `/fix`
-- **Next prompts**: `/file-modularity`, `/dead-code-scan`

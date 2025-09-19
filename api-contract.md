@@ -1,3 +1,14 @@
+---
+phase: "P2 App Scaffold & Contracts"
+gate: "Test Gate lite"
+status: "contract checked into repo with sample generation running cleanly."
+previous:
+  - "/scaffold-fullstack"
+next:
+  - "/openapi-generate"
+  - "/modular-architecture"
+---
+
 # API Contract
 
 **Trigger:** `/api-contract "<feature or domain>"`
@@ -24,9 +35,3 @@
 
 - Follow JSON:API style for REST unless caller specifies otherwise. Include `429` and `5xx` models.
 
-## Stage alignment
-
-- **Phase**: [P2 App Scaffold & Contracts](WORKFLOW.md#p2-app-scaffold--contracts)
-- **Gate**: Test Gate lite — contract checked into repo with sample generation running cleanly.
-- **Previous prompts**: `/scaffold-fullstack`
-- **Next prompts**: `/openapi-generate`, `/modular-architecture`

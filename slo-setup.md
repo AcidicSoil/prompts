@@ -1,3 +1,14 @@
+---
+phase: "P7 Release & Ops"
+gate: "Release Gate"
+status: "SLOs and alerts reviewed before production rollout."
+previous:
+  - "/monitoring-setup"
+next:
+  - "/logging-strategy"
+  - "/audit"
+---
+
 # SLO Setup
 
 **Trigger:** `/slo-setup`
@@ -16,9 +27,3 @@
 
 **Notes:** Tie SLOs to deploy gates and incident severity.
 
-## Stage alignment
-
-- **Phase**: [P7 Release & Ops](WORKFLOW.md#p7-release--ops)
-- **Gate**: Release Gate — SLOs and alerts reviewed before production rollout.
-- **Previous prompts**: `/monitoring-setup`
-- **Next prompts**: `/logging-strategy`, `/audit`

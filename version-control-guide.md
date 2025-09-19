@@ -1,3 +1,14 @@
+---
+phase: "P6 CI/CD & Env"
+gate: "Review Gate"
+status: "clean diff, CI green, and approvals ready."
+previous:
+  - "/regression-guard"
+next:
+  - "/devops-automation"
+  - "/env-setup"
+---
+
 # Version Control Guide
 
 Trigger: /version-control-guide
@@ -23,9 +34,3 @@ Purpose: Enforce clean incremental commits and clean-room re-implementation when
 
 - Never modify remote branches without confirmation.
 
-## Stage alignment
-
-- **Phase**: [P6 CI/CD & Env](WORKFLOW.md#p6-cicd--env)
-- **Gate**: Review Gate — clean diff, CI green, and approvals ready.
-- **Previous prompts**: `/regression-guard`
-- **Next prompts**: `/devops-automation`, `/env-setup`
