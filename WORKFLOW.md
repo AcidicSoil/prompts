@@ -32,6 +32,7 @@ M5 Production release with rollback tested.
 
 ## 5) Phases
 
+<!-- BEGIN GENERATED PHASES -->
 ### P0 Preflight Docs (Blocking)
 
 - **Purpose**: Enforce docs-first policy and record DocFetchReport.&#x20;
@@ -42,6 +43,10 @@ M5 Production release with rollback tested.
 - **Risks**: Missing docs.
 - **Owners**: Planner.
 
+<!-- commands:start -->
+- _No catalog commands mapped to this phase._
+<!-- commands:end -->
+
 ### P1 Plan & Scope
 
 - **Purpose**: Lock scope and acceptance.
@@ -49,6 +54,13 @@ M5 Production release with rollback tested.
 - **Gate**: Scope Gate passed.
 - **Outputs**: PLAN.md, scope table.
 - **Owners**: Planner.
+
+<!-- commands:start -->
+- `/planning-process` — Draft, refine, and execute a feature plan with strict scope control and progress tracking.
+- `/prototype-feature` — Spin up a standalone prototype in a clean repo before merging into main.
+- `/scope-control` — Enforce explicit scope boundaries and maintain "won't do" and "ideas for later" lists.
+- `/stack-evaluation` — Evaluate language/framework choices relative to AI familiarity and repo goals.
+<!-- commands:end -->
 
 ### P2 App Scaffold & Contracts
 
@@ -62,6 +74,15 @@ M5 Production release with rollback tested.
 - **Outputs**: repo tree, OpenAPI/SDL.
 - **Owners**: Full-stack dev.
 
+<!-- commands:start -->
+- `/api-contract "<feature or domain>"` — Author an initial OpenAPI 3.1 or GraphQL SDL contract from requirements.
+- `/api-docs-local` — Fetch API docs and store locally for offline, deterministic reference.
+- `/openapi-generate <server|client> <lang> <spec-path>` — Generate server stubs or typed clients from an OpenAPI spec.
+- `/prototype-feature` — Spin up a standalone prototype in a clean repo before merging into main.
+- `/reference-implementation` — Mimic the style and API of a known working example.
+- `/scaffold-fullstack <stack>` — Create a minimal, production-ready monorepo template with app, API, tests, CI seeds, and infra stubs.
+<!-- commands:end -->
+
 ### P3 Data & Auth
 
 - **Purpose**: Persistence and identity.
@@ -72,6 +93,12 @@ M5 Production release with rollback tested.
 - **Outputs**: migrations, seed script, auth routes.
 - **Owners**: API dev, Security.
 
+<!-- commands:start -->
+- `/auth-scaffold <oauth|email|oidc>` — Scaffold auth flows, routes, storage, and a basic threat model.
+- `/db-bootstrap <postgres|mysql|sqlite|mongodb>` — Pick a database, initialize migrations, local compose, and seed scripts.
+- `/migration-plan "<change summary>"` — Produce safe up/down migration steps with checks and rollback notes.
+<!-- commands:end -->
+
 ### P4 Frontend UX
 
 - **Purpose**: Routes and components.
@@ -79,6 +106,11 @@ M5 Production release with rollback tested.
 - **Gate**: Accessibility checks queued.
 - **Outputs**: Screens, states, assets.
 - **Owners**: Frontend.
+
+<!-- commands:start -->
+- `/design-assets` — Generate favicons and small design snippets from product brand.
+- `/ui-screenshots` — Analyze screenshots for UI bugs or inspiration and propose actionable UI changes.
+<!-- commands:end -->
 
 ### P5 Quality Gates & Tests
 
@@ -89,6 +121,14 @@ M5 Production release with rollback tested.
 - **Outputs**: E2E suite, coverage plan.
 - **Owners**: QA.
 
+<!-- commands:start -->
+- `/coverage-guide` — Propose high-ROI tests to raise coverage using uncovered areas.
+- `/e2e-runner-setup <playwright|cypress>` — Configure an end-to-end test runner with fixtures and a data sandbox.
+- `/generate <source-file>` — Generate unit tests for a given source file.
+- `/integration-test` — Generate E2E tests that simulate real user flows.
+- `/regression-guard` — Detect unrelated changes and add tests to prevent regressions.
+<!-- commands:end -->
+
 ### P6 CI/CD & Env
 
 - **Purpose**: Reproducible pipeline and environments.
@@ -96,6 +136,15 @@ M5 Production release with rollback tested.
 - **Gate**: Review Gate = CI green, approvals, no unrelated churn.
 - **Outputs**: CI config, IaC, secret store wiring.
 - **Owners**: DevOps.
+
+<!-- commands:start -->
+- `/devops-automation` — Configure servers, DNS, SSL, CI/CD at a pragmatic level.
+- `/env-setup` — Create .env.example, runtime schema validation, and per-env overrides.
+- `/iac-bootstrap <aws|gcp|azure|fly|render>` — Create minimal Infrastructure-as-Code for the chosen platform plus CI hooks.
+- `/secrets-manager-setup <provider>` — Provision a secrets store and map application variables to it.
+- `/version-control-guide` — Enforce clean incremental commits and clean-room re-implementation when finalizing.
+- `commit` — Generate a conventional, review-ready commit message from the currently staged changes.
+<!-- commands:end -->
 
 ### P7 Release & Ops
 
@@ -105,6 +154,19 @@ M5 Production release with rollback tested.
 - **Outputs**: Release notes, dashboards, runbooks.
 - **Owners**: Dev, DevOps, SRE.
 
+<!-- commands:start -->
+- `/audit` — Audit repository hygiene and suggest improvements.
+- `/explain-code` — Provide line-by-line explanations for a given file or diff.
+- `/monitoring-setup` — Bootstrap logs, metrics, and traces with dashboards per domain.
+- `/owners <path>` — Suggest likely owners or reviewers for the specified path.
+- `/pr-desc <context>` — Draft a PR description from the branch diff.
+- `/release-notes <git-range>` — Generate human-readable release notes from recent commits.
+- `/review <pattern>` — Review code matching a pattern and deliver actionable feedback.
+- `/review-branch` — Provide a high-level review of the current branch versus origin/main.
+- `/slo-setup` — Define Service Level Objectives, burn alerts, and runbooks.
+- `/version-proposal` — Propose the next semantic version based on commit history.
+<!-- commands:end -->
+
 ### P8 Post-release Hardening
 
 - **Purpose**: Stability and cleanup.
@@ -113,6 +175,16 @@ M5 Production release with rollback tested.
 - **Outputs**: Clean diff, flags in place.
 - **Owners**: Dev.
 
+<!-- commands:start -->
+- `/cleanup-branches` — Recommend which local branches are safe to delete and which to keep.
+- `/dead-code-scan` — Identify likely dead or unused files and exports using static signals.
+- `/error-analysis` — Analyze error logs and enumerate likely root causes with fixes.
+- `/feature-flags <provider>` — Integrate a flag provider, wire the SDK, and enforce guardrails.
+- `/file-modularity` — Enforce smaller files and propose safe splits for giant files.
+- `/fix "<bug summary>"` — Propose a minimal, correct fix with diff-style patches.
+- `/refactor-suggestions` — Propose repo-wide refactoring opportunities after tests exist.
+<!-- commands:end -->
+
 ### P9 Model Tactics (cross-cutting)
 
 - **Purpose**: Optimize prompting/model choice.
@@ -120,6 +192,73 @@ M5 Production release with rollback tested.
 - **Gate**: Model delta improves QoS.
 - **Owners**: Planner.
 
+<!-- commands:start -->
+- _No catalog commands mapped to this phase._
+<!-- commands:end -->
+
+### 11) Evidence Log
+
+- **Purpose**: _Document the goal for 11) Evidence Log._
+- **Steps**: _Outline the prompts and activities involved._
+- **Gate Criteria**: _Capture the exit checks before advancing._
+- **Outputs**: _List the deliverables for this phase._
+- **Owners**: _Assign accountable roles._
+
+<!-- commands:start -->
+- `/content-generation` — Draft docs, blog posts, or marketing copy aligned with the codebase.
+<!-- commands:end -->
+
+### P0 Preflight Docs
+
+- **Purpose**: _Document the goal for P0 Preflight Docs._
+- **Steps**: _Outline the prompts and activities involved._
+- **Gate Criteria**: _Capture the exit checks before advancing._
+- **Outputs**: _List the deliverables for this phase._
+- **Owners**: _Assign accountable roles._
+
+<!-- commands:start -->
+- `/instruction-file` — Generate or update `cursor.rules`, `windsurf.rules`, or `claude.md` with project-specific instructions.
+<!-- commands:end -->
+
+### P9 Model Tactics
+
+- **Purpose**: _Document the goal for P9 Model Tactics._
+- **Steps**: _Outline the prompts and activities involved._
+- **Gate Criteria**: _Capture the exit checks before advancing._
+- **Outputs**: _List the deliverables for this phase._
+- **Owners**: _Assign accountable roles._
+
+<!-- commands:start -->
+- `/compare-outputs` — Run multiple models or tools on the same prompt and summarize best output.
+- `/model-evaluation` — Try a new model and compare outputs against a baseline.
+- `/model-strengths` — Choose model per task type.
+- `/switch-model` — Decide when to try a different AI backend and how to compare.
+<!-- commands:end -->
+
+### Reset Playbook
+
+- **Purpose**: _Document the goal for Reset Playbook._
+- **Steps**: _Outline the prompts and activities involved._
+- **Gate Criteria**: _Capture the exit checks before advancing._
+- **Outputs**: _List the deliverables for this phase._
+- **Owners**: _Assign accountable roles._
+
+<!-- commands:start -->
+- `/reset-strategy` — Decide when to hard reset and start clean to avoid layered bad diffs.
+<!-- commands:end -->
+
+### Support
+
+- **Purpose**: _Document the goal for Support._
+- **Steps**: _Outline the prompts and activities involved._
+- **Gate Criteria**: _Capture the exit checks before advancing._
+- **Outputs**: _List the deliverables for this phase._
+- **Owners**: _Assign accountable roles._
+
+<!-- commands:start -->
+- `/voice-input` — Support interaction from voice capture and convert to structured prompts.
+<!-- commands:end -->
+<!-- END GENERATED PHASES -->
 ## 6) Dev Loop Rules
 
 Commit small. One concern per PR. Use clean-room finalize if diff grows. Reset when E2E red for >60m or design drift detected. Enforce branch policy via `/version-control-guide`.&#x20;

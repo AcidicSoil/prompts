@@ -1,107 +1,125 @@
 flowchart TD
-  subgraph P0["P0 Preflight Docs"]
-    preflight["Preflight Docs (§A) AGENTS"]
+  subgraph phase_p0_preflight_docs["P0 Preflight Docs"]
+    cmd_instruction_file[//instruction-file/]
   end
-
-  subgraph P1["P1 Plan & Scope"]
-    plan[/planning-process/]
-    scope[/scope-control/]
-    stack[/stack-evaluation/]
+  subgraph phase_p1_plan_scope["P1 Plan & Scope"]
+    cmd_planning_process[//planning-process/]
+    cmd_prototype_feature[//prototype-feature/]
+    cmd_scope_control[//scope-control/]
+    cmd_stack_evaluation[//stack-evaluation/]
   end
-
-  subgraph P2["P2 App Scaffold & Contracts"]
-    scaffold[/scaffold-fullstack/]
-    api_contract[/api-contract/]
-    openapi[/openapi-generate/]
-    modular[/modular-architecture/]
+  subgraph phase_p2_app_scaffold_contracts["P2 App Scaffold & Contracts"]
+    cmd_api_contract___feature_or_domain__[//api-contract "<feature or domain>"/]
+    cmd_api_docs_local[//api-docs-local/]
+    cmd_openapi_generate__server_client___lang___spec_path_[//openapi-generate <server|client> <lang> <spec-path>/]
+    cmd_reference_implementation[//reference-implementation/]
+    cmd_scaffold_fullstack__stack_[//scaffold-fullstack <stack>/]
   end
-
-  subgraph P3["P3 Data & Auth"]
-    db[/db-bootstrap/]
-    migrate[/migration-plan/]
-    auth[/auth-scaffold/]
+  subgraph phase_p3_data_auth["P3 Data & Auth"]
+    cmd_auth_scaffold__oauth_email_oidc_[//auth-scaffold <oauth|email|oidc>/]
+    cmd_db_bootstrap__postgres_mysql_sqlite_mongodb_[//db-bootstrap <postgres|mysql|sqlite|mongodb>/]
+    cmd_migration_plan___change_summary__[//migration-plan "<change summary>"/]
   end
-
-  subgraph P4["P4 Frontend UX"]
-    assets[/design-assets/]
-    screenshots[/ui-screenshots/]
+  subgraph phase_p4_frontend_ux["P4 Frontend UX"]
+    cmd_design_assets[//design-assets/]
+    cmd_ui_screenshots[//ui-screenshots/]
   end
-
-  subgraph P5["P5 Quality Gates & Tests"]
-    e2e[/e2e-runner-setup/]
-    integration[/integration-test/]
-    coverage[/coverage-guide/]
-    regression[/regression-guard/]
+  subgraph phase_p5_quality_gates_tests["P5 Quality Gates & Tests"]
+    cmd_coverage_guide[//coverage-guide/]
+    cmd_e2e_runner_setup__playwright_cypress_[//e2e-runner-setup <playwright|cypress>/]
+    cmd_generate__source_file_[//generate <source-file>/]
+    cmd_integration_test[//integration-test/]
+    cmd_regression_guard[//regression-guard/]
   end
-
-  subgraph P6["P6 CI/CD & Env"]
-    vcs[/version-control-guide/]
-    devops[/devops-automation/]
-    env[/env-setup/]
-    secrets[/secrets-manager-setup/]
-    iac[/iac-bootstrap/]
+  subgraph phase_p6_ci_cd_env["P6 CI/CD & Env"]
+    cmd_devops_automation[//devops-automation/]
+    cmd_env_setup[//env-setup/]
+    cmd_iac_bootstrap__aws_gcp_azure_fly_render_[//iac-bootstrap <aws|gcp|azure|fly|render>/]
+    cmd_secrets_manager_setup__provider_[//secrets-manager-setup <provider>/]
+    cmd_version_control_guide[//version-control-guide/]
+    cmd_commit[/commit/]
   end
-
-  subgraph P7["P7 Release & Ops"]
-    owners[/owners/]
-    review[/review/]
-    review_branch[/review-branch/]
-    pr_desc[/pr-desc/]
-    release_notes[/release-notes/]
-    version[/version-proposal/]
-    monitoring[/monitoring-setup/]
-    slo[/slo-setup/]
-    logging[/logging-strategy/]
-    audit[/audit/]
+  subgraph phase_p7_release_ops["P7 Release & Ops"]
+    cmd_audit[//audit/]
+    cmd_explain_code[//explain-code/]
+    cmd_monitoring_setup[//monitoring-setup/]
+    cmd_owners__path_[//owners <path>/]
+    cmd_pr_desc__context_[//pr-desc <context>/]
+    cmd_release_notes__git_range_[//release-notes <git-range>/]
+    cmd_review__pattern_[//review <pattern>/]
+    cmd_review_branch[//review-branch/]
+    cmd_slo_setup[//slo-setup/]
+    cmd_version_proposal[//version-proposal/]
   end
-
-  subgraph Deploy["Deployment Flow"]
-    deploy_staging[Deploy Staging]
-    canary[Canary + Health]
-    deploy_prod[Deploy Prod]
-    rollback[Rollback]
+  subgraph phase_p8_post_release_hardening["P8 Post-release Hardening"]
+    cmd_cleanup_branches[//cleanup-branches/]
+    cmd_dead_code_scan[//dead-code-scan/]
+    cmd_error_analysis[//error-analysis/]
+    cmd_feature_flags__provider_[//feature-flags <provider>/]
+    cmd_file_modularity[//file-modularity/]
+    cmd_fix___bug_summary__[//fix "<bug summary>"/]
+    cmd_refactor_suggestions[//refactor-suggestions/]
   end
-
-  subgraph P8["P8 Post-release Hardening"]
-    error[/error-analysis/]
-    fix[/fix/]
-    refactor[/refactor-suggestions/]
-    modularity[/file-modularity/]
-    deadcode[/dead-code-scan/]
-    cleanup[/cleanup-branches/]
-    flags[/feature-flags/]
+  subgraph phase_p9_model_tactics["P9 Model Tactics"]
+    cmd_compare_outputs[//compare-outputs/]
+    cmd_model_evaluation[//model-evaluation/]
+    cmd_model_strengths[//model-strengths/]
+    cmd_switch_model[//switch-model/]
   end
-
-  subgraph P9["P9 Model Tactics"]
-    strengths[/model-strengths/]
-    evaluation[/model-evaluation/]
-    compare[/compare-outputs/]
-    switch[/switch-model/]
+  subgraph phase_11_evidence_log["11) Evidence Log"]
+    cmd_content_generation[//content-generation/]
   end
-
-  scope_gate{Scope Gate}
-  test_gate_lite{Test Gate lite}
-  ux_gate{Accessibility checks queued}
-  test_gate{Test Gate}
-  review_gate{Review Gate}
-  release_gate{Release Gate}
-  hardening_gate{Sev-1 resolved}
-
-  preflight --> plan
-  plan --> scope --> stack --> scope_gate
-  scope_gate --> scaffold
-  scaffold --> api_contract --> openapi --> modular --> test_gate_lite
-  test_gate_lite --> db
-  db --> migrate --> auth --> assets --> screenshots --> ux_gate
-  ux_gate --> e2e --> integration --> coverage --> regression --> test_gate
-  test_gate --> vcs --> devops --> env --> secrets --> iac --> review_gate
-  review_gate --> owners --> review --> review_branch --> pr_desc --> release_notes --> version --> release_gate
-  release_gate --> deploy_staging --> canary --> deploy_prod
-  canary --> rollback
-  deploy_prod --> monitoring --> slo --> logging --> audit --> hardening_gate
-  deploy_prod --> error
-  error --> fix --> refactor --> modularity --> deadcode --> cleanup --> flags --> hardening_gate
-  deploy_prod --> flags
-  deploy_prod --> strengths
-  strengths --> evaluation --> compare --> switch
-  flags --> strengths
+  subgraph phase_reset_playbook["Reset Playbook"]
+    cmd_reset_strategy[//reset-strategy/]
+  end
+  subgraph phase_support["Support"]
+    cmd_voice_input[//voice-input/]
+  end
+  cmd_audit --> cmd_error_analysis
+  cmd_auth_scaffold__oauth_email_oidc_ --> cmd_ui_screenshots
+  cmd_cleanup_branches --> cmd_model_strengths
+  cmd_commit --> cmd_devops_automation
+  cmd_commit --> cmd_env_setup
+  cmd_compare_outputs --> cmd_switch_model
+  cmd_coverage_guide --> cmd_regression_guard
+  cmd_coverage_guide --> cmd_version_control_guide
+  cmd_dead_code_scan --> cmd_cleanup_branches
+  cmd_design_assets --> cmd_ui_screenshots
+  cmd_devops_automation --> cmd_env_setup
+  cmd_e2e_runner_setup__playwright_cypress_ --> cmd_coverage_guide
+  cmd_e2e_runner_setup__playwright_cypress_ --> cmd_integration_test
+  cmd_error_analysis --> cmd_refactor_suggestions
+  cmd_explain_code --> cmd_review_branch
+  cmd_feature_flags__provider_ --> cmd_model_evaluation
+  cmd_feature_flags__provider_ --> cmd_model_strengths
+  cmd_file_modularity --> cmd_cleanup_branches
+  cmd_file_modularity --> cmd_dead_code_scan
+  cmd_fix___bug_summary__ --> cmd_file_modularity
+  cmd_fix___bug_summary__ --> cmd_refactor_suggestions
+  cmd_generate__source_file_ --> cmd_regression_guard
+  cmd_instruction_file --> cmd_planning_process
+  cmd_instruction_file --> cmd_scope_control
+  cmd_integration_test --> cmd_coverage_guide
+  cmd_integration_test --> cmd_regression_guard
+  cmd_model_evaluation --> cmd_compare_outputs
+  cmd_model_evaluation --> cmd_switch_model
+  cmd_model_strengths --> cmd_compare_outputs
+  cmd_model_strengths --> cmd_model_evaluation
+  cmd_monitoring_setup --> cmd_slo_setup
+  cmd_owners__path_ --> cmd_review_branch
+  cmd_planning_process --> cmd_scope_control
+  cmd_planning_process --> cmd_stack_evaluation
+  cmd_pr_desc__context_ --> cmd_version_proposal
+  cmd_refactor_suggestions --> cmd_dead_code_scan
+  cmd_refactor_suggestions --> cmd_file_modularity
+  cmd_regression_guard --> cmd_devops_automation
+  cmd_regression_guard --> cmd_version_control_guide
+  cmd_release_notes__git_range_ --> cmd_monitoring_setup
+  cmd_release_notes__git_range_ --> cmd_version_proposal
+  cmd_review__pattern_ --> cmd_review_branch
+  cmd_scope_control --> cmd_stack_evaluation
+  cmd_slo_setup --> cmd_audit
+  cmd_version_control_guide --> cmd_devops_automation
+  cmd_version_control_guide --> cmd_env_setup
+  cmd_version_proposal --> cmd_monitoring_setup
+  cmd_version_proposal --> cmd_slo_setup

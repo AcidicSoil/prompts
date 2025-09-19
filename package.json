@@ -3,7 +3,8 @@
   "private": true,
   "scripts": {
     "validate:metadata": "ts-node scripts/validate_metadata.ts",
-    "build:catalog": "ts-node scripts/build_catalog.ts"
+    "build:catalog": "ts-node scripts/build_catalog.ts",
+    "test": "ts-node scripts/__tests__/workflow_sync.test.ts"
   },
   "devDependencies": {
     "ts-node": "^10.9.2",
