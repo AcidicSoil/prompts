@@ -5,7 +5,7 @@ import { MetadataValue, parseFrontMatter } from './front_matter';
 import { collectMarkdownFiles, loadPhases } from './markdown_utils';
 import { PromptCatalog, PromptCatalogEntry, normalizePhaseLabel } from './catalog_types';
 import { writeFileAtomic } from './file_utils';
-import { generateDocs } from './generate_docs';
+import { generateDocs, synchronizeWorkflowDoc } from './generate_docs';
 
 type PromptMetadata = Record<string, MetadataValue | undefined> & {
   phase?: MetadataValue;
@@ -15,17 +15,24 @@ type PromptMetadata = Record<string, MetadataValue | undefined> & {
   next?: MetadataValue;
 };
 
+interface MissingPhaseRecord {
+  label: string;
+  files: Set<string>;
+}
+
 async function main(): Promise<void> {
   const args = new Set(process.argv.slice(2));
   const updateWorkflow = args.has('--update-workflow');
   const repoRoot = path.resolve(__dirname, '..');
   const workflowPath = path.join(repoRoot, 'WORKFLOW.md');
-  const validPhases = await loadPhases(workflowPath);
+  let validPhases = await loadPhases(workflowPath);
+  let normalizedPhaseLookup = buildNormalizedPhaseSet(validPhases);
   const markdownFiles = await collectMarkdownFiles(repoRoot);
 
   const phaseBuckets = new Map<string, PromptCatalogEntry[]>();
   const commandIndex = new Map<string, string>();
   const errors: string[] = [];
+  const missingPhases = new Map<string, MissingPhaseRecord>();
 
   for (const filePath of markdownFiles) {
     const relativePath = path.relative(repoRoot, filePath);
@@ -57,11 +64,19 @@ async function main(): Promise<void> {
     registerCommand(commandIndex, command, relativePath, errors);
 
     for (const phaseLabel of phases) {
-      if (!phaseExists(phaseLabel, validPhases)) {
-        errors.push(`${relativePath}: phase "${phaseLabel}" not found in WORKFLOW.md.`);
-        continue;
+      const normalizedPhase = normalizePhaseLabel(phaseLabel);
+      if (!phaseExists(normalizedPhase, normalizedPhaseLookup)) {
+        const existing = missingPhases.get(normalizedPhase);
+        if (existing) {
+          existing.files.add(relativePath);
+        } else {
+          missingPhases.set(normalizedPhase, { label: phaseLabel, files: new Set([relativePath]) });
+        }
+        if (!updateWorkflow) {
+          errors.push(`${relativePath}: phase "${phaseLabel}" not found in WORKFLOW.md.`);
+        }
       }
-      const normalized = normalizePhaseLabel(phaseLabel);
+
       const entry: PromptCatalogEntry = {
         phase: phaseLabel,
         command,
@@ -73,12 +88,32 @@ async function main(): Promise<void> {
         next,
         path: relativePath,
       };
-      const bucket = phaseBuckets.get(normalized);
+      const bucket = phaseBuckets.get(normalizedPhase);
       if (bucket) {
         bucket.push(entry);
       } else {
-        phaseBuckets.set(normalized, [entry]);
+        phaseBuckets.set(normalizedPhase, [entry]);
       }
+    }
+  }
+
+  const { catalog: ordered, sortedKeys } = buildOrderedCatalog(phaseBuckets);
+
+  if (updateWorkflow && missingPhases.size > 0) {
+    const workflowUpdated = await synchronizeWorkflowDoc(repoRoot, ordered);
+    if (workflowUpdated) {
+      console.log('Inserted missing phases into WORKFLOW.md before catalog generation.');
+    }
+    validPhases = await loadPhases(workflowPath);
+    normalizedPhaseLookup = buildNormalizedPhaseSet(validPhases);
+    for (const [normalized, record] of missingPhases) {
+      if (phaseExists(normalized, normalizedPhaseLookup)) {
+        continue;
+      }
+      const files = Array.from(record.files).sort();
+      errors.push(
+        `Phase "${record.label}" referenced in ${files.join(', ')} is missing from WORKFLOW.md after synchronization.`,
+      );
     }
   }
 
@@ -91,27 +126,31 @@ async function main(): Promise<void> {
     return;
   }
 
-  const sortedPhases = Array.from(phaseBuckets.keys()).sort((a, b) => a.localeCompare(b));
-  const ordered: PromptCatalog = {};
-  for (const phase of sortedPhases) {
-    const prompts = phaseBuckets.get(phase);
-    if (!prompts) {
-      continue;
-    }
-    prompts.sort((a, b) => a.command.localeCompare(b.command));
-    ordered[phase] = prompts;
-  }
-
   const catalogPath = path.join(repoRoot, 'catalog.json');
   const catalogPayload = `${JSON.stringify(ordered, null, 2)}\n`;
   const catalogUpdated = await writeFileAtomic(catalogPath, catalogPayload);
   if (catalogUpdated) {
-    console.log(`Wrote catalog with ${sortedPhases.length} phase group(s) to ${catalogPath}`);
+    console.log(`Wrote catalog with ${sortedKeys.length} phase group(s) to ${catalogPath}`);
   } else {
     console.log(`Catalog already up to date at ${catalogPath}`);
   }
 
   await generateDocs(repoRoot, ordered, { updateWorkflow });
+}
+
+function buildOrderedCatalog(
+  buckets: Map<string, PromptCatalogEntry[]>,
+): { catalog: PromptCatalog; sortedKeys: string[] } {
+  const sortedKeys = Array.from(buckets.keys()).sort((a, b) => a.localeCompare(b));
+  const catalog: PromptCatalog = {};
+  for (const key of sortedKeys) {
+    const prompts = buckets.get(key);
+    if (!prompts) {
+      continue;
+    }
+    catalog[key] = prompts.slice().sort((a, b) => a.command.localeCompare(b.command));
+  }
+  return { catalog, sortedKeys: Object.keys(catalog) };
 }
 
 function extractPhases(
@@ -242,17 +281,22 @@ function registerCommand(
   commandIndex.set(command, file);
 }
 
-function phaseExists(phase: string, validPhases: Set<string>): boolean {
-  const normalized = phase.trim();
-  if (!normalized) {
-    return false;
-  }
-  for (const heading of validPhases) {
-    if (heading.includes(normalized)) {
-      return true;
+function buildNormalizedPhaseSet(phases: Set<string>): Set<string> {
+  const normalized = new Set<string>();
+  for (const phase of phases) {
+    const key = normalizePhaseLabel(phase);
+    if (key) {
+      normalized.add(key);
     }
   }
-  return false;
+  return normalized;
+}
+
+function phaseExists(normalizedPhase: string, normalizedPhases: Set<string>): boolean {
+  if (!normalizedPhase) {
+    return false;
+  }
+  return normalizedPhases.has(normalizedPhase);
 }
 
 main().catch((error) => {

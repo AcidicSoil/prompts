@@ -14,6 +14,17 @@ interface CrossEntry {
   purpose: string;
 }
 
+const PHASE_BLOCK_BEGIN = '<!-- BEGIN GENERATED PHASES -->';
+const PHASE_BLOCK_END = '<!-- END GENERATED PHASES -->';
+const COMMANDS_BLOCK_BEGIN = '<!-- commands:start -->';
+const COMMANDS_BLOCK_END = '<!-- commands:end -->';
+
+interface PhaseSectionSnapshot {
+  headingLine: string;
+  normalizedKey: string;
+  manualLines: string[];
+}
+
 export async function generateDocs(
   repoRoot: string,
   catalog: PromptCatalog,
@@ -27,6 +38,13 @@ export async function generateDocs(
   }
 
   if (options.updateWorkflow) {
+    const workflowDocUpdated = await synchronizeWorkflowDoc(repoRoot, catalog);
+    if (workflowDocUpdated) {
+      console.log('Synchronized WORKFLOW.md phase catalog.');
+    } else {
+      console.log('WORKFLOW.md already matches the generated phase catalog.');
+    }
+
     const workflowUpdated = await regenerateWorkflow(repoRoot, catalog);
     if (workflowUpdated) {
       console.log('Regenerated workflow.mmd from catalog graph.');
@@ -36,6 +54,71 @@ export async function generateDocs(
   } else {
     console.log('Skipped workflow.mmd regeneration (pass --update-workflow to enable).');
   }
+}
+
+export async function synchronizeWorkflowDoc(repoRoot: string, catalog: PromptCatalog): Promise<boolean> {
+  const workflowPath = path.join(repoRoot, 'WORKFLOW.md');
+  const original = await fs.readFile(workflowPath, 'utf8');
+  const lines = original.split(/\r?\n/);
+
+  const blockStartIndex = lines.findIndex((line) => line.trim() === PHASE_BLOCK_BEGIN);
+  const blockEndIndex = lines.findIndex((line) => line.trim() === PHASE_BLOCK_END);
+  if (blockStartIndex === -1 || blockEndIndex === -1 || blockEndIndex <= blockStartIndex) {
+    throw new Error('WORKFLOW.md is missing generated phase markers.');
+  }
+
+  const blockLines = lines.slice(blockStartIndex + 1, blockEndIndex);
+  const existingSections = parsePhaseSections(blockLines);
+  const manualLookup = new Map<string, PhaseSectionSnapshot>();
+  for (const section of existingSections) {
+    manualLookup.set(section.normalizedKey, section);
+  }
+
+  const existingOrder = existingSections.map((section) => section.normalizedKey);
+  const catalogKeys = Object.keys(catalog);
+  const newKeys = catalogKeys.filter((key) => !manualLookup.has(key)).sort((a, b) => comparePhaseKeys(a, b));
+  const orderedKeys = [...existingOrder, ...newKeys];
+
+  const renderedBlock: string[] = [];
+  for (const key of orderedKeys) {
+    const snapshot = manualLookup.get(key);
+    const bucket = catalog[key] ?? [];
+    const headingLine = snapshot?.headingLine ?? `### ${resolvePhaseHeading(key, bucket)}`;
+    const manualLines = snapshot?.manualLines ?? createManualStub(resolvePhaseHeading(key, bucket));
+    const commandLines = buildCommandLines(bucket);
+
+    if (renderedBlock.length > 0) {
+      renderedBlock.push('');
+    }
+
+    renderedBlock.push(headingLine);
+    renderedBlock.push('');
+    if (manualLines.length > 0) {
+      renderedBlock.push(...manualLines);
+      if (manualLines[manualLines.length - 1].trim() !== '') {
+        renderedBlock.push('');
+      }
+    }
+
+    renderedBlock.push(COMMANDS_BLOCK_BEGIN);
+    renderedBlock.push(...commandLines);
+    renderedBlock.push(COMMANDS_BLOCK_END);
+  }
+
+  while (renderedBlock.length > 0 && renderedBlock[renderedBlock.length - 1].trim() === '') {
+    renderedBlock.pop();
+  }
+
+  const replacement = [PHASE_BLOCK_BEGIN, ...renderedBlock, PHASE_BLOCK_END];
+  const nextLines = [...lines];
+  nextLines.splice(blockStartIndex, blockEndIndex - blockStartIndex + 1, ...replacement);
+  const updatedContent = ensureTrailingNewline(nextLines.join('\n'));
+  const normalizedOriginal = ensureTrailingNewline(lines.join('\n'));
+  if (updatedContent === normalizedOriginal) {
+    return false;
+  }
+  await writeFileAtomic(workflowPath, updatedContent);
+  return true;
 }
 
 async function updateReadme(repoRoot: string, catalog: PromptCatalog): Promise<boolean> {
@@ -184,7 +267,7 @@ function ensureTrailingNewline(content: string): string {
   return content.endsWith('\n') ? content : `${content}\n`;
 }
 
-async function regenerateWorkflow(repoRoot: string, catalog: PromptCatalog): Promise<boolean> {
+export async function regenerateWorkflow(repoRoot: string, catalog: PromptCatalog): Promise<boolean> {
   const workflowPath = path.join(repoRoot, 'workflow.mmd');
   const lines = buildWorkflowGraph(catalog);
   const payload = ensureTrailingNewline(lines.join('\n'));
@@ -312,4 +395,107 @@ function extractPhaseNumber(key: string): number | null {
     return null;
   }
   return Number.parseInt(match[1], 10);
+}
+
+function parsePhaseSections(lines: string[]): PhaseSectionSnapshot[] {
+  const sections: PhaseSectionSnapshot[] = [];
+  let current: PhaseSectionSnapshot | null = null;
+  let manualBuffer: string[] = [];
+  let inCommands = false;
+
+  const flush = (): void => {
+    if (!current) {
+      return;
+    }
+    current.manualLines = trimBlankEdges(manualBuffer);
+    sections.push(current);
+    current = null;
+    manualBuffer = [];
+  };
+
+  for (const line of lines) {
+    if (line.trim().startsWith('### ')) {
+      flush();
+      const headingLine = line.trimStart();
+      const heading = headingLine.replace(/^###\s+/, '').trim();
+      current = {
+        headingLine,
+        normalizedKey: normalizePhaseLabel(heading),
+        manualLines: [],
+      };
+      inCommands = false;
+      manualBuffer = [];
+      continue;
+    }
+
+    if (!current) {
+      continue;
+    }
+
+    const trimmed = line.trim();
+    if (trimmed === COMMANDS_BLOCK_BEGIN) {
+      inCommands = true;
+      continue;
+    }
+    if (trimmed === COMMANDS_BLOCK_END) {
+      inCommands = false;
+      continue;
+    }
+
+    if (!inCommands) {
+      manualBuffer.push(line);
+    }
+  }
+
+  flush();
+  return sections;
+}
+
+function trimBlankEdges(lines: string[]): string[] {
+  let start = 0;
+  let end = lines.length;
+  while (start < end && lines[start].trim() === '') {
+    start += 1;
+  }
+  while (end > start && lines[end - 1].trim() === '') {
+    end -= 1;
+  }
+  return lines.slice(start, end);
+}
+
+function resolvePhaseHeading(key: string, bucket: PromptCatalogEntry[]): string {
+  if (bucket.length > 0) {
+    return bucket[0].phase;
+  }
+  const segments = key.split('-').filter(Boolean);
+  if (segments.length === 0) {
+    return key;
+  }
+  return segments
+    .map((segment) => segment.charAt(0).toUpperCase() + segment.slice(1))
+    .join(' ');
+}
+
+function createManualStub(label: string): string[] {
+  const trimmed = label.trim();
+  return [
+    `- **Purpose**: _Document the goal for ${trimmed}._`,
+    '- **Steps**: _Outline the prompts and activities involved._',
+    '- **Gate Criteria**: _Capture the exit checks before advancing._',
+    '- **Outputs**: _List the deliverables for this phase._',
+    '- **Owners**: _Assign accountable roles._',
+  ];
+}
+
+function buildCommandLines(entries: PromptCatalogEntry[]): string[] {
+  if (entries.length === 0) {
+    return ['- _No catalog commands mapped to this phase._'];
+  }
+  return entries
+    .slice()
+    .sort((a, b) => a.command.localeCompare(b.command))
+    .map((entry) => {
+      const purpose = entry.purpose.trim();
+      return purpose ? `- \`${entry.command}\` — ${purpose}` : `- \`${entry.command}\``;
+    });
 }
