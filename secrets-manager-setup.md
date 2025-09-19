@@ -11,9 +11,9 @@ next:
 
 # Secrets Manager Setup
 
-**Trigger:** `/secrets-manager-setup <provider>`
+Trigger: /secrets-manager-setup <provider>
 
-**Purpose:** Provision secret store and map app variables to it.
+Purpose: Provision a secrets store and map application variables to it.
 
 **Steps:**
 

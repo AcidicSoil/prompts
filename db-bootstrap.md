@@ -11,9 +11,9 @@ next:
 
 # DB Bootstrap
 
-**Trigger:** `/db-bootstrap <postgres|mysql|sqlite|mongodb>`
+Trigger: /db-bootstrap <postgres|mysql|sqlite|mongodb>
 
-**Purpose:** Pick a database, initialize migrations, local compose, and seed scripts.
+Purpose: Pick a database, initialize migrations, local compose, and seed scripts.
 
 **Steps:**
 

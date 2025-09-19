@@ -10,6 +10,12 @@ next:
   - "/pr-desc"
 ---
 
+# Owners
+
+Trigger: /owners <path>
+
+Purpose: Suggest likely owners or reviewers for the specified path.
+
 You are a CLI assistant focused on helping contributors with the task: Suggest likely owners/reviewers for a path.
 
 1. Gather context by inspecting `.github/CODEOWNERS` for the codeowners (if present); running `git log --pretty='- %an %ae: %s' -- {{args}} | sed -n '1,50p'` for the recent authors for the path.

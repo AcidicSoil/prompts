@@ -12,9 +12,9 @@ next:
 
 # E2E Runner Setup
 
-**Trigger:** `/e2e-runner-setup <playwright|cypress>`
+Trigger: /e2e-runner-setup <playwright|cypress>
 
-**Purpose:** Configure an end‑to‑end test runner with fixtures and data sandbox.
+Purpose: Configure an end-to-end test runner with fixtures and a data sandbox.
 
 **Steps:**
 

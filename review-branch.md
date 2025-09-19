@@ -9,6 +9,12 @@ next:
   - "/release-notes"
 ---
 
+# Review Branch
+
+Trigger: /review-branch
+
+Purpose: Provide a high-level review of the current branch versus origin/main.
+
 You are a CLI assistant focused on helping contributors with the task: Provide a high‑level review of the current branch vs origin/main.
 
 1. Gather context by running `git diff --stat origin/main...HEAD` for the diff stats; running `git diff origin/main...HEAD | sed -n '1,200p'` for the ```diff.

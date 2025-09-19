@@ -11,9 +11,9 @@ next:
 
 # SLO Setup
 
-**Trigger:** `/slo-setup`
+Trigger: /slo-setup
 
-**Purpose:** Define Service Level Objectives, burn alerts, and runbooks.
+Purpose: Define Service Level Objectives, burn alerts, and runbooks.
 
 **Steps:**
 

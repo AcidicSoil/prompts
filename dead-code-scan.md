@@ -9,6 +9,12 @@ next:
   - "/feature-flags"
 ---
 
+# Dead Code Scan
+
+Trigger: /dead-code-scan
+
+Purpose: Identify likely dead or unused files and exports using static signals.
+
 You are a CLI assistant focused on helping contributors with the task: List likely dead or unused files and exports (static signals).
 
 1. Gather context by running `rg -n "export |module.exports|exports\.|require\(|import " -g '!node_modules' .` for the file reference graph (best‑effort).

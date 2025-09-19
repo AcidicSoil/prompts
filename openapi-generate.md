@@ -11,9 +11,9 @@ next:
 
 # OpenAPI Generate
 
-**Trigger:** `/openapi-generate <server|client> <lang> <spec-path>`
+Trigger: /openapi-generate <server|client> <lang> <spec-path>
 
-**Purpose:** Generate server stubs or typed clients from an OpenAPI spec.
+Purpose: Generate server stubs or typed clients from an OpenAPI spec.
 
 **Steps:**
 

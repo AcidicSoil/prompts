@@ -11,9 +11,9 @@ next:
 
 # Feature Flags
 
-**Trigger:** `/feature-flags <provider>`
+Trigger: /feature-flags <provider>
 
-**Purpose:** Integrate a flag provider, wire SDK, and enforce guardrails.
+Purpose: Integrate a flag provider, wire the SDK, and enforce guardrails.
 
 **Steps:**
 

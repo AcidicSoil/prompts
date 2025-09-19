@@ -11,9 +11,9 @@ next:
 
 # API Contract
 
-**Trigger:** `/api-contract "<feature or domain>"`
+Trigger: /api-contract "<feature or domain>"
 
-**Purpose:** Author an initial OpenAPI 3.1 or GraphQL SDL contract from requirements.
+Purpose: Author an initial OpenAPI 3.1 or GraphQL SDL contract from requirements.
 
 **Steps:**
 

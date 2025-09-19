@@ -9,6 +9,12 @@ next:
   - "/slo-setup"
 ---
 
+# Version Proposal
+
+Trigger: /version-proposal
+
+Purpose: Propose the next semantic version based on commit history.
+
 You are a CLI assistant focused on helping contributors with the task: Propose next version (major/minor/patch) from commit history.
 
 1. Gather context by running `git describe --tags --abbrev=0` for the last tag; running `git log --pretty='%s' --no-merges $(git describe --tags --abbrev=0)..HEAD` for the commits since last tag (no merges).
