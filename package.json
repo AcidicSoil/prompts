@@ -2,7 +2,8 @@
   "name": "prompts",
   "private": true,
   "scripts": {
-    "validate:metadata": "ts-node scripts/validate_metadata.ts"
+    "validate:metadata": "ts-node scripts/validate_metadata.ts",
+    "build:catalog": "ts-node scripts/build_catalog.ts"
   },
   "devDependencies": {
     "ts-node": "^10.9.2",

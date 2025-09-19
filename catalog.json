@@ -1,0 +1,849 @@
+{
+  "11-evidence-log": [
+    {
+      "phase": "11) Evidence Log",
+      "command": "/content-generation",
+      "title": "Content Generation",
+      "purpose": "Draft docs, blog posts, or marketing copy aligned with the codebase.",
+      "gate": "Evidence Log",
+      "status": "Ensure docs stay synced with current phase deliverables.",
+      "previous": [
+        "Stage-specific work just completed"
+      ],
+      "next": [
+        "/release-notes",
+        "/summary (if sharing updates)"
+      ],
+      "path": "content-generation.md"
+    }
+  ],
+  "p0-preflight-docs": [
+    {
+      "phase": "P0 Preflight Docs",
+      "command": "/instruction-file",
+      "title": "Instruction File",
+      "purpose": "Generate or update `cursor.rules`, `windsurf.rules`, or `claude.md` with project-specific instructions.",
+      "gate": "DocFetchReport",
+      "status": "capture approved instructions before proceeding.",
+      "previous": [
+        "Preflight discovery (AGENTS baseline)"
+      ],
+      "next": [
+        "/planning-process",
+        "/scope-control"
+      ],
+      "path": "instruction-file.md"
+    }
+  ],
+  "p1-plan-scope": [
+    {
+      "phase": "P1 Plan & Scope",
+      "command": "/planning-process",
+      "title": "Planning Process",
+      "purpose": "Draft, refine, and execute a feature plan with strict scope control and progress tracking.",
+      "gate": "Scope Gate",
+      "status": "confirm problem, users, Done criteria, and stack risks are logged.",
+      "previous": [
+        "Preflight Docs (AGENTS baseline)"
+      ],
+      "next": [
+        "/scope-control",
+        "/stack-evaluation"
+      ],
+      "path": "planning-process.md"
+    },
+    {
+      "phase": "P1 Plan & Scope",
+      "command": "/prototype-feature",
+      "title": "Prototype Feature",
+      "purpose": "Spin up a standalone prototype in a clean repo before merging into main.",
+      "gate": "Prototype review",
+      "status": "Validate spike outcomes before committing to scope.",
+      "previous": [
+        "/planning-process"
+      ],
+      "next": [
+        "/scaffold-fullstack",
+        "/api-contract"
+      ],
+      "path": "prototype-feature.md"
+    },
+    {
+      "phase": "P1 Plan & Scope",
+      "command": "/scope-control",
+      "title": "Scope Control",
+      "purpose": "Enforce explicit scope boundaries and maintain \"won't do\" and \"ideas for later\" lists.",
+      "gate": "Scope Gate",
+      "status": "Done criteria, scope lists, and stack choices are committed.",
+      "previous": [
+        "/planning-process"
+      ],
+      "next": [
+        "/stack-evaluation",
+        "/scaffold-fullstack"
+      ],
+      "path": "scope-control.md"
+    },
+    {
+      "phase": "P1 Plan & Scope",
+      "command": "/stack-evaluation",
+      "title": "Stack Evaluation",
+      "purpose": "Evaluate language/framework choices relative to AI familiarity and repo goals.",
+      "gate": "Scope Gate",
+      "status": "record recommended stack and top risks before building.",
+      "previous": [
+        "/scope-control"
+      ],
+      "next": [
+        "/scaffold-fullstack",
+        "/api-contract"
+      ],
+      "path": "stack-evaluation.md"
+    }
+  ],
+  "p2-app-scaffold-contracts": [
+    {
+      "phase": "P2 App Scaffold & Contracts",
+      "command": "/api-contract \"<feature or domain>\"",
+      "title": "API Contract",
+      "purpose": "Author an initial OpenAPI 3.1 or GraphQL SDL contract from requirements.",
+      "gate": "Test Gate lite",
+      "status": "contract checked into repo with sample generation running cleanly.",
+      "previous": [
+        "/scaffold-fullstack"
+      ],
+      "next": [
+        "/openapi-generate",
+        "/modular-architecture"
+      ],
+      "path": "api-contract.md"
+    },
+    {
+      "phase": "P2 App Scaffold & Contracts",
+      "command": "/api-docs-local",
+      "title": "API Docs Local",
+      "purpose": "Fetch API docs and store locally for offline, deterministic reference.",
+      "gate": "Test Gate lite",
+      "status": "contracts cached locally for repeatable generation.",
+      "previous": [
+        "/scaffold-fullstack"
+      ],
+      "next": [
+        "/api-contract",
+        "/openapi-generate"
+      ],
+      "path": "api-docs-local.md"
+    },
+    {
+      "phase": "P2 App Scaffold & Contracts",
+      "command": "/openapi-generate <server|client> <lang> <spec-path>",
+      "title": "OpenAPI Generate",
+      "purpose": "Generate server stubs or typed clients from an OpenAPI spec.",
+      "gate": "Test Gate lite",
+      "status": "generated code builds and CI checks cover the new scripts.",
+      "previous": [
+        "/api-contract"
+      ],
+      "next": [
+        "/modular-architecture",
+        "/db-bootstrap"
+      ],
+      "path": "openapi-generate.md"
+    },
+    {
+      "phase": "P2 App Scaffold & Contracts",
+      "command": "/prototype-feature",
+      "title": "Prototype Feature",
+      "purpose": "Spin up a standalone prototype in a clean repo before merging into main.",
+      "gate": "Prototype review",
+      "status": "Validate spike outcomes before committing to scope.",
+      "previous": [
+        "/planning-process"
+      ],
+      "next": [
+        "/scaffold-fullstack",
+        "/api-contract"
+      ],
+      "path": "prototype-feature.md"
+    },
+    {
+      "phase": "P2 App Scaffold & Contracts",
+      "command": "/reference-implementation",
+      "title": "Reference Implementation",
+      "purpose": "Mimic the style and API of a known working example.",
+      "gate": "Test Gate lite",
+      "status": "align new modules with proven patterns before deeper work.",
+      "previous": [
+        "/scaffold-fullstack",
+        "/api-contract"
+      ],
+      "next": [
+        "/modular-architecture",
+        "/openapi-generate"
+      ],
+      "path": "reference-implementation.md"
+    },
+    {
+      "phase": "P2 App Scaffold & Contracts",
+      "command": "/scaffold-fullstack <stack>",
+      "title": "Scaffold Full‑Stack App",
+      "purpose": "Create a minimal, production‑ready monorepo template with app, API, tests, CI seeds, and infra stubs.",
+      "gate": "Test Gate lite",
+      "status": "ensure lint/build scripts execute on the generated scaffold.",
+      "previous": [
+        "/stack-evaluation"
+      ],
+      "next": [
+        "/api-contract",
+        "/openapi-generate",
+        "/modular-architecture"
+      ],
+      "path": "scaffold-fullstack.md"
+    }
+  ],
+  "p3-data-auth": [
+    {
+      "phase": "P3 Data & Auth",
+      "command": "/auth-scaffold <oauth|email|oidc>",
+      "title": "Auth Scaffold",
+      "purpose": "Scaffold auth flows, routes, storage, and a basic threat model.",
+      "gate": "Migration dry-run",
+      "status": "auth flows threat-modeled and test accounts wired.",
+      "previous": [
+        "/migration-plan"
+      ],
+      "next": [
+        "/modular-architecture",
+        "/ui-screenshots",
+        "/e2e-runner-setup"
+      ],
+      "path": "auth-scaffold.md"
+    },
+    {
+      "phase": "P3 Data & Auth",
+      "command": "/db-bootstrap <postgres|mysql|sqlite|mongodb>",
+      "title": "DB Bootstrap",
+      "purpose": "Pick a database, initialize migrations, local compose, and seed scripts.",
+      "gate": "Migration dry-run",
+      "status": "migrations apply/rollback cleanly with seeds populated.",
+      "previous": [
+        "/modular-architecture"
+      ],
+      "next": [
+        "/migration-plan",
+        "/auth-scaffold"
+      ],
+      "path": "db-bootstrap.md"
+    },
+    {
+      "phase": "P3 Data & Auth",
+      "command": "/migration-plan \"<change summary>\"",
+      "title": "Migration Plan",
+      "purpose": "Produce safe up/down migration steps with checks and rollback notes.",
+      "gate": "Migration dry-run",
+      "status": "validated rollback steps and safety checks documented.",
+      "previous": [
+        "/db-bootstrap"
+      ],
+      "next": [
+        "/auth-scaffold",
+        "/e2e-runner-setup"
+      ],
+      "path": "migration-plan.md"
+    }
+  ],
+  "p4-frontend-ux": [
+    {
+      "phase": "P4 Frontend UX",
+      "command": "/design-assets",
+      "title": "Design Assets",
+      "purpose": "Generate favicons and small design snippets from product brand.",
+      "gate": "Accessibility checks queued",
+      "status": "ensure assets support design review.",
+      "previous": [
+        "/modular-architecture"
+      ],
+      "next": [
+        "/ui-screenshots",
+        "/logging-strategy"
+      ],
+      "path": "design-assets.md"
+    },
+    {
+      "phase": "P4 Frontend UX",
+      "command": "/ui-screenshots",
+      "title": "UI Screenshots",
+      "purpose": "Analyze screenshots for UI bugs or inspiration and propose actionable UI changes.",
+      "gate": "Accessibility checks queued",
+      "status": "capture UX issues and backlog fixes.",
+      "previous": [
+        "/design-assets",
+        "/modular-architecture"
+      ],
+      "next": [
+        "/logging-strategy",
+        "/e2e-runner-setup"
+      ],
+      "path": "ui-screenshots.md"
+    }
+  ],
+  "p5-quality-gates-tests": [
+    {
+      "phase": "P5 Quality Gates & Tests",
+      "command": "/coverage-guide",
+      "title": "Coverage Guide",
+      "purpose": "",
+      "gate": "Test Gate",
+      "status": "coverage targets and regression guard plan recorded.",
+      "previous": [
+        "/integration-test"
+      ],
+      "next": [
+        "/regression-guard",
+        "/version-control-guide"
+      ],
+      "path": "coverage-guide.md"
+    },
+    {
+      "phase": "P5 Quality Gates & Tests",
+      "command": "/e2e-runner-setup <playwright|cypress>",
+      "title": "E2E Runner Setup",
+      "purpose": "Configure an end‑to‑end test runner with fixtures and data sandbox.",
+      "gate": "Test Gate",
+      "status": "runner green locally and wired into CI before expanding coverage.",
+      "previous": [
+        "/auth-scaffold",
+        "/ui-screenshots"
+      ],
+      "next": [
+        "/integration-test",
+        "/coverage-guide"
+      ],
+      "path": "e2e-runner-setup.md"
+    },
+    {
+      "phase": "P5 Quality Gates & Tests",
+      "command": "/generate",
+      "title": "Generate",
+      "purpose": "",
+      "gate": "Test Gate",
+      "status": "targeted unit tests authored for the specified module.",
+      "previous": [
+        "/coverage-guide"
+      ],
+      "next": [
+        "/regression-guard"
+      ],
+      "path": "generate.md"
+    },
+    {
+      "phase": "P5 Quality Gates & Tests",
+      "command": "/integration-test",
+      "title": "Integration Test",
+      "purpose": "Generate E2E tests that simulate real user flows.",
+      "gate": "Test Gate",
+      "status": "happy path E2E must pass locally and in CI.",
+      "previous": [
+        "/e2e-runner-setup"
+      ],
+      "next": [
+        "/coverage-guide",
+        "/regression-guard"
+      ],
+      "path": "integration-test.md"
+    },
+    {
+      "phase": "P5 Quality Gates & Tests",
+      "command": "/regression-guard",
+      "title": "Regression Guard",
+      "purpose": "Detect unrelated changes and add tests to prevent regressions.",
+      "gate": "Test Gate",
+      "status": "regression coverage in place before CI hand-off.",
+      "previous": [
+        "/coverage-guide"
+      ],
+      "next": [
+        "/version-control-guide",
+        "/devops-automation"
+      ],
+      "path": "regression-guard.md"
+    }
+  ],
+  "p6-ci-cd-env": [
+    {
+      "phase": "P6 CI/CD & Env",
+      "command": "/devops-automation",
+      "title": "DevOps Automation",
+      "purpose": "Configure servers, DNS, SSL, CI/CD at a pragmatic level.",
+      "gate": "Review Gate",
+      "status": "CI pipeline codified, rollback steps rehearsed.",
+      "previous": [
+        "/version-control-guide"
+      ],
+      "next": [
+        "/env-setup",
+        "/secrets-manager-setup",
+        "/iac-bootstrap"
+      ],
+      "path": "devops-automation.md"
+    },
+    {
+      "phase": "P6 CI/CD & Env",
+      "command": "/env-setup",
+      "title": "Env Setup",
+      "purpose": "Create `.env.example`, runtime schema validation, and per‑env overrides.",
+      "gate": "Review Gate",
+      "status": "environment schemas enforced and CI respects strict loading.",
+      "previous": [
+        "/devops-automation"
+      ],
+      "next": [
+        "/secrets-manager-setup",
+        "/iac-bootstrap"
+      ],
+      "path": "env-setup.md"
+    },
+    {
+      "phase": "P6 CI/CD & Env",
+      "command": "/iac-bootstrap <aws|gcp|azure|fly|render>",
+      "title": "IaC Bootstrap",
+      "purpose": "Create minimal Infrastructure‑as‑Code for chosen platform plus CI pipeline hooks.",
+      "gate": "Review Gate",
+      "status": "IaC applied in staging with drift detection configured.",
+      "previous": [
+        "/secrets-manager-setup"
+      ],
+      "next": [
+        "/owners",
+        "/review"
+      ],
+      "path": "iac-bootstrap.md"
+    },
+    {
+      "phase": "P6 CI/CD & Env",
+      "command": "/secrets-manager-setup <provider>",
+      "title": "Secrets Manager Setup",
+      "purpose": "Provision secret store and map app variables to it.",
+      "gate": "Review Gate",
+      "status": "secret paths mapped and least-privilege policies drafted.",
+      "previous": [
+        "/env-setup"
+      ],
+      "next": [
+        "/iac-bootstrap",
+        "/owners"
+      ],
+      "path": "secrets-manager-setup.md"
+    },
+    {
+      "phase": "P6 CI/CD & Env",
+      "command": "/version-control-guide",
+      "title": "Version Control Guide",
+      "purpose": "Enforce clean incremental commits and clean-room re-implementation when finalizing.",
+      "gate": "Review Gate",
+      "status": "clean diff, CI green, and approvals ready.",
+      "previous": [
+        "/regression-guard"
+      ],
+      "next": [
+        "/devops-automation",
+        "/env-setup"
+      ],
+      "path": "version-control-guide.md"
+    },
+    {
+      "phase": "P6 CI/CD & Env",
+      "command": "commit",
+      "title": "Commit Message Assistant",
+      "purpose": "Generate a conventional, review-ready commit message from the currently staged changes.",
+      "gate": "Review Gate",
+      "status": "clean diff, CI green, and approvals ready.",
+      "previous": [
+        "/version-control-guide"
+      ],
+      "next": [
+        "/devops-automation",
+        "/env-setup"
+      ],
+      "path": "commit.md"
+    }
+  ],
+  "p7-release-ops": [
+    {
+      "phase": "P7 Release & Ops",
+      "command": "/audit",
+      "title": "Audit",
+      "purpose": "Audit repository hygiene and suggest improvements.",
+      "gate": "Release Gate",
+      "status": "readiness criteria before shipping.",
+      "previous": [
+        "/logging-strategy"
+      ],
+      "next": [
+        "/error-analysis",
+        "/fix"
+      ],
+      "path": "audit.md"
+    },
+    {
+      "phase": "P7 Release & Ops",
+      "command": "/explain-code",
+      "title": "Explain Code",
+      "purpose": "Provide line-by-line explanations for a given file or diff.",
+      "gate": "Review Gate",
+      "status": "Improve reviewer comprehension before approvals.",
+      "previous": [
+        "/owners",
+        "/review"
+      ],
+      "next": [
+        "/review-branch",
+        "/pr-desc"
+      ],
+      "path": "explain-code.md"
+    },
+    {
+      "phase": "P7 Release & Ops",
+      "command": "/monitoring-setup",
+      "title": "Monitoring Setup",
+      "purpose": "Bootstrap logs, metrics, and traces with dashboards per domain.",
+      "gate": "Release Gate",
+      "status": "observability baselines ready before rollout.",
+      "previous": [
+        "/version-proposal"
+      ],
+      "next": [
+        "/slo-setup",
+        "/logging-strategy"
+      ],
+      "path": "monitoring-setup.md"
+    },
+    {
+      "phase": "P7 Release & Ops",
+      "command": "/owners",
+      "title": "Owners",
+      "purpose": "",
+      "gate": "Review Gate",
+      "status": "confirm approvers and escalation paths before PR submission.",
+      "previous": [
+        "/iac-bootstrap"
+      ],
+      "next": [
+        "/review",
+        "/review-branch",
+        "/pr-desc"
+      ],
+      "path": "owners.md"
+    },
+    {
+      "phase": "P7 Release & Ops",
+      "command": "/pr-desc",
+      "title": "Pr Desc",
+      "purpose": "",
+      "gate": "Review Gate",
+      "status": "PR narrative ready for approvals and release prep.",
+      "previous": [
+        "/review-branch"
+      ],
+      "next": [
+        "/release-notes",
+        "/version-proposal"
+      ],
+      "path": "pr-desc.md"
+    },
+    {
+      "phase": "P7 Release & Ops",
+      "command": "/release-notes",
+      "title": "Release Notes",
+      "purpose": "",
+      "gate": "Release Gate",
+      "status": "notes compiled for staging review and production rollout.",
+      "previous": [
+        "/pr-desc"
+      ],
+      "next": [
+        "/version-proposal",
+        "/monitoring-setup"
+      ],
+      "path": "release-notes.md"
+    },
+    {
+      "phase": "P7 Release & Ops",
+      "command": "/review",
+      "title": "Review",
+      "purpose": "",
+      "gate": "Review Gate",
+      "status": "peer review coverage met before merging.",
+      "previous": [
+        "/owners"
+      ],
+      "next": [
+        "/review-branch",
+        "/pr-desc"
+      ],
+      "path": "review.md"
+    },
+    {
+      "phase": "P7 Release & Ops",
+      "command": "/review-branch",
+      "title": "Review Branch",
+      "purpose": "",
+      "gate": "Review Gate",
+      "status": "branch scope validated before PR submission.",
+      "previous": [
+        "/review"
+      ],
+      "next": [
+        "/pr-desc",
+        "/release-notes"
+      ],
+      "path": "review-branch.md"
+    },
+    {
+      "phase": "P7 Release & Ops",
+      "command": "/slo-setup",
+      "title": "SLO Setup",
+      "purpose": "Define Service Level Objectives, burn alerts, and runbooks.",
+      "gate": "Release Gate",
+      "status": "SLOs and alerts reviewed before production rollout.",
+      "previous": [
+        "/monitoring-setup"
+      ],
+      "next": [
+        "/logging-strategy",
+        "/audit"
+      ],
+      "path": "slo-setup.md"
+    },
+    {
+      "phase": "P7 Release & Ops",
+      "command": "/version-proposal",
+      "title": "Version Proposal",
+      "purpose": "",
+      "gate": "Release Gate",
+      "status": "version bump decision recorded before deployment.",
+      "previous": [
+        "/release-notes"
+      ],
+      "next": [
+        "/monitoring-setup",
+        "/slo-setup"
+      ],
+      "path": "version-proposal.md"
+    }
+  ],
+  "p8-post-release-hardening": [
+    {
+      "phase": "P8 Post-release Hardening",
+      "command": "/cleanup-branches",
+      "title": "Cleanup Branches",
+      "purpose": "",
+      "gate": "Post-release cleanup",
+      "status": "repo tidy with stale branches archived.",
+      "previous": [
+        "/dead-code-scan"
+      ],
+      "next": [
+        "/feature-flags",
+        "/model-strengths"
+      ],
+      "path": "cleanup-branches.md"
+    },
+    {
+      "phase": "P8 Post-release Hardening",
+      "command": "/dead-code-scan",
+      "title": "Dead Code Scan",
+      "purpose": "",
+      "gate": "Post-release cleanup",
+      "status": "ensure code removals keep prod stable.",
+      "previous": [
+        "/file-modularity"
+      ],
+      "next": [
+        "/cleanup-branches",
+        "/feature-flags"
+      ],
+      "path": "dead-code-scan.md"
+    },
+    {
+      "phase": "P8 Post-release Hardening",
+      "command": "/error-analysis",
+      "title": "Error Analysis",
+      "purpose": "Analyze error logs and enumerate likely root causes with fixes.",
+      "gate": "Post-release cleanup",
+      "status": "Sev-1 incidents triaged with fixes scheduled.",
+      "previous": [
+        "/logging-strategy",
+        "/audit"
+      ],
+      "next": [
+        "/fix",
+        "/refactor-suggestions"
+      ],
+      "path": "error-analysis.md"
+    },
+    {
+      "phase": "P8 Post-release Hardening",
+      "command": "/feature-flags <provider>",
+      "title": "Feature Flags",
+      "purpose": "Integrate a flag provider, wire SDK, and enforce guardrails.",
+      "gate": "Post-release cleanup",
+      "status": "guardrails added before toggling new flows.",
+      "previous": [
+        "/cleanup-branches"
+      ],
+      "next": [
+        "/model-strengths",
+        "/model-evaluation"
+      ],
+      "path": "feature-flags.md"
+    },
+    {
+      "phase": "P8 Post-release Hardening",
+      "command": "/file-modularity",
+      "title": "File Modularity",
+      "purpose": "Enforce smaller files and propose safe splits for giant files.",
+      "gate": "Post-release cleanup",
+      "status": "structure debt addressed without destabilizing prod.",
+      "previous": [
+        "/refactor-suggestions"
+      ],
+      "next": [
+        "/dead-code-scan",
+        "/cleanup-branches"
+      ],
+      "path": "file-modularity.md"
+    },
+    {
+      "phase": "P8 Post-release Hardening",
+      "command": "/fix",
+      "title": "Fix",
+      "purpose": "",
+      "gate": "Post-release cleanup",
+      "status": "validated fix with regression coverage before closing incident.",
+      "previous": [
+        "/error-analysis"
+      ],
+      "next": [
+        "/refactor-suggestions",
+        "/file-modularity"
+      ],
+      "path": "fix.md"
+    },
+    {
+      "phase": "P8 Post-release Hardening",
+      "command": "/refactor-suggestions",
+      "title": "Refactor Suggestions",
+      "purpose": "Propose repo-wide refactoring opportunities after tests exist.",
+      "gate": "Post-release cleanup",
+      "status": "plan high-leverage refactors once Sev-1 issues settle.",
+      "previous": [
+        "/fix"
+      ],
+      "next": [
+        "/file-modularity",
+        "/dead-code-scan"
+      ],
+      "path": "refactor-suggestions.md"
+    }
+  ],
+  "p9-model-tactics": [
+    {
+      "phase": "P9 Model Tactics",
+      "command": "/compare-outputs",
+      "title": "Compare Outputs",
+      "purpose": "Run multiple models or tools on the same prompt and summarize best output.",
+      "gate": "Model uplift",
+      "status": "comparative data compiled before switching defaults.",
+      "previous": [
+        "/model-evaluation"
+      ],
+      "next": [
+        "/switch-model"
+      ],
+      "path": "compare-outputs.md"
+    },
+    {
+      "phase": "P9 Model Tactics",
+      "command": "/model-evaluation",
+      "title": "Model Evaluation",
+      "purpose": "Try a new model and compare outputs against a baseline.",
+      "gate": "Model uplift",
+      "status": "experiments must beat baseline quality metrics.",
+      "previous": [
+        "/model-strengths"
+      ],
+      "next": [
+        "/compare-outputs",
+        "/switch-model"
+      ],
+      "path": "model-evaluation.md"
+    },
+    {
+      "phase": "P9 Model Tactics",
+      "command": "/model-strengths",
+      "title": "Model Strengths",
+      "purpose": "Choose model per task type.",
+      "gate": "Model uplift",
+      "status": "capture baseline routing before experimentation.",
+      "previous": [
+        "/feature-flags (optional)",
+        "Stage-specific blockers"
+      ],
+      "next": [
+        "/model-evaluation",
+        "/compare-outputs"
+      ],
+      "path": "model-strengths.md"
+    },
+    {
+      "phase": "P9 Model Tactics",
+      "command": "/switch-model",
+      "title": "Switch Model",
+      "purpose": "Decide when to try a different AI backend and how to compare.",
+      "gate": "Model uplift",
+      "status": "document rollback/guardrails before flipping defaults.",
+      "previous": [
+        "/compare-outputs"
+      ],
+      "next": [
+        "Return to the blocked stage (e.g., /integration-test) to apply learnings"
+      ],
+      "path": "switch-model.md"
+    }
+  ],
+  "reset-playbook": [
+    {
+      "phase": "Reset Playbook",
+      "command": "/reset-strategy",
+      "title": "Reset Strategy",
+      "purpose": "Decide when to hard reset and start clean to avoid layered bad diffs.",
+      "gate": "Clean restart",
+      "status": "triggered when gate criteria stall for >60 minutes.",
+      "previous": [
+        "Any blocked stage"
+      ],
+      "next": [
+        "Restart with /planning-process then follow the gated flow"
+      ],
+      "path": "reset-strategy.md"
+    }
+  ],
+  "support": [
+    {
+      "phase": "Support",
+      "command": "/voice-input",
+      "title": "Voice Input",
+      "purpose": "Support interaction from voice capture and convert to structured prompts.",
+      "gate": "Support intake",
+      "status": "Clarify voice-derived requests before invoking gated prompts.",
+      "previous": [
+        "Voice transcript capture"
+      ],
+      "next": [
+        "Any stage-specific command (e.g., /planning-process)"
+      ],
+      "path": "voice-input.md"
+    }
+  ]
+}
