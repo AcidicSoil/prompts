@@ -30,6 +30,6 @@ description = "Draft a PR description"
 prompt = "Create sections Summary, Context, Changes from diff stats"
 Expected output:
 
-A pr-description.md file with the structure above and a bash cat > block.
+A pr-desc.md file with the structure above and a bash cat > block.
 
 Usage: /gemini-map
