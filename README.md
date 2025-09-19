@@ -7,6 +7,16 @@ This pack extends the default Codex CLI prompts with vibe-coding playbooks inspi
 1. Clone or copy this repository into `~/.codex/prompts`. The CLI hot-reloads changes, but restarting Codex guarantees the new commands are registered.
 2. Optionally commit the directory into your dotfiles so the prompts travel with your workstation setup.
 
+## Contributor workflow
+
+Run these commands whenever you add or edit prompts so the generated catalog stays in sync:
+
+1. `npm install` — install the TypeScript tooling used by the validation scripts.
+2. `npm run validate:metadata` — confirm every prompt’s front matter matches the lifecycle workflow.
+3. `npm run build:catalog` — regenerate `catalog.json` and refresh the README tables.
+
+`npm run build:catalog` must run after each prompt change; it keeps our published metadata accurate for the upcoming [MCP roadmap](#future-enhancements) work on tool exposure and state tracking. The pre-commit hook and CI guard execute these checks and will fail when `catalog.json` or the README tables are stale, so expect local or remote failures if the command is skipped.
+
 ## Using these prompts
 
 - **Direct slash commands**: Invoke the files that declare a `Trigger:` (table below) straight from Codex. Example: `/planning-process Add OAuth login` opens `planning-process.md` and walks through the feature plan template.
