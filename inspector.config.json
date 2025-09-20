@@ -2,8 +2,8 @@
   "mcpServers": {
     "codex-prompts": {
       "type": "stdio",
-      "command": "npm",
-      "args": ["run", "start"],
+      "command": "node",
+      "args": ["dist/index.js"],
       "cwd": "."
     }
   }

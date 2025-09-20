@@ -48,7 +48,7 @@ const runTests = () => {
   const payload = "a".repeat(200);
   const limit = 64;
   const truncated = capPayload(payload, limit);
-  assert.ok(Buffer.byteLength(truncated, "utf8") <= limit);
+  assert.equal(Buffer.byteLength(truncated, "utf8"), limit);
   const truncatedNote = truncated.match(/\[truncated (\d+) bytes\]$/);
   assert.ok(truncatedNote);
   const truncatedCount = Number(truncatedNote?.[1] ?? "0");
@@ -67,6 +67,18 @@ const runTests = () => {
   const tinyLimit = 8;
   const tiny = capPayload(payload, tinyLimit);
   assert.ok(Buffer.byteLength(tiny, "utf8") <= tinyLimit);
+
+  const preciseLimit = 40;
+  const precisePayload = "b".repeat(preciseLimit + 15);
+  const preciseResult = capPayload(precisePayload, preciseLimit);
+  assert.equal(Buffer.byteLength(preciseResult, "utf8"), preciseLimit);
+  const preciseMatch = preciseResult.match(/\[truncated (\d+) bytes\]$/);
+  assert.ok(preciseMatch);
+  const truncatedBytesMeasured = Number(preciseMatch?.[1] ?? "0");
+  const prefix = preciseResult.slice(0, preciseResult.length - (preciseMatch?.[0].length ?? 0));
+  const prefixBytes = Buffer.byteLength(prefix, "utf8");
+  const expectedTruncated = Buffer.byteLength(precisePayload, "utf8") - prefixBytes;
+  assert.equal(truncatedBytesMeasured, expectedTruncated);
 };
 
 try {

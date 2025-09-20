@@ -1,3 +1,5 @@
+import matter from 'gray-matter';
+
 export type Scalar = string;
 
 export type MetadataValue = Scalar | Scalar[];
@@ -7,57 +9,55 @@ export interface ParsedFrontMatter {
   endOffset: number;
 }
 
+const FRONT_MATTER_PATTERN = /^---\r?\n([\s\S]*?)\r?\n---\r?\n?/;
+
 export function parseFrontMatter(content: string): ParsedFrontMatter | null {
   if (!content.startsWith('---')) {
     return null;
   }
-  const closingIndex = content.indexOf('\n---', 3);
-  if (closingIndex === -1) {
+
+  const match = content.match(FRONT_MATTER_PATTERN);
+  if (!match) {
     throw new Error('Front matter missing closing delimiter.');
   }
-  const frontMatter = content.slice(4, closingIndex);
-  const lines = frontMatter.split('\n');
-  const data: Record<string, MetadataValue> = {};
-  let currentKey: string | null = null;
 
-  for (const rawLine of lines) {
-    const line = rawLine.trimEnd();
-    if (line.trim() === '') {
-      continue;
-    }
-    const itemMatch = line.match(/^[-\s]+-\s+(.*)$/);
-    if (itemMatch) {
-      if (!currentKey) {
-        throw new Error(`Array item encountered without a key in front matter: "${line}"`);
-      }
-      const array = (data[currentKey] as Scalar[]) || [];
-      array.push(parseScalar(itemMatch[1].trim()));
-      data[currentKey] = array;
-      continue;
-    }
+  const parsed = matter(content, { excerpt: false });
+  const metadata = normalizeMetadata(parsed.data);
 
-    const keyMatch = line.match(/^([a-zA-Z0-9_]+):\s*(.*)$/);
-    if (!keyMatch) {
-      throw new Error(`Unable to parse front matter line: "${line}"`);
-    }
-    const [, key, rawValue] = keyMatch;
-    if (rawValue.length === 0) {
-      data[key] = [];
-      currentKey = key;
-    } else {
-      data[key] = parseScalar(rawValue);
-      currentKey = null;
-    }
-  }
-
-  return { metadata: data, endOffset: closingIndex + 4 };
+  return {
+    metadata,
+    endOffset: match[0].length,
+  };
 }
 
-function parseScalar(value: string): string {
-  const trimmed = value.trim();
-  if ((trimmed.startsWith('"') && trimmed.endsWith('"')) || (trimmed.startsWith("'") && trimmed.endsWith("'"))) {
-    const inner = trimmed.slice(1, -1);
-    return inner.replace(/\\"/g, '"').replace(/\\'/g, "'");
+function normalizeMetadata(raw: unknown): Record<string, MetadataValue> {
+  if (raw === null || typeof raw !== 'object') {
+    return {};
   }
-  return trimmed;
+
+  const entries = Object.entries(raw as Record<string, unknown>);
+  const normalized: Record<string, MetadataValue> = {};
+
+  for (const [key, value] of entries) {
+    if (value === undefined || value === null) {
+      continue;
+    }
+    if (Array.isArray(value)) {
+      normalized[key] = value.map((item) => stringify(item)).filter((item) => item.length > 0);
+    } else {
+      const stringValue = stringify(value);
+      if (stringValue.length > 0) {
+        normalized[key] = stringValue;
+      }
+    }
+  }
+
+  return normalized;
+}
+
+function stringify(input: unknown): string {
+  if (typeof input === 'string') {
+    return input.trim();
+  }
+  return String(input).trim();
 }

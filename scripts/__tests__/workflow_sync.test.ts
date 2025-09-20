@@ -3,8 +3,8 @@ import { promises as fs } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 
-import { PromptCatalog } from '../catalog_types.js';
-import { regenerateWorkflow, synchronizeWorkflowDoc } from '../generate_docs.js';
+import type { PromptCatalog } from '../catalog_types.ts';
+import { regenerateWorkflow, synchronizeWorkflowDoc } from '../generate_docs.ts';
 
 async function main(): Promise<void> {
   const tmpRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'workflow-sync-'));

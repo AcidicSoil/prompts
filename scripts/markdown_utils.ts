@@ -1,31 +1,24 @@
 import { promises as fs } from 'fs';
 import path from 'path';
 
-const SKIP_DIRECTORIES = new Set(['node_modules', '.git', '.taskmaster', '.github']);
+import { glob } from 'glob';
+
+const DEFAULT_IGNORE = [
+  '**/node_modules/**',
+  '**/.git/**',
+  '**/.taskmaster/**',
+  '**/.github/**',
+  '**/dist/**',
+];
 
 export async function collectMarkdownFiles(rootDir: string): Promise<string[]> {
-  const results: string[] = [];
-  await walk(rootDir, results);
-  return results;
-
-  async function walk(currentDir: string, acc: string[]): Promise<void> {
-    const entries = await fs.readdir(currentDir, { withFileTypes: true });
-    for (const entry of entries) {
-      if (shouldSkip(entry.name)) {
-        continue;
-      }
-      const fullPath = path.join(currentDir, entry.name);
-      if (entry.isDirectory()) {
-        await walk(fullPath, acc);
-      } else if (entry.isFile() && fullPath.endsWith('.md')) {
-        acc.push(fullPath);
-      }
-    }
-  }
-}
-
-export function shouldSkip(name: string): boolean {
-  return SKIP_DIRECTORIES.has(name);
+  const matches = await glob('**/*.md', {
+    cwd: rootDir,
+    ignore: DEFAULT_IGNORE,
+    nodir: true,
+    absolute: true,
+  });
+  return matches.map((match) => path.resolve(match));
 }
 
 export async function loadPhases(workflowPath: string): Promise<Set<string>> {

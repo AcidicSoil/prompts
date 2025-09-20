@@ -17,6 +17,19 @@ Run these commands whenever you add or edit prompts so the generated catalog sta
 
 `npm run build:catalog` must run after each prompt change; it keeps our published metadata accurate for the upcoming [MCP roadmap](#future-enhancements) work on tool exposure and state tracking. The pre-commit hook and CI guard execute these checks and will fail when `catalog.json` or the README tables are stale, so expect local or remote failures if the command is skipped.
 
+### Running the MCP server with Inspector
+
+When testing the MCP server via stdio transports, launch the binary directly so stdout remains reserved for JSON-RPC traffic.
+
+1. Build the server once: `npm run build` (produces `dist/index.js`).
+2. In MCP Inspector set:
+   - **Transport Type:** `STDIO`
+   - **Command:** `node`
+   - **Arguments:** `dist/index.js`
+   - **Working Directory:** project root
+
+All logging is emitted to stderr, so Inspector receives a clean protocol stream without the `npm run start` banner that previously broke parsing.
+
 ## Using these prompts
 
 - **Direct slash commands**: Invoke the files that declare a `Trigger:` (table below) straight from Codex. Example: `/planning-process Add OAuth login` opens `planning-process.md` and walks through the feature plan template.
@@ -57,6 +70,7 @@ Commands are grouped by development phase. Stage headings link back to
 
 | Command | What it does |
 | --- | --- |
+| /docfetch-check | Enforce the documentation freshness gate before planning work begins. Run this guardrail to pull the latest references, update the DocFetchReport, and block further tasks until the report is OK. |
 | /instruction-file | Generate or update `cursor.rules`, `windsurf.rules`, or `claude.md` with project-specific instructions. |
 
 ### [P1 Plan & Scope](WORKFLOW.md#p1-plan--scope) — pass the [Scope Gate](WORKFLOW.md#scope-gate)

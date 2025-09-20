@@ -9,7 +9,8 @@
     "resolveJsonModule": true,
     "types": ["node"],
     "importHelpers": false,
-    "noEmit": false
+    "noEmit": false,
+    "allowImportingTsExtensions": false
   },
   "include": ["src/**/*.ts"],
   "exclude": ["src/**/*.test.ts"]

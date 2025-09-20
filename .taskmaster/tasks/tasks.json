@@ -616,7 +616,7 @@
         "testStrategy": "Create a temporary valid prompt file and an invalid one (e.g., missing a required field). Run the script against them. Verify the script passes for the valid file and fails with a descriptive error for the invalid one. Ensure it correctly handles various data types.",
         "priority": "high",
         "dependencies": [],
-        "status": "pending",
+        "status": "done",
         "subtasks": [
           {
             "id": 1,
@@ -624,7 +624,7 @@
             "description": "Add `zod`, `gray-matter`, and `glob` as development dependencies to `package.json`. Ensure the `validate:metadata` script in `package.json` is correctly configured to execute `scripts/validate_metadata.ts` using `ts-node`.",
             "dependencies": [],
             "details": "This foundational step ensures all required tools are available before writing the core logic. The command should be `npm install zod gray-matter glob --save-dev`. The script should be `\"validate:metadata\": \"ts-node scripts/validate_metadata.ts\"`.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": ""
           },
           {
@@ -635,7 +635,7 @@
               "10.1"
             ],
             "details": "Create a `const promptMetadataSchema = z.object({...})`. This schema will be the single source of truth for metadata validation and should be placed at the top of the script file for clarity.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": ""
           },
           {
@@ -646,7 +646,7 @@
               "10.1"
             ],
             "details": "The function should asynchronously find all files matching the pattern `prompts/**/*.md`. This isolates the file system interaction from the parsing and validation logic. The main script function will await the result of this discovery.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": ""
           },
           {
@@ -658,7 +658,7 @@
               "10.3"
             ],
             "details": "This subtask ties together file discovery, parsing, and validation. It will form the core of the script's functionality. Use `fs.readFileSync` to get file content and `matter()` from `gray-matter` to extract the `data` object for validation.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": ""
           },
           {
@@ -669,7 +669,7 @@
               "10.4"
             ],
             "details": "Use a `try...catch` block around the Zod `safeParse` method. If the parse result is not successful, format the `ZodError` into a user-friendly message. Track a global error flag or a count of errors to determine the final exit code after checking all files.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": ""
           }
         ]
@@ -684,7 +684,7 @@
         "dependencies": [
           10
         ],
-        "status": "pending",
+        "status": "done",
         "subtasks": [
           {
             "id": 1,
@@ -692,7 +692,7 @@
             "description": "Within the new `scripts/build_catalog.ts` file, implement a utility function that finds all prompt markdown files. This function will use a glob pattern to recursively search the `prompts/` directory for all files ending in `.md` and return an array of their full paths.",
             "dependencies": [],
             "details": "This is the initial step for gathering the source files. A library like `glob` or `fast-glob` should be added as a dev dependency to handle the file system traversal. The function should be designed to be reusable within the script.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Create a temporary directory with a few nested `.md` files and some other file types. Assert that the utility function returns the correct paths for only the `.md` files."
           },
           {
@@ -703,7 +703,7 @@
               "11.1"
             ],
             "details": "This function is critical for consuming the prompt files discovered in the previous subtask. A validation library like `zod` should be used to define and enforce the metadata structure. The function should throw a clear error or log a warning if a file is missing front-matter or if the metadata is invalid.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Test with a valid prompt file and assert the metadata is parsed correctly. Test with a file missing front-matter and another with invalid/missing fields to ensure errors are handled gracefully."
           },
           {
@@ -715,7 +715,7 @@
               "11.2"
             ],
             "details": "This subtask orchestrates the data collection process. The main function should handle errors from the parsing step by logging the problematic file and continuing, ensuring that one bad file doesn't halt the entire process. The final result is a complete, in-memory representation of the prompt catalog.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Using a set of mock prompt files (including one invalid one), run the aggregation logic and assert that the final array contains the correct metadata for the valid files and that a warning was logged for the invalid one."
           },
           {
@@ -726,7 +726,7 @@
               "11.3"
             ],
             "details": "This function is responsible for the first major output of the script. It should use `JSON.stringify` with an indentation setting for pretty-printing. The file write operation should overwrite the existing `catalog.json` to ensure it's always up-to-date.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Provide a sample metadata array to the function. After it runs, read the generated `catalog.json` and assert that its content matches the expected formatted JSON output and is correctly sorted."
           },
           {
@@ -737,7 +737,7 @@
               "11.3"
             ],
             "details": "This function ensures the project's documentation stays synchronized with the prompt library. The table should include columns for ID, Title, and Description. The file update logic must be precise, likely using a regular expression, to avoid modifying any other part of the `README.md` file.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Create a mock `README.md` file with the placeholder comments and surrounding text. Run the function with sample metadata and assert that only the content between the placeholders is replaced with the correct markdown table."
           }
         ]
@@ -752,7 +752,7 @@
         "dependencies": [
           11
         ],
-        "status": "pending",
+        "status": "done",
         "subtasks": [
           {
             "id": 1,
@@ -760,7 +760,7 @@
             "description": "Create the markdown file for the DocFetch preflight prompt and add the necessary YAML front matter to define its metadata, following the structure suggested in the task description.",
             "dependencies": [],
             "details": "Create the file at `prompts/preflight/docfetch-check.md`. Based on the parent task and similar prompts, the YAML front matter should include `id`, `title`, `description`, and `phase: preflight`. This establishes the prompt's identity within the system and associates it with the preflight check phase of the workflow.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Verify the file `prompts/preflight/docfetch-check.md` is created. Manually inspect the YAML front matter to ensure it contains the required keys (`id`, `title`, `description`, `phase`) with appropriate values."
           },
           {
@@ -771,7 +771,7 @@
               "12.1"
             ],
             "details": "In `prompts/preflight/docfetch-check.md`, add a section below the front matter. This content should clearly explain that planning and coding require up-to-date project context from documentation, and that the DocFetch tool is designed to validate this context automatically.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Read the rendered markdown. The introduction should be clear, concise, and effectively communicate the importance of having fresh documentation context for the AI to perform its tasks."
           },
           {
@@ -782,7 +782,7 @@
               "12.2"
             ],
             "details": "In `prompts/preflight/docfetch-check.md`, create a clear, user-friendly section titled 'How to Run the Check'. Provide the exact command-line instruction to trigger the documentation fetching and analysis process. Use markdown code blocks for the command to make it easy to copy and paste.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Review the prompt to ensure the command for running the DocFetch tool is present, correct, and clearly formatted within a code block."
           },
           {
@@ -793,7 +793,7 @@
               "12.3"
             ],
             "details": "In `prompts/preflight/docfetch-check.md`, add a section explaining where the `DocFetchReport` is located (e.g., `.codex/reports/docfetch-report.json`). Describe what a successful report looks like (e.g., `status: 'OK'`) versus what a failure looks like (e.g., `status: 'STALE'`, `missingSources: [...]`). This section is crucial for user self-service.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Verify the prompt clearly explains the location of the report and provides distinct examples of 'success' and 'failure' states based on the report's content."
           },
           {
@@ -804,7 +804,7 @@
               "12.4"
             ],
             "details": "In `prompts/preflight/docfetch-check.md`, create a 'Remediation Steps' or 'What to Do If It Fails' section. This should provide specific instructions for different failure scenarios, such as how to add missing documentation paths to the project's configuration file or how to force-refresh stale sources before re-running the DocFetch tool.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Check that the remediation steps are actionable and cover the likely failure modes (e.g., missing sources, stale files). The instructions should be clear enough for a user to follow without assistance."
           }
         ]
@@ -1284,7 +1284,7 @@
     ],
     "metadata": {
       "created": "2025-09-18T19:25:07.429Z",
-      "updated": "2025-09-20T15:06:58.908Z",
+      "updated": "2025-09-20T17:24:33.753Z",
       "description": "Tasks for master context"
     }
   }

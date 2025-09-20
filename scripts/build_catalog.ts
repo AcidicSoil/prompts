@@ -1,11 +1,16 @@
 import { promises as fs } from 'fs';
 import path from 'path';
+import { fileURLToPath } from 'url';
 
-import { MetadataValue, parseFrontMatter } from './front_matter.js';
-import { collectMarkdownFiles, loadPhases } from './markdown_utils.js';
-import { PromptCatalog, PromptCatalogEntry, normalizePhaseLabel } from './catalog_types.js';
-import { writeFileAtomic } from './file_utils.js';
-import { generateDocs, synchronizeWorkflowDoc } from './generate_docs.js';
+import type { MetadataValue } from './front_matter.ts';
+import { parseFrontMatter } from './front_matter.ts';
+import { collectMarkdownFiles, loadPhases } from './markdown_utils.ts';
+import type { PromptCatalog, PromptCatalogEntry } from './catalog_types.ts';
+import { normalizePhaseLabel } from './catalog_types.ts';
+import { writeFileAtomic } from './file_utils.ts';
+import { generateDocs, synchronizeWorkflowDoc } from './generate_docs.ts';
+
+const moduleDir = path.dirname(fileURLToPath(import.meta.url));
 
 type PromptMetadata = Record<string, MetadataValue | undefined> & {
   phase?: MetadataValue;
@@ -23,7 +28,7 @@ interface MissingPhaseRecord {
 async function main(): Promise<void> {
   const args = new Set(process.argv.slice(2));
   const updateWorkflow = args.has('--update-workflow');
-  const repoRoot = path.resolve(__dirname, '..');
+  const repoRoot = path.resolve(moduleDir, '..');
   const workflowPath = path.join(repoRoot, 'WORKFLOW.md');
   let validPhases = await loadPhases(workflowPath);
   let normalizedPhaseLookup = buildNormalizedPhaseSet(validPhases);

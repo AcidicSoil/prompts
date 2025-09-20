@@ -20,6 +20,22 @@
   "p0-preflight-docs": [
     {
       "phase": "P0 Preflight Docs",
+      "command": "/docfetch-check",
+      "title": "DocFetch Preflight Check",
+      "purpose": "Enforce the documentation freshness gate before planning work begins. Run this guardrail to pull the latest references, update the DocFetchReport, and block further tasks until the report is OK.",
+      "gate": "DocFetchReport",
+      "status": "DocFetchReport.status is OK with sources captured before planning or coding.",
+      "previous": [
+        "Preflight discovery (AGENTS baseline)"
+      ],
+      "next": [
+        "/instruction-file",
+        "/planning-process"
+      ],
+      "path": "prompts/preflight/docfetch-check.md"
+    },
+    {
+      "phase": "P0 Preflight Docs",
       "command": "/instruction-file",
       "title": "Instruction File",
       "purpose": "Generate or update `cursor.rules`, `windsurf.rules`, or `claude.md` with project-specific instructions.",

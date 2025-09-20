@@ -158,6 +158,11 @@ When discovery/confirmation is used, add:
 
 > Note: Omit any fields related to generating or writing `config/mcp_servers.generated.toml`. Use a separate instruction file such as `instructions/mcp_servers_generated_concise.md` if present.
 
+Also log memory batching and status coupling events when applicable:
+
+- Each memory flush: append `{tool:"memory", op:"upsert_batch", time_utc, scope, batch_id, count}` to `memory_ops[]`.
+- Each Task Master status call: append `{action:"status", name:"task-master", value, status}` to `server_actions[]`.
+
 ---
 
 ## A) Preflight: Latest Docs Requirement (**MUST**, Blocking)
@@ -321,11 +326,17 @@ Allowed only for outages/ambiguous scope/timeboxed spikes. Must include:
   - Treat `create_*` as **idempotent upserts**. Skip duplicates silently.
   - `delete_*` calls are **tolerant** to missing targets. No errors on non-existent items.
   - `open_nodes` returns only requested entities and their inter-relations; silently skips misses.
-- **Usage patterns:**
+- **Usage patterns (batched, quality-first):**
 
-  - On startup, ensure `project:${PROJECT_TAG}` exists; seed task and file nodes as needed.
-  - During execution, append observations for subtask starts/finishes; keep `percent_complete` on `task:${task_id}`.
-  - On completion, upsert entities and relations for `project`, `task`, and `file:<path>` per §2.
+  - Maintain an in-memory buffer of observations and relation updates during execution.
+  - Flush to `memory` only on any of:
+
+    1. Subtask boundary reached (from §1.1),
+    2. Status transition intent (`in-progress|verify|done|blocked|needs-local-tests`),
+    3. 10 observations accumulated, or
+    4. 60s since last flush.
+  - On flush, send a single upsert with a `batch_id`, `dedupe_keys[]`, and `context` (task\_id, files\_touched, guidance\_refs).
+  - Prefer merging observations into concise summaries when multiple micro-events target the same entity within a flush window.
 - **Setup pointers (non-blocking):**
 
   - Storage file via `MEMORY_FILE_PATH` env; default `memory.json`.
@@ -342,11 +353,94 @@ Allowed only for outages/ambiguous scope/timeboxed spikes. Must include:
 
 ### 1.2) Execution logging to memory (**NEW**)
 
-- For each subtask: on **start** and **finish**, append an observation to `task:${task_id}` including `subtask_id`, `action`, `files_touched[]`, and short result.
+- For each subtask: on **start** and **finish**, append an observation including `subtask_id`, `action`, `files_touched[]`, and short result.
 - Keep a running `percent_complete` on the task node. Update after each subtask.
 - Mirror links: `task:${task_id}` —\[touches]→ `file:<path>` as work proceeds, not only at the end.
 
+#### Observation schema (batched)
+
+```
+{
+  subtask_id, action, ts_utc, files_touched[],
+  summary, details_md, metrics:{time_ms?, tokens?, pass?},
+  guidance_refs[], dedupe_key
+}
+```
+
+- Compute `dedupe_key` as a stable hash of `{task_id, subtask_id, action, summary}`.
+- Replace per-event writes with buffered batches per §1.0.
+
+## Memory MCP Usage — Quality-over-Quantity Mode
+
+### Write policy
+
+- Maintain an in-memory buffer for observations and relation updates.
+- Flush triggers (any):
+
+  1. Subtask boundary per §1.1,
+  2. Status transition intent,
+  3. 10 buffered observations,
+  4. 60s since last flush.
+- Single-call upsert per flush with `batch_id`, `dedupe_keys[]`, and `context`.
+
+### Observation schema
+
+- Item: `{subtask_id, action, ts_utc, files_touched[], summary, details_md, metrics:{time_ms?, tokens?, pass?}, guidance_refs[], dedupe_key}`.
+- `dedupe_key` = hash(task\_id, subtask\_id, action, summary). Treat creates as idempotent upserts. Skips on duplicate.
+
+### Merge & summarization
+
+- If multiple items target the same entity within a window, coalesce into one summary with bullet details.
+- Keep observations atomic but summarized; avoid trivial micro-events.
+
+### Read-after-write consistency
+
+- On finalization: force `final:true` flush, then `open_nodes` to verify write result.
+- Retry once with 250–500 ms backoff on mismatch; record outcome as observation.
+
+### Error and backoff
+
+- Network errors: exponential backoff starting at 250 ms, max 3 attempts per flush.
+- On persistent failure: mark `memory_unavailable:true` in session preamble and proceed read-only.
+
+### Post-save Task Master coupling
+
+- After any successful flush that changes `percent_complete` or has `status_intent`:
+
+  - Call Task Master MCP to set status:
+
+    - first execution flush → `in-progress`,
+    - post-completion pre-checks → `verify`,
+    - after §2.1 outcomes → `done|blocked|needs-local-tests`.
+- Record hook: `{hook:"task-master", result:"ok|error", ts_utc}` in memory.
+
+### Transition gating and retries
+
+- Emit status changes only immediately after a successful memory flush.
+- If Task Master call fails, set `status_pending` and retry on next flush or T+2m, capped backoff.
+
+### Logging in DocFetchReport
+
+- Add each flush under `memory_ops[]` with `{tool:"memory", op:"upsert_batch", time_utc, scope, batch_id, count}`.
+- Add Task Master calls under `server_actions[]` with `{action:"status", name:"task-master", value, status}`.
+
+### Execution logging alignment
+
+- Replace per-event writes with batch buffer per the policy above.
+- Update `percent_complete` only at flush time.
+
+### Completion
+
+- Write concise `completion_summary_md` + `evidence_refs[]`.
+- Ensure graph links and observations are updated before exit.
+
 ## 2) On task completion (status → done)
+
+- **Before finalizing:**
+
+  - Force a final buffer flush with `final:true`.
+  - Re-read (`open_nodes`) the affected entities to confirm merge result; if mismatch, retry once with backoff (250–500 ms).
+  - Attach a consolidated `completion_summary_md` and `evidence_refs[]` to `task:${task_id}`.
 
 - Write a concise completion to memory including:
 
@@ -398,6 +492,15 @@ Allowed only for outages/ambiguous scope/timeboxed spikes. Must include:
   - On failures → set status **`blocked`** and record an unblock plan.
   - On deferral → set status **`needs-local-tests`** and include the instructions block.
 
+- **Post-save hook:**
+
+  - After any successful memory flush that changes `percent_complete` or `status_intent`, call Task Master MCP to set status:
+
+    - first execution flush → `in-progress`,
+    - post-completion pre-checks → `verify`,
+    - after §2.1 outcomes → `done|blocked|needs-local-tests`.
+  - Record hook outcome in memory as an observation: `{hook:"task-master", result:"ok|error", ts_utc}`.
+
 - **Local Test Instructions (example, Proposed — not executed):**
 
 ```bash
@@ -435,6 +538,11 @@ uv run -q pytest -q tests/unit -k "not integration" || exit 1
   `in-progress → verify → done` on success.
   `verify → blocked` on check failure.
   `verify → needs-local-tests` on deferral.
+
+- **Transition gating:**
+
+  - Emit Task Master status changes **only** immediately after a successful memory flush.
+  - If the Task Master call fails, mark `status_pending` in memory; retry on next flush or at T+2m with capped backoff.
 
 ---
 
@@ -893,6 +1001,33 @@ To demonstrate prompts in practice, a full-stack app workflow includes:
 
 - Discovery check: ensure files exist at `~/.codex/prompts/<name>.md` for every command listed above.
 - If any command is not recognized, restart the client and re-check filename casing and extension.
+
+---
+
+## Terminology Normalization (Memory MCP)
+
+- “append observations” → **batched observations with flush triggers**
+- “subtask starts/finishes” → **semantic boundary events**
+- “after it saves memories” → **post-save hook to Task Master MCP**
+- “more detail” → **rich observation schema**
+  Deprecated: per-event immediate writes.
+
+## Retention Map (Memory sections)
+
+- Startup hydration → preserved.
+- Subtask planning DoD → preserved.
+- Execution logging → enhanced with batching and schema.
+- Completion updates → enhanced with read-back verification.
+- Status management → preserved and now post-save synchronized.
+
+## Validation Checklist (Memory batching)
+
+- Batching fires only on the four triggers.
+- Each flush shows `upsert_batch` in `DocFetchReport.memory_ops`.
+- No per-event memory calls during a subtask.
+- Dedupe removes repeats with identical `dedupe_key`.
+- A Task Master status call follows every successful flush that changes progress or status intent.
+- Finalization performs read-back verification and writes `completion_summary_md`.
 
 ---
 

@@ -89,10 +89,10 @@ export function capPayload(payload: string, maxSize: number = 1024 * 1024): stri
   }
 
   const buffer = Buffer.from(payload, "utf8");
-  let targetBuffer = buffer.subarray(0, Math.min(maxSize, buffer.length));
-  let { buffer: validBuffer, text: truncatedText } = decodeUtf8Safely(targetBuffer);
+  let targetLength = Math.min(maxSize, buffer.length);
 
-  while (true) {
+  while (targetLength >= 0) {
+    const { buffer: validBuffer, text: truncatedText } = decodeUtf8Safely(buffer.subarray(0, targetLength));
     const truncatedBytes = payloadBytes - validBuffer.length;
     const suffix = formatTruncationMessage(truncatedBytes);
     const suffixBytes = utf8ByteLength(suffix);
@@ -101,22 +101,18 @@ export function capPayload(payload: string, maxSize: number = 1024 * 1024): stri
       return clampSuffixToLimit(suffix, maxSize);
     }
 
-    if (validBuffer.length + suffixBytes <= maxSize) {
-      return `${truncatedText}${suffix}`;
-    }
-
-    const allowedBytes = Math.max(0, maxSize - suffixBytes);
-    if (validBuffer.length === allowedBytes) {
-      // No further progress possible; return suffix trimmed to fit.
+    const allowedPrefixBytes = maxSize - suffixBytes;
+    if (allowedPrefixBytes <= 0) {
       return clampSuffixToLimit(suffix, maxSize);
     }
 
-    targetBuffer = buffer.subarray(0, Math.min(allowedBytes, buffer.length));
-    ({ buffer: validBuffer, text: truncatedText } = decodeUtf8Safely(targetBuffer));
-
-    if (validBuffer.length === 0) {
-      const newSuffix = formatTruncationMessage(payloadBytes);
-      return clampSuffixToLimit(newSuffix, maxSize);
+    if (validBuffer.length <= allowedPrefixBytes) {
+      return `${truncatedText}${suffix}`;
     }
+
+    targetLength = Math.min(allowedPrefixBytes, validBuffer.length - 1);
   }
+
+  const fallbackSuffix = formatTruncationMessage(payloadBytes);
+  return clampSuffixToLimit(fallbackSuffix, maxSize);
 }

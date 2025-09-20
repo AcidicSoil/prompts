@@ -63,7 +63,7 @@ const prepareMetadata = (metadata?: LogMetadata): LogMetadata | undefined => {
 export class Logger {
   private readonly stream: NodeJS.WriteStream;
 
-  constructor(stream: NodeJS.WriteStream = process.stdout) {
+  constructor(stream: NodeJS.WriteStream = process.stderr) {
     this.stream = stream;
   }
 
@@ -95,7 +95,7 @@ export class Logger {
   }
 }
 
-export const logger = new Logger();
+export const logger = new Logger(process.stderr);
 
 const redactMetadata = (metadata?: LogMetadata): LogMetadata | undefined => {
   if (!metadata) {

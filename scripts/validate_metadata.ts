@@ -1,22 +1,31 @@
 import { promises as fs } from 'fs';
 import path from 'path';
+import { fileURLToPath } from 'url';
 
-import { parseFrontMatter, MetadataValue } from './front_matter.js';
-import { collectMarkdownFiles, loadPhases } from './markdown_utils.js';
+import { z } from 'zod';
 
-type Scalar = string;
+import { parseFrontMatter } from './front_matter.ts';
+import { collectMarkdownFiles, loadPhases } from './markdown_utils.ts';
 
-interface Metadata {
-  phase: Scalar | Scalar[];
-  gate: Scalar;
-  status: Scalar;
-  previous: Scalar[];
-  next: Scalar[];
-  [key: string]: MetadataValue;
-}
+const moduleDir = path.dirname(fileURLToPath(import.meta.url));
+
+const stringField = z.string().trim().min(1, 'value must be a non-empty string');
+const stringArray = z.array(stringField).nonempty('must contain at least one entry');
+const stringOrArray = z.union([stringField, stringArray]);
+
+const metadataSchema = z
+  .object({
+    phase: stringOrArray,
+    gate: stringField,
+    status: stringField,
+    previous: stringArray,
+    next: stringArray,
+    tags: z.array(stringField).optional(),
+  })
+  .passthrough();
 
 async function main(): Promise<void> {
-  const repoRoot = path.resolve(__dirname, '..');
+  const repoRoot = path.resolve(moduleDir, '..');
   const workflowPath = path.join(repoRoot, 'WORKFLOW.md');
   const validPhases = await loadPhases(workflowPath);
   const markdownFiles = await collectMarkdownFiles(repoRoot);
@@ -32,22 +41,25 @@ async function main(): Promise<void> {
       continue;
     }
 
-    const metadata = parsed.metadata as Partial<Metadata>;
     validatedFiles += 1;
 
-    const phaseErrors = validatePhase(metadata.phase, validPhases, relativePath);
-    const gateErrors = validateRequiredString('gate', metadata.gate, relativePath);
-    const statusErrors = validateRequiredString('status', metadata.status, relativePath);
-    const previousErrors = validateStringArray('previous', metadata.previous, relativePath);
-    const nextErrors = validateStringArray('next', metadata.next, relativePath);
+    const validation = metadataSchema.safeParse(parsed.metadata);
+    if (!validation.success) {
+      for (const issue of validation.error.issues) {
+        const location = issue.path.length > 0 ? issue.path.join('.') : 'front matter';
+        errors.push(`${relativePath}: ${location} ${issue.message}`);
+      }
+      continue;
+    }
 
-    errors.push(
-      ...phaseErrors,
-      ...gateErrors,
-      ...statusErrors,
-      ...previousErrors,
-      ...nextErrors,
-    );
+    const metadata = validation.data;
+    const phases = toArray(metadata.phase);
+    const missingPhases = findMissingPhases(phases, validPhases);
+    if (missingPhases.length > 0) {
+      errors.push(
+        `${relativePath}: phase value(s) not found in WORKFLOW.md headings: ${missingPhases.join(', ')}.`,
+      );
+    }
   }
 
   if (errors.length > 0) {
@@ -62,38 +74,24 @@ async function main(): Promise<void> {
   console.log(`Metadata validation passed for ${validatedFiles} file(s).`);
 }
 
-function validatePhase(value: MetadataValue | undefined, validPhases: Set<string>, file: string): string[] {
-  if (value === undefined) {
-    return [`${file}: missing required field "phase".`];
-  }
-  const phases = Array.isArray(value) ? value : [value];
-  if (phases.length === 0 || phases.some((item) => typeof item !== 'string' || item.trim() === '')) {
-    return [`${file}: "phase" must contain at least one non-empty string.`];
-  }
-  const headings = Array.from(validPhases);
-  const missing = phases.filter((phase) => !headings.some((heading) => heading.includes(phase.trim())));
-  if (missing.length > 0) {
-    return [`${file}: phase value(s) not found in WORKFLOW.md headings: ${missing.join(', ')}.`];
-  }
-  return [];
+function toArray(input: z.infer<typeof stringOrArray>): string[] {
+  return Array.isArray(input) ? input : [input];
 }
 
-function validateRequiredString(field: string, value: MetadataValue | undefined, file: string): string[] {
-  if (typeof value !== 'string' || value.trim() === '') {
-    return [`${file}: missing or empty "${field}".`];
+function findMissingPhases(phases: string[], validPhases: Set<string>): string[] {
+  if (phases.length === 0) {
+    return [];
   }
-  return [];
-}
-
-function validateStringArray(field: string, value: MetadataValue | undefined, file: string): string[] {
-  if (!Array.isArray(value) || value.length === 0) {
-    return [`${file}: "${field}" must be a non-empty array.`];
+  const headings = Array.from(validPhases).map((heading) => heading.toLowerCase());
+  const missing: string[] = [];
+  for (const phase of phases) {
+    const normalized = phase.toLowerCase();
+    const found = headings.some((heading) => heading.includes(normalized));
+    if (!found) {
+      missing.push(phase);
+    }
   }
-  const invalid = value.filter((item) => typeof item !== 'string' || item.trim() === '');
-  if (invalid.length > 0) {
-    return [`${file}: "${field}" contains empty entries.`];
-  }
-  return [];
+  return missing;
 }
 
 main().catch((error) => {
