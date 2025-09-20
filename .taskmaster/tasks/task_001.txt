@@ -1,0 +1,43 @@
+# Task ID: 1
+# Title: Project Setup and Server Bootstrap
+# Status: done
+# Dependencies: None
+# Priority: high
+# Description: Initialize a Node.js TypeScript project and set up the basic MCP server using stdio transport. This includes creating the main entry point, configuring graceful shutdown, and establishing structured NDJSON logging.
+# Details:
+Create a `package.json` with dependencies like `@modelcontextprotocol/sdk` and `typescript`. Set up `tsconfig.json` for compilation to `dist/`. Implement the main server file (`src/index.ts`) to instantiate `StdioServerTransport`, register server info (name, version), and handle SIGINT/SIGTERM for graceful shutdown. Implement a basic structured logger that outputs NDJSON.
+
+# Test Strategy:
+Manually start the server and connect with an MCP client like MCP Inspector. Verify that the server reports its name and version. Send a SIGINT signal and confirm the server logs a 'server_stop' message and exits cleanly.
+
+# Subtasks:
+## 1. Configure package.json and tsconfig.json [done]
+### Dependencies: None
+### Description: Update the project's package.json to include necessary dependencies and scripts. Configure tsconfig.json to define the TypeScript compilation settings, ensuring output is directed to the dist/ directory.
+### Details:
+In `package.json`, add `@modelcontextprotocol/sdk` to `dependencies`. Add `typescript`, `ts-node`, and `@types/node` to `devDependencies`. Add a `build` script (`"tsc"`) and a `start` script (`"node dist/index.js"`). In `tsconfig.json`, set `compilerOptions.outDir` to `./dist`, `rootDir` to `./src`, and ensure `moduleResolution` is `node`.
+
+## 2. Implement a Structured NDJSON Logger [done]
+### Dependencies: None
+### Description: Create a simple logger in `src/logger.ts` that writes structured log messages to `stdout` in NDJSON (Newline Delimited JSON) format. This utility will be used for all server logging.
+### Details:
+Implement a `Logger` class or object in `src/logger.ts` with `info`, `warn`, and `error` methods. Each method should accept a message and an optional metadata object. The output for each log entry must be a single-line JSON string containing a timestamp, log level, message, and any metadata, written to `process.stdout`.
+
+## 3. Bootstrap MCP Server with Stdio Transport [done]
+### Dependencies: 1.1, 1.2
+### Description: In the main entry point `src/index.ts`, initialize the core server components by instantiating the MCP server and the standard I/O transport layer.
+### Details:
+In `src/index.ts`, import the logger from `./logger.ts`. Import `MCPServer` and `StdioServerTransport` from `@modelcontextprotocol/sdk`. Inside a `main` async function, instantiate the logger, then the `StdioServerTransport`, and finally the `MCPServer`, passing the transport and logger to its constructor.
+
+## 4. Register Server Information and Start Listening [done]
+### Dependencies: 1.3
+### Description: Configure the server with its identity by registering its name and version, and then start the server to begin listening for client connections over stdio.
+### Details:
+In the `main` function of `src/index.ts`, read the `version` from `package.json`. Call the `server.info.register()` method with a server name (e.g., "MCP Reference Server") and the version. After registration, call `server.start()` and log a confirmation message indicating the server is running.
+
+## 5. Implement Graceful Shutdown and Top-Level Error Handling [done]
+### Dependencies: 1.3
+### Description: Add signal handlers in `src/index.ts` to ensure the server shuts down cleanly on SIGINT/SIGTERM signals and that any uncaught exceptions are logged before exiting.
+### Details:
+Add listeners for `process.on('SIGINT', ...)` and `process.on('SIGTERM', ...)`. The handler should invoke `await server.stop()`, log a 'server_stop' message, and exit with `process.exit(0)`. Also, implement a `process.on('uncaughtException', ...)` handler to log the fatal error using the NDJSON logger before exiting with a non-zero status code.
+

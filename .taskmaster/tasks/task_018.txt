@@ -1,0 +1,43 @@
+# Task ID: 18
+# Title: Integrate and Test Full Metadata Workflow
+# Status: pending
+# Dependencies: 12, 13, 14, 15, 16, 17
+# Priority: high
+# Description: Perform an end-to-end test of the metadata automation by editing a prompt, running validation, and rebuilding the catalog and README.
+# Details:
+This task verifies that the core automation loop is robust. Make a change to a prompt's YAML front matter (e.g., edit its title). Run `npm run validate:metadata` and confirm it passes. Then run `npm run build:catalog`. Verify that `catalog.json` and the `README.md` tables reflect the change. This satisfies the acceptance criteria for 'Prompt Metadata Automation'.
+
+# Test Strategy:
+Follow the steps in the details. Introduce an invalid change to a prompt's metadata and confirm `npm run validate:metadata` fails as expected. Fix the error and confirm both scripts succeed and update the artifacts correctly.
+
+# Subtasks:
+## 1. Create Test Branch for Metadata Workflow Verification [pending]
+### Dependencies: None
+### Description: Set up a dedicated git branch to isolate the end-to-end testing of the metadata workflow, as recommended by the task expansion plan.
+### Details:
+Create a new git branch named `test/metadata-workflow` from the current main branch. This ensures that the main branch remains clean during the test cycle and provides an isolated environment for making and reverting changes.
+
+## 2. Execute 'Happy Path' Test: Modify Metadata and Run Build [pending]
+### Dependencies: 18.1
+### Description: Perform a 'happy path' test by modifying a prompt's metadata, running validation and build scripts, and committing the successful changes.
+### Details:
+On the `test/metadata-workflow` branch, edit the `title` in the YAML front matter of `prompts/1-analyze-issue.md`. Run `npm run validate:metadata` and confirm it passes. Then, run `npm run build:catalog` to update `catalog.json` and `README.md`. Commit all modified files to the branch.
+
+## 3. Verify Artifacts After 'Happy Path' Build [pending]
+### Dependencies: 18.2
+### Description: Inspect `catalog.json` and `README.md` to confirm that the changes from the 'happy path' test were correctly applied.
+### Details:
+After the successful build in the previous subtask, manually review `catalog.json` to ensure the `title` for prompt ID 1 has been updated. Also, check the prompt table within `README.md` to verify the new title is correctly reflected there.
+
+## 4. Execute 'Failure Path' Test: Introduce Invalid Metadata [pending]
+### Dependencies: 18.3
+### Description: Test the validation logic by intentionally introducing an invalid change to a prompt's metadata and confirming that the validation script fails as expected.
+### Details:
+On the `test/metadata-workflow` branch, edit `prompts/1-analyze-issue.md` again. Remove the `version` field from the YAML front matter. Run `npm run validate:metadata` and confirm that the script exits with a non-zero status code and logs a Zod validation error. Document the specific error message for verification. Do not commit this invalid change.
+
+## 5. Revert Invalid Change, Re-run Build, and Finalize Test [pending]
+### Dependencies: 18.4
+### Description: Revert the invalid metadata change, re-run the build process to ensure the system returns to a valid state, and finalize the end-to-end test.
+### Details:
+Revert the change made to `prompts/1-analyze-issue.md` in the previous step by restoring the `version` field. Re-run `npm run validate:metadata` to confirm it passes. This concludes the E2E test, leaving the branch in a clean state with the successful 'happy path' changes.
+

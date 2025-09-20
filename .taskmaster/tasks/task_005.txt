@@ -1,0 +1,43 @@
+# Task ID: 5
+# Title: Implement Atomic State Store
+# Status: done
+# Dependencies: 1
+# Priority: high
+# Description: Create a `StateStore` class to manage workflow state persistence in `.mcp/state.json` using atomic file writes.
+# Details:
+Implement a class responsible for reading and writing the `ProjectState` JSON object. The `save` method must be atomic to prevent corruption. This should be achieved by writing the new state to a temporary file in the `.mcp/` directory and then using an atomic `rename` operation to replace the existing `state.json`. The store should also handle creating the `.mcp/` directory if it doesn't exist.
+
+# Test Strategy:
+Write a test that simulates concurrent calls to the `save` method to ensure the final `state.json` file is always valid JSON and not a corrupted, partially written file. Verify that the directory is created if it's missing.
+
+# Subtasks:
+## 1. Create StateStore Class and Directory Initialization Logic [done]
+### Dependencies: None
+### Description: Create the file `src/state/StateStore.ts` and define the `StateStore` class. The constructor should accept a project root path and ensure the `.mcp` directory exists.
+### Details:
+Define the `StateStore` class in a new file `src/state/StateStore.ts`. The constructor will take `projectRoot: string`. It should define and store private properties for the paths to the `.mcp` directory, `state.json`, and a temporary file like `state.json.tmp`. Implement a private async method that is called by the constructor to create the `.mcp` directory using `fs.promises.mkdir(mcpDir, { recursive: true })`. This ensures all subsequent file operations have a valid directory to work in.
+
+## 2. Implement `load` Method to Read State from Disk [done]
+### Dependencies: 5.1
+### Description: Implement an asynchronous `load` method to read and parse `.mcp/state.json`. It should handle cases where the file doesn't exist by providing a default initial state.
+### Details:
+Add a public async `load` method to the `StateStore` class. This method will attempt to read `.mcp/state.json` using `fs.promises.readFile`. If the file doesn't exist (catch the 'ENOENT' error), it should initialize a default `ProjectState` object: `{ completedTools: [], artifacts: {} }`. The loaded or default state should be stored in a private property (e.g., `_state`). The method should return the state.
+
+## 3. Implement In-Memory State Accessors and Mutators [done]
+### Dependencies: 5.1
+### Description: Add methods to get the current state and to update it in memory, specifically by recording the completion of a tool. This prepares the store for use by other components like the `advance_state` tool.
+### Details:
+Based on the `ProjectState` interface in `src/state/ProjectState.ts`, add a public getter `getState(): ProjectState` that returns a deep copy of the internal `_state` to prevent outside mutation. Also, add a public method `recordCompletion(completion: ToolCompletion)` which updates the internal `_state` by adding the new completion record to the `completedTools` array and merging the new artifacts into the top-level `artifacts` map.
+
+## 4. Implement Atomic `save` Method Using a Temporary File and Rename [done]
+### Dependencies: 5.3
+### Description: Implement the `save` method to atomically persist the current in-memory state to `.mcp/state.json`.
+### Details:
+Create a public async `save` method. This method will take the current in-memory state from the `_state` property, stringify it with `JSON.stringify`, and write it to the temporary file path (`.mcp/state.json.tmp`) using `fs.promises.writeFile`. Upon successful write, it will use `fs.promises.rename` to atomically move the temporary file to the final `state.json` path, overwriting any existing file. This two-step process prevents file corruption.
+
+## 5. Create Comprehensive Unit Tests for StateStore [done]
+### Dependencies: 5.1, 5.2, 5.3, 5.4
+### Description: Develop a suite of unit tests in `test/state/StateStore.test.ts` to validate all public methods and behaviors of the `StateStore` class.
+### Details:
+Using a testing framework like Jest and a temporary file system utility, create a test file for the `StateStore`. The tests should cover: 1. Directory creation on instantiation. 2. Loading from a non-existent file. 3. Correctly saving state via `recordCompletion` and `save`. 4. Correctly loading a previously saved state. 5. Ensure the `getState` method returns a value-identical but not reference-identical object.
+

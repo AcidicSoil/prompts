@@ -1,0 +1,43 @@
+# Task ID: 4
+# Title: Implement Dynamic Prompt Tools
+# Status: done
+# Dependencies: 2, 3
+# Priority: high
+# Description: Expose each prompt defined in `resources/prompts.meta.yaml` as a dynamically generated MCP tool.
+# Details:
+During server startup, iterate through the entries in `prompts.meta.yaml`. For each entry, dynamically register an MCP tool with an `id` matching the metadata. Generate input/output schemas based on the metadata. The tool's handler should read the corresponding Markdown file from `resources/prompts/`, append a rendered footer, and return the content, applying the payload cap from task 2.
+
+# Test Strategy:
+Use an MCP client to list tools and verify that a tool exists for each prompt in the metadata file. Invoke a tool and confirm the response contains the correct Markdown content. Test with a prompt file larger than 1 MB to ensure the response is truncated.
+
+# Subtasks:
+## 1. Create a Utility to Load and Parse Prompt Metadata [done]
+### Dependencies: None
+### Description: Implement a function that reads `resources/prompts.meta.yaml`, parses it, and returns a validated, typed array of prompt metadata objects. This will serve as the single source of truth for prompt definitions.
+### Details:
+Create a new file `src/lib/prompt-loader.ts`. Add an exported function `loadPromptDefinitions()`. This function should use the `fs` module to read `resources/prompts.meta.yaml` and the `js-yaml` library to parse its content. Define a TypeScript interface for the prompt metadata structure (e.g., `PromptDefinition`) and ensure the parsed data conforms to this type before returning it. This utility will be called during server startup.
+
+## 2. Develop a Generic Handler for Prompt Tools [done]
+### Dependencies: None
+### Description: Create a generic handler function that can be used by all dynamically generated prompt tools. The handler will be responsible for reading the prompt content, appending a footer, and applying the payload cap.
+### Details:
+In a new file, e.g., `src/tools/prompt-handler.ts`, create a factory function `createPromptHandler(promptFilePath: string)`. This function should return an async `ToolHandler` function. The handler will read the file content from the provided `promptFilePath`, append a standard rendered footer (a simple string for now), and then apply the payload capping utility from Task 2 to the final content. The handler should return an object like `{ content: '...' }`.
+
+## 3. Implement Dynamic Schema Generation from Metadata [done]
+### Dependencies: 4.1
+### Description: Create a function that generates JSON schemas for a tool's input and output based on the `variables` defined in its metadata.
+### Details:
+In a new utility file, e.g., `src/lib/schema-generator.ts`, create a function `generateSchemas(metadata: PromptDefinition)`. This function will generate the `inputSchema` by creating a JSON Schema `object` with `properties` corresponding to each item in the metadata's `variables` array. The `outputSchema` should be a static JSON Schema defining an object with a single string property named `content`.
+
+## 4. Integrate Dynamic Tool Registration into Server Startup [done]
+### Dependencies: 4.1, 4.2, 4.3
+### Description: Modify the server's startup sequence to iterate through the loaded prompt definitions and register an MCP tool for each one.
+### Details:
+In the primary tool registration file (e.g., `src/tools/tool-registry.ts`), create a new async function `registerPromptTools(mcpServer: McpServer)`. This function will call `loadPromptDefinitions()` (from subtask 4.1). It will then loop through each definition, calling `generateSchemas()` (subtask 4.3) and `createPromptHandler()` (subtask 4.2) for each. Finally, it will construct the complete `ToolDefinition` object (with `id`, schemas, and handler) and register it using `mcpServer.registerTool()`. Call this new function from the main server entry point (`src/server.ts`) during initialization.
+
+## 5. Add Integration Tests for Dynamic Prompt Tools [done]
+### Dependencies: 4.4
+### Description: Implement integration tests to verify that the dynamic tools are correctly exposed and functional through the MCP server.
+### Details:
+In a new test file under `test/integration/`, write tests that use an MCP client to interact with the running server. One test should list all available tools and assert that a tool exists for each entry in `prompts.meta.yaml`. Another test should invoke a specific prompt tool and validate that the response body contains the expected markdown content. Add a final test using a large (>1MB) prompt file to ensure the response content is correctly truncated by the payload cap.
+

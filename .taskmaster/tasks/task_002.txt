@@ -1,0 +1,43 @@
+# Task ID: 2
+# Title: Implement Safety Control Utilities
+# Status: done
+# Dependencies: 1
+# Priority: high
+# Description: Create utility functions for redacting secrets in logs and capping payload sizes to prevent data leakage and excessive resource usage.
+# Details:
+Create a logging utility that wraps the base logger. This utility should scan log objects for keys matching the regex `/(key|secret|token)/i` and replace their values with `[redacted]`. Create a `capPayload` function that truncates strings larger than ~1 MB and appends a note like `[truncated N bytes]`. These utilities should be pure functions and easily testable.
+
+# Test Strategy:
+Unit test the redaction logic by passing objects with keys like `API_KEY` and `SECRET_TOKEN`. Unit test the `capPayload` function with strings smaller than, equal to, and larger than the 1 MB threshold to verify correct truncation and messaging.
+
+# Subtasks:
+## 1. Create `redactSecrets` Utility Function [done]
+### Dependencies: None
+### Description: Implement a pure function to recursively scan an object and redact values for keys matching a specific regex.
+### Details:
+In a new file, `src/utils/safety.ts`, create and export a pure function `redactSecrets(data: any)`. This function should recursively traverse any given object or array. If it encounters an object key that matches the case-insensitive regex `/(key|secret|token)/i`, it must replace the corresponding value with the string `[redacted]`. The function should handle nested objects and arrays without modifying the original input object (i.e., it should return a new, deep-cloned object).
+
+## 2. Create `capPayload` Utility Function [done]
+### Dependencies: None
+### Description: Implement a pure function to truncate large strings to a specified maximum size.
+### Details:
+In the same `src/utils/safety.ts` file, create and export a pure function `capPayload(payload: string, maxSize: number = 1024 * 1024)`. This function will check if the input string's size exceeds `maxSize`. If it does, the function should truncate the string to `maxSize` bytes and append a message indicating how many bytes were removed, e.g., `[truncated 42 bytes]`. If the string is within the limit, it should be returned unmodified.
+
+## 3. Implement Unit Tests for `redactSecrets` [done]
+### Dependencies: 2.1
+### Description: Create a suite of unit tests to validate the behavior of the `redactSecrets` function.
+### Details:
+In a new test file, `src/utils/safety.test.ts`, write comprehensive unit tests for the `redactSecrets` function. Test cases should include: an object with sensitive keys (`apiKey`, `SECRET_TOKEN`), a deeply nested object with sensitive keys, an array of objects, an object with no sensitive keys (to ensure it remains unchanged), and non-object inputs to ensure graceful handling.
+
+## 4. Implement Unit Tests for `capPayload` [done]
+### Dependencies: 2.2
+### Description: Create a suite of unit tests to validate the behavior of the `capPayload` function.
+### Details:
+In the `src/utils/safety.test.ts` file, add unit tests for the `capPayload` function. Cover the main scenarios: a string smaller than the 1MB threshold, a string larger than the threshold (verifying correct truncation and the appended message), and edge cases like an empty string or a string exactly at the threshold.
+
+## 5. Create and Integrate Secure Logger Wrapper [done]
+### Dependencies: 2.1
+### Description: Create a logging utility that wraps the base logger to automatically redact secrets from log objects.
+### Details:
+Based on the existing logging implementation, create a secure logger wrapper. This wrapper will expose standard logging methods (e.g., `info`, `warn`, `error`). Before passing a log object to the base logger, it must first process the object with the `redactSecrets` function created in subtask 2.1. This ensures that no sensitive data is ever written to the logs. This new utility should be exported for use throughout the application.
+

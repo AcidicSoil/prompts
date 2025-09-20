@@ -1,0 +1,43 @@
+# Task ID: 13
+# Title: Author Planning Phase Prompts
+# Status: pending
+# Dependencies: 11
+# Priority: medium
+# Description: Create at least one slash-command prompt for the 'planning' phase of the development lifecycle.
+# Details:
+As part of the 'Lifecycle Prompt Library', author a markdown prompt with YAML front matter indicating `phase: planning`. The prompt should guide a user through a planning activity, such as breaking down a feature or defining acceptance criteria, consistent with the `WORKFLOW.md` document.
+
+# Test Strategy:
+Run the prompt and check that its output is directive, concise, and aligns with the planning stage. Verify its metadata is correctly added to `catalog.json` and the `README.md` tables after running the build scripts.
+
+# Subtasks:
+## 1. Research Planning Phase Requirements in WORKFLOW.md [pending]
+### Dependencies: None
+### Description: Analyze the 'Planning' section of WORKFLOW.md to understand the key activities, such as feature breakdown and defining acceptance criteria. This research will define the scope and purpose of the new planning prompt.
+### Details:
+Read the WORKFLOW.md file to identify the specific goals and outputs expected during the planning phase of the development lifecycle. This will ensure the prompt aligns with the established process.
+
+## 2. Create Initial Draft of `feature-breakdown.md` Prompt [pending]
+### Dependencies: 13.1
+### Description: Create a new markdown file at `src/prompts/commands/planning/feature-breakdown.md`. Draft the initial version of the prompt's instructional text to guide a user through breaking down a feature into actionable tasks.
+### Details:
+Based on the research from the previous subtask, write the main body of the prompt. The text should instruct the AI on how to analyze a feature request and output a structured plan.
+
+## 3. Add YAML Front Matter to `feature-breakdown.md` [pending]
+### Dependencies: 13.2
+### Description: Add the required YAML front matter to the `src/prompts/commands/planning/feature-breakdown.md` file. This includes a `title`, `description`, and `phase: planning`.
+### Details:
+The front matter is critical for the prompt to be recognized by the system. The title should be actionable, like 'Feature Breakdown', and the description should clearly state its purpose. The `phase` must be set to `planning`.
+
+## 4. Refine and Test the Feature Breakdown Prompt [pending]
+### Dependencies: 13.3
+### Description: Iteratively test the `feature-breakdown.md` prompt by running it with a sample feature description. Refine the prompt's text to ensure the output is structured, clear, and consistently provides actionable subtasks and acceptance criteria.
+### Details:
+This step involves practical testing of the prompt's effectiveness. The goal is to fine-tune the instructions until the AI's output reliably meets the standards defined in WORKFLOW.md for the planning phase.
+
+## 5. Run Build Scripts and Verify Prompt Integration [pending]
+### Dependencies: 13.4
+### Description: Execute the project's build scripts to update the prompt catalog and documentation. Verify that the new 'Feature Breakdown' prompt is correctly added to `catalog.json` and the relevant tables in `README.md`.
+### Details:
+The final step is to ensure the new prompt is properly integrated into the project's ecosystem. This involves running any scripts responsible for cataloging and documenting available prompts.
+

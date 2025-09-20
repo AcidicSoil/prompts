@@ -1,0 +1,43 @@
+# Task ID: 14
+# Title: Author Scaffolding Phase Prompts
+# Status: pending
+# Dependencies: 11
+# Priority: medium
+# Description: Create at least one slash-command prompt for the 'scaffolding' phase of the development lifecycle.
+# Details:
+As part of the 'Lifecycle Prompt Library', author a markdown prompt with YAML front matter indicating `phase: scaffolding`. The prompt should assist a developer in generating boilerplate code, setting up file structures, or creating initial components based on a plan.
+
+# Test Strategy:
+Run the prompt and check that its output helps accelerate initial code creation. Verify its metadata is correctly added to `catalog.json` and the `README.md` tables after running the build scripts.
+
+# Subtasks:
+## 1. Define Scope for '/scaffold-component' Prompt [pending]
+### Dependencies: None
+### Description: Define the specific scope and target for the new scaffolding prompt. Decide on the component type, language, and framework to be scaffolded, as recommended by the complexity report. This initial definition will guide the subsequent implementation.
+### Details:
+Based on the complexity report's recommendation, the target will be a React functional component using TypeScript. Document the expected inputs (e.g., component name, list of props) and the desired output structure (e.g., a single `.tsx` file with boilerplate code, prop types, and basic JSX). This definition serves as the design document for the prompt.
+
+## 2. Create 'scaffold-component.md' with YAML Frontmatter [pending]
+### Dependencies: 14.1
+### Description: Create the new prompt file at 'prompts/library/scaffolding/scaffold-component.md' and add the YAML frontmatter based on the scope defined in the previous subtask.
+### Details:
+Create the file `prompts/library/scaffolding/scaffold-component.md`. The YAML frontmatter should include `title: Scaffold Component`, `description`, `author`, `tags: ["scaffolding", "react", "typescript", "component"]`, and `phase: scaffolding`. The description should clearly state that it generates a React functional component with TypeScript.
+
+## 3. Write the Main Prompt Body for '/scaffold-component' [pending]
+### Dependencies: 14.2
+### Description: Write the main body of the prompt in 'scaffold-component.md'. This section should contain the core instructions for the AI on how to generate the component.
+### Details:
+In the markdown file, add 'System' and 'Instructions' sections. The instructions should guide the AI to: 1. Accept a component name and a list of props as input. 2. Generate a TypeScript interface for the props. 3. Create a React functional component using the provided name and props interface. 4. Include basic JSX structure. 5. Return the output as a single, formatted code block.
+
+## 4. Add a Detailed Example to 'scaffold-component.md' [pending]
+### Dependencies: 14.3
+### Description: Add a comprehensive 'Example' section to the 'scaffold-component.md' prompt file to demonstrate its usage and expected output.
+### Details:
+Append an '## Example' section to the markdown file. The example should show a sample user request (e.g., `/scaffold-component name:UserProfile props:name:string,age:number`) and the corresponding complete AI response, including the generated `.tsx` code for the `UserProfile` component.
+
+## 5. Test and Verify '/scaffold-component' Prompt Integration [pending]
+### Dependencies: 14.4
+### Description: Test the completed prompt by running it in a development environment. Verify the generated code is correct and that the prompt is correctly integrated into the project's documentation.
+### Details:
+Execute the `/scaffold-component` prompt with the example inputs. Check if the output is a valid React/TypeScript component. After confirming functionality, run the project's build scripts. Verify that the new prompt is added to the `catalog.json` file and appears in the appropriate table in the `README.md`.
+

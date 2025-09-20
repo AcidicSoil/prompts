@@ -1,0 +1,43 @@
+# Task ID: 8
+# Title: Implement `export_task_list` Tool
+# Status: done
+# Dependencies: 3
+# Priority: medium
+# Description: Create the `export_task_list` tool to emit a compact task list for interoperability with external systems.
+# Details:
+Register a new MCP tool named `export_task_list`. The handler will read `resources/prompts.meta.yaml` and map its contents to a JSON array. Each element in the array should contain `id`, `title`, `dependsOn`, and a default `status: 'pending'`. This provides a simple, structured view of the entire workflow.
+
+# Test Strategy:
+Call the `export_task_list` tool. Validate that the returned JSON array contains an entry for every prompt defined in the metadata file and that the `id`, `title`, and `dependsOn` fields correctly match the source data.
+
+# Subtasks:
+## 1. Create `export_task_list` Tool Skeleton [done]
+### Dependencies: None
+### Description: Create the file `src/tools/export_task_list.ts` and define the basic structure for the new tool, including the factory function `createExportTaskListTool` and a placeholder implementation.
+### Details:
+Following the existing pattern in `src/tools`, create a new file for the `export_task_list` tool. It should export a factory function that returns a `Tool` object with the name 'export_task_list', a clear description, an empty input schema, and a handler that currently returns an empty array. This establishes the boilerplate for the tool.
+
+## 2. Implement YAML File Reading and Parsing [done]
+### Dependencies: 8.1
+### Description: Update the `export_task_list` tool handler to read and parse the `resources/prompts.meta.yaml` file.
+### Details:
+Use the `fs` module to read the contents of `resources/prompts.meta.yaml`. Add the `js-yaml` library as a dependency if it's not already part of the project. Use the library to parse the YAML content into a JavaScript array of objects. Implement basic error handling for file-not-found scenarios.
+
+## 3. Map Parsed YAML to the Specified JSON Array Format [done]
+### Dependencies: 8.2
+### Description: Transform the parsed data from `prompts.meta.yaml` into the final JSON array structure required by the task.
+### Details:
+Within the tool's handler, iterate over the array of parsed prompt objects. For each object, create a new object containing the `id`, `title`, and `dependsOn` fields from the source. Add a `status` field with a default value of 'pending'. The handler should return this newly created array.
+
+## 4. Register the Tool with the MCP Server [done]
+### Dependencies: 8.1
+### Description: Integrate the newly created `export_task_list` tool into the main application by registering it with the MCP server on startup.
+### Details:
+In `src/main.ts`, import the `createExportTaskListTool` factory function. In the main server initialization block, call the factory and pass the resulting tool object to the `server.registerTool()` method. This will make the tool available via the MCP.
+
+## 5. Create an Integration Test for the `export_task_list` Tool [done]
+### Dependencies: 8.3, 8.4
+### Description: Write a test that invokes the complete `export_task_list` tool and validates its output against a known `prompts.meta.yaml` file.
+### Details:
+Create a test file `src/tools/export_task_list.test.ts`. The test should execute the tool's handler. It should use a test-specific version of `prompts.meta.yaml` to ensure a stable test environment. The test will assert that the returned JSON array correctly reflects the contents of the test YAML file, verifying the entire flow from file reading to data transformation.
+

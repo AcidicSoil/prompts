@@ -1,0 +1,43 @@
+# Task ID: 7
+# Title: Implement `advance_state` Tool
+# Status: done
+# Dependencies: 5, 6
+# Priority: high
+# Description: Create the `advance_state` MCP tool to mark a tool as complete and record its outputs and artifacts in the state file.
+# Details:
+Register a new MCP tool named `advance_state`. Its handler will accept a tool `id`, `outputs`, and a list of `artifacts`. The handler will call a `recordCompletion` method on the `StateStore` instance, which updates the in-memory state by adding the completed tool and merging the new artifacts. The handler then triggers the `StateStore` to save the updated state to disk. It should return `{ ok: true }` and the path to the state file on success.
+
+# Test Strategy:
+Call `advance_state` with a valid tool ID and artifact mapping. Inspect the resulting `.mcp/state.json` file to confirm it contains the new completion record with a timestamp, outputs, and the correct artifact paths.
+
+# Subtasks:
+## 1. Implement `recordCompletion` Method in `StateStore` [done]
+### Dependencies: None
+### Description: Add a new public method `recordCompletion` to the `StateStore` class in `src/state/state-store.ts`. This method will accept a tool `id`, `outputs`, and a list of `artifacts`. It should create a `ToolCompletion` object with a new timestamp, add it to the `completedTools` map, and merge the new artifacts into the main `artifacts` map within the in-memory `ProjectState` object.
+### Details:
+The method signature should be `recordCompletion(id: string, outputs: Record<string, any>, artifacts: Artifact[])`. It should not call `save()` itself; that responsibility will lie with the tool handler. The new artifacts should overwrite any existing artifacts with the same name. This method directly modifies the in-memory state managed by the `StateStore` instance.
+
+## 2. Define `advance_state` Tool and Zod Input Schema [done]
+### Dependencies: None
+### Description: Create a new file `src/tools/definitions/advance-state.ts`. In this file, define and export the Zod schema for the `advance_state` tool's input, which includes a string `id`, a `z.record(z.any())` for `outputs`, and an array of `artifact` objects for `artifacts`. Also, define the `McpTool` object with the name `advance_state`, a suitable description, and a reference to the schema.
+### Details:
+The artifact schema within the input array should validate `source`, `name`, and `uri` as strings, consistent with the `Artifact` type in `src/state/state-types.ts`. The main tool object will be exported to be used for registration later. The handler function can be a placeholder for now.
+
+## 3. Implement `advance_state` Handler to Call `recordCompletion` [done]
+### Dependencies: 7.1, 7.2
+### Description: In `src/tools/definitions/advance-state.ts`, implement the body of the `handler` function for the `advance_state` tool. The handler will use the `stateStore` from its context to call the `recordCompletion` method, passing the validated `id`, `outputs`, and `artifacts` from its input.
+### Details:
+The handler will receive `context: McpToolContext` and `input: { id: string, ... }`. It should destructure these arguments and call `context.stateStore.recordCompletion(input.id, input.outputs, input.artifacts)`. The handler function should be marked as `async`.
+
+## 4. Add State Persistence and Success Response to `advance_state` Handler [done]
+### Dependencies: 7.3
+### Description: Extend the `advance_state` handler in `src/tools/definitions/advance-state.ts`. After calling `recordCompletion`, the handler must call `await context.stateStore.save()` to persist the updated state to disk. On success, it should return an object `{ ok: true, statePath: <path_to_state.json> }`.
+### Details:
+The `save()` method on `StateStore` is asynchronous and must be awaited. The path to the state file can be retrieved from a property on the `stateStore` instance (e.g., `context.stateStore.statePath`). This completes the core logic of the tool.
+
+## 5. Register `advance_state` Tool with the MCP Server [done]
+### Dependencies: 7.2
+### Description: Import the `advance_state` tool definition from `src/tools/definitions/advance-state.ts` into the main tool registration location (likely `src/mcp/mcp-server.ts` or a dedicated tool loading module). Register the tool with the `ToolRegistry` instance so it becomes available to the MCP server.
+### Details:
+Locate the code block where other tools are registered, which is typically in the `McpServer` constructor or an initialization method. Add a line like `this.toolRegistry.registerTool(advanceStateTool);` to include the new tool in the server's list of available tools.
+

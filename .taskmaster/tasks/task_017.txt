@@ -1,0 +1,43 @@
+# Task ID: 17
+# Title: Author Post-Release Hardening Prompts
+# Status: pending
+# Dependencies: 11
+# Priority: medium
+# Description: Create at least one slash-command prompt for the 'post-release' phase of the development lifecycle.
+# Details:
+As part of the 'Lifecycle Prompt Library', author a markdown prompt with YAML front matter indicating `phase: post-release`. The prompt could guide a user in creating a post-mortem document, identifying areas for technical debt repayment, or hardening a feature based on initial feedback.
+
+# Test Strategy:
+Run the prompt and confirm its output is relevant to post-release activities. Verify its metadata is correctly added to `catalog.json` and the `README.md` tables after running the build scripts.
+
+# Subtasks:
+## 1. Define Scope and Goal for Post-Mortem Prompt [pending]
+### Dependencies: None
+### Description: Brainstorm and select a specific post-release activity for the new prompt. Settle on creating a 'post-mortem analysis' prompt to guide users in documenting and learning from a release cycle.
+### Details:
+Based on the parent task, decide on a concrete topic for the post-release prompt. The chosen topic is 'post-mortem analysis'. Define the prompt's primary goal: to help a user generate a structured post-mortem document by asking targeted questions about the release process, what went well, what didn't, and action items for improvement.
+
+## 2. Create 'conduct-post-mortem.md' and YAML Front Matter [pending]
+### Dependencies: 17.1
+### Description: Create the new markdown file for the post-mortem prompt in the correct directory and add the required YAML front matter.
+### Details:
+Create a new file at `prompts/lifecycle/post-release/conduct-post-mortem.md`. In this file, add the YAML front matter with the following keys: `name` set to `/conduct-post-mortem`, `description` summarizing its purpose, and `phase` set to `post-release`. This establishes the prompt's metadata for the build system.
+
+## 3. Author System Prompt and Instructions for Post-Mortem Analysis [pending]
+### Dependencies: 17.2
+### Description: Write the system prompt and detailed instructions within 'conduct-post-mortem.md' that define the AI's role and the structure of the post-mortem.
+### Details:
+In `prompts/lifecycle/post-release/conduct-post-mortem.md`, write the `# System Prompt` section. Define the AI's persona as an experienced project lead facilitating a blameless post-mortem. Under an `# Instructions` section, outline the steps the AI should take, such as asking for a summary of the release, what went well, what could be improved, and key learnings. The structure should encourage a comprehensive and constructive analysis.
+
+## 4. Author User Prompt and Finalize 'conduct-post-mortem.md' Content [pending]
+### Dependencies: 17.3
+### Description: Complete the prompt by adding the user prompt section and refining the overall content for clarity and effectiveness.
+### Details:
+In `prompts/lifecycle/post-release/conduct-post-mortem.md`, add the `# User Prompt` section. This section should include placeholders like `{{user_input}}` for the user to provide context about the project or release they want to analyze. Review and refine the entire prompt file for grammar, clarity, and flow.
+
+## 5. Verify Prompt Integration via Build Scripts [pending]
+### Dependencies: 17.4
+### Description: Run the project's build scripts and verify that the new '/conduct-post-mortem' prompt is correctly added to 'catalog.json' and the 'README.md' documentation.
+### Details:
+Execute the build script responsible for updating the prompt catalog (e.g., `npm run build:prompts`). After the script completes, inspect the `catalog.json` file to ensure an entry for `/conduct-post-mortem` exists with the correct metadata. Also, check the `README.md` file to confirm the prompt is listed in the appropriate table for the 'post-release' phase.
+

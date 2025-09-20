@@ -1,0 +1,31 @@
+# Task ID: 21
+# Title: Provide CLI surface for prompts workflow
+# Status: done
+# Dependencies: 8, 20
+# Priority: medium
+# Description: Create a Node.js CLI entry point that mirrors the MCP server capabilities (list prompts, refresh metadata, export task list, advance state) so users can operate without Task Master or an MCP client.
+# Details:
+Implement a `bin/prompts.js` (or TypeScript equivalent) that wraps metadata validation, catalog rebuilds, prompt listing, and workflow exports. Ensure commands can backfill tasks from prompt metadata when Task Master is unavailable. Document usage in the integration brief and README, and wire npm scripts so the CLI is easily invoked (e.g., `npm run prompts -- list`).
+
+# Test Strategy:
+Add unit tests for command handlers and run through an integration smoke test exercising list/refresh/export flows. Reuse existing test suites where possible.
+
+# Subtasks:
+## 1. Scaffold CLI command surface [done]
+### Dependencies: None
+### Description: Introduce a CLI scaffold (e.g., Commander or native argument parsing) with commands for list, refresh, and export.
+### Details:
+Ensure stdout emits human-readable output while `--json` preserves structured payloads.
+
+## 2. Wire workflow commands to existing scripts [done]
+### Dependencies: 21.1
+### Description: Hook CLI commands into metadata validation, catalog rebuild, and export_task_list backfill logic.
+### Details:
+Reuse the same utilities that power MCP tools to avoid drift.
+
+## 3. Document CLI usage and fallback flows [done]
+### Dependencies: 21.2
+### Description: Update the integration brief and README to show CLI-based workflows, including Task Master independent flows.
+### Details:
+Include examples for backfilling tasks and refreshing metadata without MCP clients.
+

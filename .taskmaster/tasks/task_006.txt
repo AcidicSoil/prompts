@@ -1,0 +1,43 @@
+# Task ID: 6
+# Title: Implement Planner `suggest_next_calls` Tool
+# Status: done
+# Dependencies: 4, 5
+# Priority: high
+# Description: Implement the `suggest_next_calls` tool to rank and suggest runnable tools based on DAG dependencies and available artifacts.
+# Details:
+Create a `Planner` class that loads `resources/default-graph.json` and the current state from the `StateStore`. Implement the logic for the `suggest_next_calls` tool. This logic should compute which nodes in the DAG are 'ready' by checking if their `dependsOn` nodes are complete and their `requiresArtifacts` are present in the state. Return a ranked list of candidates, sorted by `phase` and then `id`.
+
+# Test Strategy:
+Unit test the planner logic. Given an empty state, verify it returns `discover_research`. Simulate the completion of `discover_research` with a `research_summary` artifact and verify `define_prd` is now suggested. Test that a node with unmet artifact requirements is not returned.
+
+# Subtasks:
+## 1. Create Planner Class and Load `default-graph.json` [done]
+### Dependencies: None
+### Description: Create a new file `src/planner.ts` and define a `Planner` class. The constructor should read `resources/default-graph.json`, parse it, and store the graph nodes in a private member. Also, define the necessary types for graph nodes in `src/types.ts`.
+### Details:
+The class should have a private field `private graph: { nodes: any[] }`. The constructor will use `fs.readFileSync` and `JSON.parse` to load the graph data. The path to the graph file should be passed into the constructor. Add a `GraphNode` type definition to `src/types.ts` to represent the structure of nodes in the JSON file.
+
+## 2. Integrate `StateStore` into the `Planner` Class [done]
+### Dependencies: 6.1
+### Description: Modify the `Planner` class to accept a `StateStore` instance in its constructor. Store the `StateStore` instance as a private member to allow access to the current project state for subsequent logic.
+### Details:
+Update the `Planner` constructor signature to accept an instance of `StateStore` (from Task 5). Store the passed `stateStore` in a `private readonly stateStore: StateStore` field. This will be used by other methods to query the project's state.
+
+## 3. Implement `dependsOn` Completion Check in `Planner` [done]
+### Dependencies: 6.2
+### Description: Create a private helper method within the `Planner` class, e.g., `areDependenciesMet(node: GraphNode): boolean`. This method should check if all task IDs listed in the node's `dependsOn` array are present in the list of completed tools from the `StateStore`.
+### Details:
+The method will get the set of completed tool IDs from `this.stateStore.getCompletedToolIds()`. It will then iterate through the input node's `dependsOn` array and return `false` if any dependency ID is not in the completed set. If the `dependsOn` array is empty or all dependencies are met, it returns `true`.
+
+## 4. Implement `requiresArtifacts` Availability Check in `Planner` [done]
+### Dependencies: 6.2
+### Description: Create a private helper method, e.g., `areArtifactsAvailable(node: GraphNode): boolean`. This method should check if all artifacts listed in the node's `requiresArtifacts` array are available in the current state via the `StateStore`.
+### Details:
+The method will get the set of available artifact names from `this.stateStore.getAvailableArtifacts()`. It will then iterate through the input node's `requiresArtifacts` array and return `false` if any required artifact is not in the available set. If `requiresArtifacts` is empty or all are available, it returns `true`.
+
+## 5. Implement `suggest_next_calls` to Filter and Rank Ready Nodes [done]
+### Dependencies: 6.3, 6.4
+### Description: Implement the public `suggest_next_calls` method. This method will iterate through all graph nodes, filter out already completed nodes, and use the `areDependenciesMet` and `areArtifactsAvailable` helpers to find 'ready' nodes. Finally, it will sort the ready nodes by `phase` (ascending) and then by `id` (alphabetical) before returning them.
+### Details:
+The method should first get the list of completed tool IDs from the state. Then, it will `filter` the graph nodes based on three conditions: 1) The node's ID is not in the completed list. 2) `this.areDependenciesMet(node)` is true. 3) `this.areArtifactsAvailable(node)` is true. The resulting array of nodes should then be sorted using a custom comparator for `phase` then `id`.
+

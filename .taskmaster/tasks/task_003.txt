@@ -1,0 +1,43 @@
+# Task ID: 3
+# Title: Implement Resource Exposure
+# Status: done
+# Dependencies: 1, 2
+# Priority: high
+# Description: Load prompt metadata from `resources/prompts.meta.yaml` and expose each prompt's Markdown file as a `file://` resource.
+# Details:
+On server startup, parse `prompts.meta.yaml`. For each entry, register a resource with the MCP server. The resource should have a human-friendly name (from the `title` field) and a `file://` URI pointing to the absolute path of the corresponding Markdown file. The resource content preview should be capped using the utility from task 2.
+
+# Test Strategy:
+Start the server and use an MCP client to list resources. Verify that each prompt from the metadata file is listed with the correct name and a valid `file://` URI. Check that reading an oversized resource returns truncated content.
+
+# Subtasks:
+## 1. Create a utility to parse `prompts.meta.yaml` [done]
+### Dependencies: None
+### Description: Add the `js-yaml` dependency to the project. Create a new utility function that reads the `resources/prompts.meta.yaml` file, parses its content, and returns a structured object. This function should handle potential file read or parsing errors gracefully.
+### Details:
+Create a new file, e.g., `src/prompts/loader.ts`. Add a function `loadPromptMetadata()` that uses `fs.readFileSync` and `yaml.load`. Define a TypeScript interface for the expected structure of the YAML file (e.g., `{ prompts: [...] }`).
+
+## 2. Implement logic to transform metadata into resource objects [done]
+### Dependencies: 3.1
+### Description: Create a function that takes the parsed prompt metadata, iterates through each prompt entry, and transforms it into a `Resource` object as expected by the MCP server. This includes resolving the file path to an absolute `file://` URI.
+### Details:
+In `src/prompts/loader.ts`, create a function like `preparePromptResources(metadata)`. For each prompt, use the `path` module to resolve the relative file path from `prompts.meta.yaml` to an absolute path. Format the absolute path as a `file://` URI. The resulting object should conform to the `Resource` interface, which includes `name` (from `title`) and `uri`.
+
+## 3. Generate and cap content previews for each resource [done]
+### Dependencies: 3.2
+### Description: Enhance the resource preparation logic to read the content of each prompt's Markdown file and generate a capped content preview using the utility from task 2.
+### Details:
+Modify the function from the previous subtask. For each prompt, read the content of its Markdown file using `fs.readFileSync`. Import and use the `capContent` utility (assuming it's in `src/util/content.ts`) to truncate the file content. Add the resulting string to the `contentPreview` field of the `Resource` object.
+
+## 4. Integrate resource registration into the server startup sequence [done]
+### Dependencies: 3.2, 3.3
+### Description: In the main server entry point, call the new functions to load, prepare, and register the prompt resources with the MCP server instance after it has been initialized.
+### Details:
+Modify `src/main.ts`. After the `MCPServer` instance is created, call the prompt loading and preparation functions. Iterate over the generated list of `Resource` objects and call `mcpServer.registerResource()` for each one. This should happen before the server starts listening for connections.
+
+## 5. Add an integration test to validate resource exposure [done]
+### Dependencies: 3.4
+### Description: Create a new integration test that starts the server, uses an MCP client to request the list of all available resources, and validates that the prompts from `prompts.meta.yaml` are present with the correct details.
+### Details:
+In a new test file, e.g., `test/integration/resource.test.ts`, write a test case that connects to the running server. It should call the `list_resources` tool. The test will then assert that the returned list contains entries corresponding to the prompts, verifying the `name`, `uri` (is a valid `file://` URI), and `contentPreview` (is a non-empty, capped string).
+

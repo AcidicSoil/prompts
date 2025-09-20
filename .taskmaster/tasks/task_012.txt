@@ -1,0 +1,43 @@
+# Task ID: 12
+# Title: Create DocFetch Preflight Guardrail Prompt
+# Status: done
+# Dependencies: 11
+# Priority: high
+# Description: Author the primary slash-command prompt that enforces the DocFetch preflight check before planning or coding can proceed.
+# Details:
+Create a markdown prompt file (e.g., `prompts/preflight/docfetch-check.md`) with appropriate YAML front matter. The prompt's content should instruct the user on how to run the DocFetch tooling, validate the status of the `DocFetchReport`, and provide clear, actionable remediation steps if documentation sources are missing or stale. This directly implements the 'DocFetch Preflight Guardrails' feature.
+
+# Test Strategy:
+Execute the prompt via the Codex CLI. Verify that its output clearly states the success criteria (an OK DocFetchReport) and provides a clear remediation path for failure cases. Ensure the prompt's metadata is correctly processed by the validation and build scripts.
+
+# Subtasks:
+## 1. Create `docfetch-check.md` and Define YAML Front Matter [done]
+### Dependencies: None
+### Description: Create the markdown file for the DocFetch preflight prompt and add the necessary YAML front matter to define its metadata, following the structure suggested in the task description.
+### Details:
+Create the file at `prompts/preflight/docfetch-check.md`. Based on the parent task and similar prompts, the YAML front matter should include `id`, `title`, `description`, and `phase: preflight`. This establishes the prompt's identity within the system and associates it with the preflight check phase of the workflow.
+
+## 2. Draft Introduction Explaining the DocFetch Check's Purpose [done]
+### Dependencies: 12.1
+### Description: Write the introductory section of the prompt that explains to the user why the DocFetch preflight check is a necessary guardrail before proceeding with planning or coding.
+### Details:
+In `prompts/preflight/docfetch-check.md`, add a section below the front matter. This content should clearly explain that planning and coding require up-to-date project context from documentation, and that the DocFetch tool is designed to validate this context automatically.
+
+## 3. Add Instructions for Executing the DocFetch Tool [done]
+### Dependencies: 12.2
+### Description: Add a section to the prompt detailing the specific command(s) required to run the DocFetch tool and generate the `DocFetchReport`.
+### Details:
+In `prompts/preflight/docfetch-check.md`, create a clear, user-friendly section titled 'How to Run the Check'. Provide the exact command-line instruction to trigger the documentation fetching and analysis process. Use markdown code blocks for the command to make it easy to copy and paste.
+
+## 4. Document How to Interpret the `DocFetchReport` [done]
+### Dependencies: 12.3
+### Description: Add content that guides the user on how to find and interpret the `DocFetchReport` to determine if the check passed or failed.
+### Details:
+In `prompts/preflight/docfetch-check.md`, add a section explaining where the `DocFetchReport` is located (e.g., `.codex/reports/docfetch-report.json`). Describe what a successful report looks like (e.g., `status: 'OK'`) versus what a failure looks like (e.g., `status: 'STALE'`, `missingSources: [...]`). This section is crucial for user self-service.
+
+## 5. Author Remediation Steps for Failed DocFetch Checks [done]
+### Dependencies: 12.4
+### Description: Write the final section of the prompt, providing clear, actionable steps to resolve a failed DocFetch check based on the report's findings.
+### Details:
+In `prompts/preflight/docfetch-check.md`, create a 'Remediation Steps' or 'What to Do If It Fails' section. This should provide specific instructions for different failure scenarios, such as how to add missing documentation paths to the project's configuration file or how to force-refresh stale sources before re-running the DocFetch tool.
+

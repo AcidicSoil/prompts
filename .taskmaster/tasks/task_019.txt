@@ -1,0 +1,43 @@
+# Task ID: 19
+# Title: Document MCP Evolution Readiness in README
+# Status: pending
+# Dependencies: 18
+# Priority: low
+# Description: Update the `README.md` to include the 'Future enhancements' section detailing the MCP evolution path.
+# Details:
+Fulfill the 'MCP Evolution Readiness' requirement by adding a new section to the `README.md`. This section should describe the future-state architecture where the prompt pack is exposed as an MCP server with typed inputs and DocFetch event signals. Crucially, it must also specify the manual fallback paths (using slash commands) that remain functional if MCP is not available.
+
+# Test Strategy:
+Review the `README.md` file after modification. Confirm the new 'Future enhancements' section exists and contains the required architectural details and a clear statement about the manual fallback workflow, as per the PRD's acceptance criteria.
+
+# Subtasks:
+## 1. Add 'Future Enhancements' Section to README.md [pending]
+### Dependencies: None
+### Description: Edit the `README.md` file to add a new level-two heading titled '## Future Enhancements'. This section will serve as the container for the MCP evolution documentation.
+### Details:
+Locate the appropriate position in `README.md`, likely after the 'Usage' or 'Prompt Catalog' section, and insert the new markdown heading `## Future Enhancements` to create the designated area for the new content.
+
+## 2. Draft the Core MCP Server Vision [pending]
+### Dependencies: 19.1
+### Description: Under the new 'Future Enhancements' heading, write the primary description of the future-state architecture. This text should explain that the prompt pack will evolve to be exposed as a standalone MCP (Meta-prompt Communication Protocol) server.
+### Details:
+Describe the high-level goal: transitioning from a static collection of prompts to a dynamic service. Mention that this aligns with a more robust, service-oriented architecture for interacting with prompts.
+
+## 3. Detail Typed Inputs and DocFetch Event Signals [pending]
+### Dependencies: 19.2
+### Description: Expand on the MCP server vision by detailing its key technical features. Specifically, describe how the server will utilize typed inputs for prompts and emit DocFetch event signals.
+### Details:
+Explain that typed inputs will provide a structured and validated way to invoke prompts, replacing free-form text. Describe how DocFetch event signals will allow the server to communicate its state and requirements regarding documentation freshness to other development tools.
+
+## 4. Document the Manual Slash Command Fallback Path [pending]
+### Dependencies: 19.3
+### Description: Add a paragraph to the 'Future Enhancements' section that explicitly states the manual fallback mechanism. This must clarify that the current slash command interface will remain functional.
+### Details:
+This is a critical requirement. The text must reassure users that even if the MCP server is not available or integrated, the prompts can still be used via the existing, simpler slash command workflow. This ensures backward compatibility and usability in diverse environments.
+
+## 5. Review and Finalize MCP Evolution Section [pending]
+### Dependencies: 19.4
+### Description: Perform a comprehensive review of the entire 'Future Enhancements' section. Check for clarity, consistency in tone with the rest of the `README.md`, and ensure all requirements from the parent task are fully met.
+### Details:
+Read through the newly added section from the perspective of a new developer. Ensure the evolution path is easy to understand, the technical terms are used correctly, and the fallback mechanism is clearly highlighted. Correct any typos or grammatical errors.
+

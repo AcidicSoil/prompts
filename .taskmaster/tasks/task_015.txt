@@ -1,0 +1,43 @@
+# Task ID: 15
+# Title: Author Testing Phase Prompts
+# Status: pending
+# Dependencies: 11
+# Priority: medium
+# Description: Create at least one slash-command prompt for the 'testing' phase of the development lifecycle.
+# Details:
+As part of the 'Lifecycle Prompt Library', author a markdown prompt with YAML front matter indicating `phase: testing`. The prompt should guide a developer in writing unit tests, integration tests, or generating test case tables.
+
+# Test Strategy:
+Run the prompt and confirm its output provides useful guidance for creating tests. Verify its metadata is correctly added to `catalog.json` and the `README.md` tables after running the build scripts.
+
+# Subtasks:
+## 1. Create initial prompt file for test case generation [pending]
+### Dependencies: None
+### Description: Following the pattern observed in `prompts/lifecycle/`, create the initial markdown file for the test case generation prompt.
+### Details:
+Create a new file at `prompts/lifecycle/testing-generate-cases.md`. Add the standard YAML front matter including `name: /test/generate-cases`, a suitable `description`, and `phase: testing`. The main body of the prompt can be a placeholder for now.
+
+## 2. Develop prompt content for generating test case tables in 'testing-generate-cases.md' [pending]
+### Dependencies: 15.1
+### Description: Flesh out the markdown content for the `testing-generate-cases.md` prompt to guide an AI in creating structured test case tables.
+### Details:
+In the file `prompts/lifecycle/testing-generate-cases.md`, write a detailed prompt that instructs the AI to analyze user stories, requirements, or code snippets and produce a markdown table of test cases. The table should include columns for Test ID, Description, Steps, Expected Result, and Type (e.g., Happy Path, Edge Case, Error).
+
+## 3. Create and author the 'write-unit-tests' prompt [pending]
+### Dependencies: None
+### Description: Create a new, self-contained prompt file dedicated to generating unit tests for a specific function or module.
+### Details:
+Create the file `prompts/lifecycle/testing-unit-tests.md`. Add YAML front matter with `name: /test/unit-tests`, a description, and `phase: testing`. The prompt content should guide the AI to write unit tests for a provided code snippet, including instructions on mocking dependencies and asserting expected outcomes using a common testing framework like Jest or Pytest.
+
+## 4. Create and author the 'write-integration-tests' prompt [pending]
+### Dependencies: None
+### Description: Create a new, self-contained prompt file for generating integration tests between multiple components.
+### Details:
+Create the file `prompts/lifecycle/testing-integration-tests.md`. Add YAML front matter with `name: /test/integration-tests`, a description, and `phase: testing`. The prompt content should instruct the AI to write tests that verify the interaction, data flow, and contract between two or more specified components or services.
+
+## 5. Run build scripts and verify all new testing prompts in catalog [pending]
+### Dependencies: 15.2, 15.3, 15.4
+### Description: After the three new testing prompts are authored, run the build process to update the prompt catalog and documentation, and verify their inclusion.
+### Details:
+Execute the `npm run build:prompts` script (or equivalent build script). Check the generated `prompts/catalog.json` file to ensure the three new prompts (`/test/generate-cases`, `/test/unit-tests`, `/test/integration-tests`) are present with correct metadata. Also, verify they are listed in the appropriate table in the main `README.md`.
+

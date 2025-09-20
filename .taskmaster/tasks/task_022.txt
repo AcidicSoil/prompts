@@ -1,0 +1,58 @@
+# Task ID: 22
+# Title: Document CLI Distribution and Usage Lifecycle
+# Status: in-progress
+# Dependencies: 21
+# Priority: medium
+# Description: Create comprehensive documentation in the README.md for publishing the Node.js CLI to npm and for end-user installation and usage, based on the CLI created in Task 21.
+# Details:
+A new section, titled 'CLI Distribution and Usage', should be added to the main `README.md`. This section must provide clear guidance for developers on the entire lifecycle of the CLI tool.
+
+1.  **Prepare for Publishing:**
+    *   Confirm the `bin` field in `package.json` correctly maps a command name (e.g., `prompts-cli`) to the compiled JavaScript entry point (e.g., `dist/bin/prompts.js`).
+    *   Ensure the main CLI source file (likely `src/bin/prompts.ts` or similar from Task 21) includes a shebang at the very top: `#!/usr/bin/env node`.
+    *   Add or verify the `files` array in `package.json` to include `"dist"`, `"README.md"`, and other necessary assets, ensuring no source or test files are published.
+
+2.  **Local Development Workflow:**
+    *   Document the `npm link` process for testing the CLI globally without publishing. The steps are: `npm run build` (to compile TypeScript), followed by `npm link`.
+    *   Provide an example of how to test the linked command (e.g., `prompts-cli list`).
+    *   Include instructions for `npm unlink` to remove the local symlink.
+
+3.  **Publishing to npm:**
+    *   Outline the standard procedure: `npm login`, version bumping with `npm version <patch|minor|major>`, and publishing with `npm publish`.
+    *   Recommend adding a `prepublishOnly` script to `package.json` that runs the build and test scripts (`npm run test && npm run build`) to prevent accidental publishing of broken code.
+
+4.  **End-User Installation and Usage:**
+    *   Provide the command for global installation: `npm install -g <package-name>`.
+    *   Show a basic usage example, referencing the commands implemented in Task 21, such as `prompts-cli list` and `prompts-cli refresh`.
+
+# Test Strategy:
+1. Review the `README.md` file to confirm the new 'CLI Distribution and Usage' section is present and covers all points from the implementation details.
+2. Manually execute the documented local development workflow: run `npm run build`, then `npm link`. Open a new terminal session and execute one of the CLI commands (e.g., `prompts-cli list`). Confirm it works as expected. Run `npm unlink` and verify the command is no longer available.
+3. Inspect `package.json` to ensure the `bin`, `files`, and recommended `prepublishOnly` script are correctly configured.
+4. Check the primary CLI source file (e.g., `src/bin/prompts.ts`) to verify the `#!/usr/bin/env node` shebang is present.
+
+# Subtasks:
+## 1. Capture local CLI build smoke test [pending]
+### Dependencies: None
+### Description: Write the guidance for building the CLI (`npm run build` / `node dist/cli/main.js`) and verifying command output locally before any linking. Definition of done: instructions mention rebuilding after changes and checking the command via Node directly.
+### Details:
+
+
+## 2. Document npm link workflow for local testing [pending]
+### Dependencies: None
+### Description: Detail the two-step `npm link` process (global link from CLI project, then link into a sample consumer) plus cleanup commands. Definition of done: guidance covers shortcut usage, unlinking, and cautions about re-running after rebuilds.
+### Details:
+
+
+## 3. Outline publish preparation checklist [pending]
+### Dependencies: None
+### Description: Capture the pre-publish steps: package.json metadata review, `npm version` bump, `npm pack` inspection, optional dry run, and scoped package access flags. Definition of done: checklist references provenance/OTP considerations and stresses not to overwrite versions.
+### Details:
+
+
+## 4. Describe global install and maintenance guidance [pending]
+### Dependencies: None
+### Description: Add instructions for publishing (`npm publish`), global installation (`npm install -g`), updates, and uninstall paths for end users. Definition of done: notes include verifying README on npm, recommending `npm update -g`, and documenting uninstall commands.
+### Details:
+
+

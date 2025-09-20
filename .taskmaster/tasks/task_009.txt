@@ -1,0 +1,43 @@
+# Task ID: 9
+# Title: Implement Token Bucket Rate Limiter Utility
+# Status: pending
+# Dependencies: 1
+# Priority: low
+# Description: Provide a `TokenBucket` utility for rate limiting, intended for future use with external HTTP integrations.
+# Details:
+Create a `TokenBucket` class with a constructor that accepts `capacity` and `refillPerSec`. Implement a `take(count)` method that decrements the token count. If not enough tokens are available, the method should asynchronously wait for the required number of tokens to be refilled before resolving. This is a foundational component for future safety controls.
+
+# Test Strategy:
+Unit test the `TokenBucket`. Verify that calling `take(1)` when the bucket is empty causes a delay approximately equal to `1 / refillPerSec`. Test that taking the full capacity immediately depletes the tokens and that they recover over time as expected.
+
+# Subtasks:
+## 1. Create `TokenBucket.ts` with Class Skeleton and Constructor [pending]
+### Dependencies: None
+### Description: Create the file `src/utils/TokenBucket.ts`. Define the `TokenBucket` class with a constructor that accepts `capacity` and `refillPerSec`. Initialize class properties for `capacity`, `refillPerSec`, `tokens`, and `lastRefillTime`.
+### Details:
+This subtask establishes the foundational file and class structure. The constructor should initialize `this.tokens` to `this.capacity` and `this.lastRefillTime` to the current time (`Date.now()`). Also, create the corresponding test file `tests/TokenBucket.test.ts` with a placeholder test suite.
+
+## 2. Implement Private `_refill` Method for Token Replenishment [pending]
+### Dependencies: 9.1
+### Description: Implement a private helper method, `_refill()`, inside the `TokenBucket` class. This method will calculate the number of new tokens to add based on the time elapsed since `lastRefillTime` and the `refillPerSec` rate.
+### Details:
+The `_refill` method should calculate elapsed time since the last refill, determine the number of tokens to add, and update `this.lastRefillTime` to the current time. It must ensure that the number of tokens does not exceed the `capacity`. This isolates the core state update logic.
+
+## 3. Implement Synchronous Path for `take(count)` Method [pending]
+### Dependencies: 9.2
+### Description: Implement the `take(count)` method. It should first call the `_refill()` method to ensure the token count is up-to-date. Then, it should handle the synchronous case where sufficient tokens are available.
+### Details:
+The `take` method will be `async`. After calling `_refill()`, if `this.tokens >= count`, the method should decrement `this.tokens` by `count` and resolve immediately. This covers the 'happy path' where no waiting is necessary.
+
+## 4. Implement Asynchronous Waiting Logic in `take(count)` [pending]
+### Dependencies: 9.3
+### Description: Enhance the `take(count)` method to handle cases where there are insufficient tokens. The method should calculate the necessary delay until enough tokens are available and wait asynchronously before proceeding.
+### Details:
+When `this.tokens < count`, calculate the `tokensNeeded` and the `waitTime` in milliseconds. Use `new Promise(resolve => setTimeout(resolve, waitTime))` to pause execution. After the delay, recursively call `this.take(count)` to re-evaluate and consume the tokens.
+
+## 5. Write Comprehensive Unit Tests in `tests/TokenBucket.test.ts` [pending]
+### Dependencies: 9.4
+### Description: Implement unit tests in `tests/TokenBucket.test.ts` to validate the `TokenBucket` functionality, including asynchronous behavior.
+### Details:
+Tests should cover: 1. Initial state (full bucket). 2. Immediate depletion of tokens. 3. Correct asynchronous delay when taking from an empty bucket. 4. Gradual refill over time. Use a testing framework like Jest with fake timers to control time during tests and make assertions on wait times.
+

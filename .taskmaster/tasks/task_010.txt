@@ -1,0 +1,43 @@
+# Task ID: 10
+# Title: Implement Prompt Metadata Validation Script
+# Status: done
+# Dependencies: None
+# Priority: high
+# Description: Flesh out the `scripts/validate_metadata.ts` script to parse YAML front matter from all markdown prompt files and validate it against a strict schema.
+# Details:
+The script must be executed via `npm run validate:metadata`. It should read all `.md` files in the prompts directory, extract the YAML front matter, and ensure required fields (e.g., `id`, `title`, `phase`, `description`) are present and correctly typed. The script should exit with a non-zero code if validation fails, logging clear error messages about which file and field are invalid. This aligns with the 'Prompt Metadata Automation' feature and is a prerequisite for building the catalog.
+
+# Test Strategy:
+Create a temporary valid prompt file and an invalid one (e.g., missing a required field). Run the script against them. Verify the script passes for the valid file and fails with a descriptive error for the invalid one. Ensure it correctly handles various data types.
+
+# Subtasks:
+## 1. Add Dependencies and Configure `validate:metadata` NPM Script [done]
+### Dependencies: None
+### Description: Add `zod`, `gray-matter`, and `glob` as development dependencies to `package.json`. Ensure the `validate:metadata` script in `package.json` is correctly configured to execute `scripts/validate_metadata.ts` using `ts-node`.
+### Details:
+This foundational step ensures all required tools are available before writing the core logic. The command should be `npm install zod gray-matter glob --save-dev`. The script should be `"validate:metadata": "ts-node scripts/validate_metadata.ts"`.
+
+## 2. Define Prompt Metadata Schema using Zod [done]
+### Dependencies: 10.1
+### Description: In `scripts/validate_metadata.ts`, define a strict Zod schema for the prompt's YAML front matter. The schema must enforce the presence and correct types for `id` (string), `title` (string), `phase` (number), and `description` (string).
+### Details:
+Create a `const promptMetadataSchema = z.object({...})`. This schema will be the single source of truth for metadata validation and should be placed at the top of the script file for clarity.
+
+## 3. Implement File Discovery for Prompt Markdown Files [done]
+### Dependencies: 10.1
+### Description: In `scripts/validate_metadata.ts`, use the `glob` library to implement a function that finds and returns a list of all `.md` file paths within the `prompts/` directory and its subdirectories.
+### Details:
+The function should asynchronously find all files matching the pattern `prompts/**/*.md`. This isolates the file system interaction from the parsing and validation logic. The main script function will await the result of this discovery.
+
+## 4. Implement Main Loop to Parse and Validate Front Matter [done]
+### Dependencies: 10.2, 10.3
+### Description: Create the main execution logic in `scripts/validate_metadata.ts`. This logic should iterate through the file paths discovered in subtask 3, read each file's content, use `gray-matter` to parse the YAML front matter, and then validate the resulting object against the Zod schema defined in subtask 2.
+### Details:
+This subtask ties together file discovery, parsing, and validation. It will form the core of the script's functionality. Use `fs.readFileSync` to get file content and `matter()` from `gray-matter` to extract the `data` object for validation.
+
+## 5. Implement Error Reporting and Non-Zero Exit Code on Failure [done]
+### Dependencies: 10.4
+### Description: Enhance the validation loop to handle validation failures. When a file's metadata is invalid, log a clear error message to the console specifying the file path and the nature of the validation error. The script must exit with `process.exit(1)` if any validation errors are found.
+### Details:
+Use a `try...catch` block around the Zod `safeParse` method. If the parse result is not successful, format the `ZodError` into a user-friendly message. Track a global error flag or a count of errors to determine the final exit code after checking all files.
+

@@ -1,0 +1,43 @@
+# Task ID: 11
+# Title: Implement Catalog and README Build Script
+# Status: done
+# Dependencies: 10
+# Priority: high
+# Description: Develop the `scripts/build_catalog.ts` script to automatically generate `catalog.json` and update the prompt tables in `README.md` based on the metadata from all prompt files.
+# Details:
+This script, run via `npm run build:catalog`, will consume the validated metadata from all `.md` prompt files. It will then generate a `catalog.json` file containing an array of all prompt metadata objects. Concurrently, it will parse `README.md`, find placeholder tags, and inject updated markdown tables, ensuring the README stays synchronized with the prompt library. This fulfills a core requirement of 'Prompt Metadata Automation'.
+
+# Test Strategy:
+After creating a few sample prompts, run the script. Check that `catalog.json` is created or updated correctly. Inspect `README.md` to confirm the prompt tables are accurately regenerated. Verify that running the script a second time without changes results in no file modifications.
+
+# Subtasks:
+## 1. Create a Utility to Discover All Prompt Markdown Files [done]
+### Dependencies: None
+### Description: Within the new `scripts/build_catalog.ts` file, implement a utility function that finds all prompt markdown files. This function will use a glob pattern to recursively search the `prompts/` directory for all files ending in `.md` and return an array of their full paths.
+### Details:
+This is the initial step for gathering the source files. A library like `glob` or `fast-glob` should be added as a dev dependency to handle the file system traversal. The function should be designed to be reusable within the script.
+
+## 2. Implement a Parser to Extract and Validate Prompt Front-Matter [done]
+### Dependencies: 11.1
+### Description: Create a function that accepts a file path, reads the markdown file's content, and parses its YAML front-matter using the `gray-matter` library. The extracted metadata object should then be validated against a predefined schema to ensure it contains all required fields (e.g., id, title, description).
+### Details:
+This function is critical for consuming the prompt files discovered in the previous subtask. A validation library like `zod` should be used to define and enforce the metadata structure. The function should throw a clear error or log a warning if a file is missing front-matter or if the metadata is invalid.
+
+## 3. Develop Main Script Logic to Aggregate Metadata from All Prompts [done]
+### Dependencies: 11.1, 11.2
+### Description: Implement the main execution logic in `scripts/build_catalog.ts`. This logic will use the discovery utility (11.1) to get all prompt file paths, then iterate through them, calling the parser (11.2) on each. All successfully parsed and validated metadata objects should be collected into a single in-memory array.
+### Details:
+This subtask orchestrates the data collection process. The main function should handle errors from the parsing step by logging the problematic file and continuing, ensuring that one bad file doesn't halt the entire process. The final result is a complete, in-memory representation of the prompt catalog.
+
+## 4. Implement `catalog.json` Generation from Aggregated Metadata [done]
+### Dependencies: 11.3
+### Description: Create a function that takes the aggregated array of prompt metadata (from 11.3), sorts it by prompt ID, serializes it into a human-readable JSON string, and writes it to the `catalog.json` file in the project root.
+### Details:
+This function is responsible for the first major output of the script. It should use `JSON.stringify` with an indentation setting for pretty-printing. The file write operation should overwrite the existing `catalog.json` to ensure it's always up-to-date.
+
+## 5. Implement README.md Update with Auto-Generated Prompt Table [done]
+### Dependencies: 11.3
+### Description: Develop a function that generates a Markdown table from the aggregated prompt metadata. This function must then read `README.md`, find the `<!-- PROMPT_TABLE_START -->` and `<!-- PROMPT_TABLE_END -->` comment tags, and replace all content between them with the newly generated table.
+### Details:
+This function ensures the project's documentation stays synchronized with the prompt library. The table should include columns for ID, Title, and Description. The file update logic must be precise, likely using a regular expression, to avoid modifying any other part of the `README.md` file.
+

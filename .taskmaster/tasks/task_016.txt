@@ -1,0 +1,48 @@
+# Task ID: 16
+# Title: Author Release Phase Prompts
+# Status: pending
+# Dependencies: 11
+# Priority: medium
+# Description: Create at least one slash-command prompt for the 'release' phase of the development lifecycle.
+# Details:
+As part of the 'Lifecycle Prompt Library', author a markdown prompt with YAML front matter indicating `phase: release`. The prompt should assist with release-gating activities like generating release notes, creating a changelog, or verifying final checks.
+
+# Test Strategy:
+Run the prompt and check that its output supports pre-release activities. Verify its metadata is correctly added to `catalog.json` and the `README.md` tables after running the build scripts.
+
+# Subtasks:
+## 1. Create /generate-release-notes prompt file with initial YAML front matter [pending]
+### Dependencies: None
+### Description: Based on the analysis of existing prompts, create a new markdown file at `prompts/library/release/generate-release-notes.md`. Populate this file with the initial YAML front matter, including `title`, `description`, and `phase: release`.
+### Details:
+The file should be created in the `prompts/library/release/` directory. The YAML front matter should define the prompt's metadata. For example:
+---
+title: Generate Release Notes
+description: Creates a draft of release notes or a changelog from git history and guides through pre-release checks.
+phase: release
+---
+
+## 2. Draft the initial prompt logic to gather raw data for release notes [pending]
+### Dependencies: 16.1
+### Description: Following the guidance from the task complexity report, write the first part of the prompt. This section should instruct the AI on how to gather the raw data needed for release notes, such as by requesting the user to provide `git log` output between two release tags.
+### Details:
+Edit `prompts/library/release/generate-release-notes.md`. The prompt should ask the user to provide a list of commits or a git log. It should set the context for the AI to act as a release manager.
+
+## 3. Refine the prompt to format raw data into structured release notes [pending]
+### Dependencies: 16.2
+### Description: Enhance the prompt to process the raw input from the previous step. It should include instructions for categorizing commits (e.g., 'Features', 'Bug Fixes', 'Documentation') and formatting the output into a clean, markdown-formatted changelog.
+### Details:
+Update `prompts/library/release/generate-release-notes.md`. Add instructions for the AI to parse the provided commit messages, group them by type (e.g., using conventional commit prefixes like 'feat:', 'fix:'), and generate structured markdown output.
+
+## 4. Incorporate a pre-release checklist into the prompt [pending]
+### Dependencies: 16.3
+### Description: As recommended by the complexity report's expansion plan, add a final section to the prompt. This section should guide the user through a series of pre-release verification checks to ensure release readiness.
+### Details:
+Append a new section to `prompts/library/release/generate-release-notes.md`. This part of the prompt should generate a checklist for the user, including items like: 'Have version numbers been bumped?', 'Have all automated tests passed?', 'Is the documentation updated?'.
+
+## 5. Build and verify the /generate-release-notes prompt integration [pending]
+### Dependencies: 16.4
+### Description: Execute the project's build scripts to update the prompt catalog and documentation. Verify that the new `/generate-release-notes` prompt is correctly integrated into the system.
+### Details:
+Run the `npm run build:prompts` command (or equivalent build script). After the script completes, inspect the generated `catalog.json` file to ensure it contains an entry for the new prompt. Also, check the `README.md` file to confirm the prompt appears in the 'Release' phase table.
+
