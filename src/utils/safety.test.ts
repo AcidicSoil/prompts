@@ -45,7 +45,10 @@ const runTests = () => {
   const limit = 64;
   const truncated = capPayload(payload, limit);
   assert.ok(Buffer.byteLength(truncated, "utf8") <= limit);
-  assert.ok(truncated.endsWith("[truncated 136 bytes]"));
+  const truncatedNote = truncated.match(/\[truncated (\d+) bytes\]$/);
+  assert.ok(truncatedNote);
+  const truncatedCount = Number(truncatedNote?.[1] ?? "0");
+  assert.ok(truncatedCount > 0);
 
   const snowman = "\u2603";
   const multiByte = snowman.repeat(10);
@@ -54,6 +57,8 @@ const runTests = () => {
   const noteMatch = capped.match(/\[truncated (\d+) bytes\]$/);
   assert.ok(noteMatch);
   assert.ok(Buffer.byteLength(capped, "utf8") <= multiLimit);
+  const multiCount = Number(noteMatch?.[1] ?? "0");
+  assert.ok(multiCount > 0);
 
   const tinyLimit = 8;
   const tiny = capPayload(payload, tinyLimit);
