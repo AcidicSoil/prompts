@@ -483,7 +483,7 @@
         "dependencies": [
           3
         ],
-        "status": "pending",
+        "status": "done",
         "subtasks": [
           {
             "id": 1,
@@ -491,7 +491,7 @@
             "description": "Create the file `src/tools/export_task_list.ts` and define the basic structure for the new tool, including the factory function `createExportTaskListTool` and a placeholder implementation.",
             "dependencies": [],
             "details": "Following the existing pattern in `src/tools`, create a new file for the `export_task_list` tool. It should export a factory function that returns a `Tool` object with the name 'export_task_list', a clear description, an empty input schema, and a handler that currently returns an empty array. This establishes the boilerplate for the tool.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Verify the new file `src/tools/export_task_list.ts` exists and exports the `createExportTaskListTool` function. Ensure the returned tool object has the correct name."
           },
           {
@@ -502,7 +502,7 @@
               "8.1"
             ],
             "details": "Use the `fs` module to read the contents of `resources/prompts.meta.yaml`. Add the `js-yaml` library as a dependency if it's not already part of the project. Use the library to parse the YAML content into a JavaScript array of objects. Implement basic error handling for file-not-found scenarios.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "In a test environment, mock `fs.readFileSync` to return a sample YAML string. Call the handler and assert that it correctly parses the string into a JavaScript object without errors."
           },
           {
@@ -513,7 +513,7 @@
               "8.2"
             ],
             "details": "Within the tool's handler, iterate over the array of parsed prompt objects. For each object, create a new object containing the `id`, `title`, and `dependsOn` fields from the source. Add a `status` field with a default value of 'pending'. The handler should return this newly created array.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Write a unit test for the handler that provides a pre-parsed array of prompt objects. Verify that the returned array has the correct length and that each element contains the `id`, `title`, `dependsOn`, and `status` fields with the expected values."
           },
           {
@@ -524,7 +524,7 @@
               "8.1"
             ],
             "details": "In `src/main.ts`, import the `createExportTaskListTool` factory function. In the main server initialization block, call the factory and pass the resulting tool object to the `server.registerTool()` method. This will make the tool available via the MCP.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "After starting the server, use an MCP client or a test utility to list all available tools. Confirm that `export_task_list` appears in the list of registered tools."
           },
           {
@@ -536,7 +536,7 @@
               "8.4"
             ],
             "details": "Create a test file `src/tools/export_task_list.test.ts`. The test should execute the tool's handler. It should use a test-specific version of `prompts.meta.yaml` to ensure a stable test environment. The test will assert that the returned JSON array correctly reflects the contents of the test YAML file, verifying the entire flow from file reading to data transformation.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Run the test suite. The test should pass if the handler correctly reads a mock YAML file, transforms its content, and returns a JSON array matching the expected structure and values."
           }
         ]
@@ -1280,11 +1280,102 @@
             "testStrategy": "Have a peer or lead review the final `README.md` changes to confirm it meets the acceptance criteria of the parent task: the section exists, describes the MCP architecture, and specifies the manual fallback."
           }
         ]
+      },
+      {
+        "id": 20,
+        "title": "Align export_task_list with Task Master backlog",
+        "description": "Update the workflow MCP tool so it reads Task Master AI's tasks.json output, preserving dependencies, statuses, and subtask hierarchy for external agents.",
+        "details": "Refactor `workflow/export_task_list` to parse `.taskmaster/tasks/tasks.json` using the existing Zod infrastructure. The tool should flatten subtasks into parent/child arrays, propagate Task Master status values, and include metadata tying each result back to the originating task ID. Update integration tests to cover Task Master sourced data and document the new behaviour in the MCP integration brief.",
+        "testStrategy": "Add unit coverage for the new parser and extend `test/integration/tools.test.ts` to assert Task Master sourced results. Run `npm run test:tools` and `npm run test:state` to confirm no regressions.",
+        "priority": "high",
+        "dependencies": [
+          8
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Implement Task Master tasks parser",
+            "description": "Create a loader that reads `.taskmaster/tasks/tasks.json`, validates structure with Zod, and returns normalized tasks including subtasks and dependencies.",
+            "dependencies": [],
+            "details": "Prefer a pure function that accepts a JSON object so tests can inject fixtures. Match Task Master status strings exactly (e.g., pending, in-progress, done).",
+            "status": "pending",
+            "testStrategy": "Unit test the parser with representative Task Master fixtures covering nested subtasks and dependency references."
+          },
+          {
+            "id": 2,
+            "title": "Wire parser into workflow/export_task_list",
+            "description": "Replace the prompts metadata source with the new Task Master parser, ensuring structured results include parent-child relationships and status propagation.",
+            "dependencies": [
+              "20.1"
+            ],
+            "details": "Return payload should include `source: 'task-master'` and maintain the schema expected by existing clients (id, title, dependsOn, status).",
+            "status": "pending",
+            "testStrategy": "Extend integration tests in `test/integration/tools.test.ts` to assert the tool now reflects Task Master data."
+          },
+          {
+            "id": 3,
+            "title": "Document behaviour and update automation",
+            "description": "Refresh MCP documentation (integration brief, README) and ensure `workflow/refresh_metadata` guidance covers Task Master sourced tasks.",
+            "dependencies": [
+              "20.2"
+            ],
+            "details": "Note any manual fallback commands and confirm DocFetchReport call-outs where applicable.",
+            "status": "pending",
+            "testStrategy": "Review docs for accuracy; no automated tests required."
+          }
+        ]
+      },
+      {
+        "id": 21,
+        "title": "Provide CLI surface for prompts workflow",
+        "description": "Create a Node.js CLI entry point that mirrors the MCP server capabilities (list prompts, refresh metadata, export task list, advance state) so users can operate without Task Master or an MCP client.",
+        "details": "Implement a `bin/prompts.js` (or TypeScript equivalent) that wraps metadata validation, catalog rebuilds, prompt listing, and workflow exports. Ensure commands can backfill tasks from prompt metadata when Task Master is unavailable. Document usage in the integration brief and README, and wire npm scripts so the CLI is easily invoked (e.g., `npm run prompts -- list`).",
+        "testStrategy": "Add unit tests for command handlers and run through an integration smoke test exercising list/refresh/export flows. Reuse existing test suites where possible.",
+        "priority": "medium",
+        "dependencies": [
+          8,
+          20
+        ],
+        "status": "done",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Scaffold CLI command surface",
+            "description": "Introduce a CLI scaffold (e.g., Commander or native argument parsing) with commands for list, refresh, and export.",
+            "dependencies": [],
+            "details": "Ensure stdout emits human-readable output while `--json` preserves structured payloads.",
+            "status": "done",
+            "testStrategy": "Unit test argument parsing and help output."
+          },
+          {
+            "id": 2,
+            "title": "Wire workflow commands to existing scripts",
+            "description": "Hook CLI commands into metadata validation, catalog rebuild, and export_task_list backfill logic.",
+            "dependencies": [
+              "21.1"
+            ],
+            "details": "Reuse the same utilities that power MCP tools to avoid drift.",
+            "status": "done",
+            "testStrategy": "Integration test the CLI using a temporary workspace to ensure scripts run and outputs are generated."
+          },
+          {
+            "id": 3,
+            "title": "Document CLI usage and fallback flows",
+            "description": "Update the integration brief and README to show CLI-based workflows, including Task Master independent flows.",
+            "dependencies": [
+              "21.2"
+            ],
+            "details": "Include examples for backfilling tasks and refreshing metadata without MCP clients.",
+            "status": "done",
+            "testStrategy": "Peer review documentation for accuracy."
+          }
+        ]
       }
     ],
     "metadata": {
       "created": "2025-09-18T19:25:07.429Z",
-      "updated": "2025-09-20T17:24:33.753Z",
+      "updated": "2025-09-20T19:12:13.444Z",
       "description": "Tasks for master context"
     }
   }

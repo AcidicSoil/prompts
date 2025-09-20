@@ -3,33 +3,38 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "validate:metadata": "ts-node --esm scripts/validate_metadata.ts",
-    "build:catalog": "ts-node --esm scripts/build_catalog.ts",
-    "test:workflow": "node --loader ts-node/esm scripts/__tests__/workflow_sync.test.ts",
-    "test:safety": "TS_NODE_ESM_EXPERIMENTAL_SPECIFIER_RESOLUTION=node npx ts-node --esm src/utils/safety.test.ts",
-    "test:prompts": "node --loader ts-node/esm src/prompts/loader.test.ts",
-    "test:prompt-handler": "node --loader ts-node/esm src/tools/prompt-handler.test.ts",
-    "test:schemas": "node --loader ts-node/esm src/prompts/schema.test.ts",
-    "test:resources": "node --loader ts-node/esm test/integration/resources.test.ts",
-    "test:tools": "node --loader ts-node/esm test/integration/tools.test.ts",
-    "test": "npm run test:workflow && npm run test:safety && npm run test:prompts && npm run test:prompt-handler && npm run test:schemas && npm run test:resources && npm run test:tools && npm run test:state && npm run test:planner",
     "build": "tsc --project tsconfig.build.json",
-    "start": "node dist/index.js",
+    "build:catalog": "ts-node --esm scripts/build_catalog.ts",
     "inspect": "npx @modelcontextprotocol/inspector --config inspector.config.json",
+    "prompts": "TS_NODE_ESM_EXPERIMENTAL_SPECIFIER_RESOLUTION=node node --loader ts-node/esm src/cli/main.ts",
+    "start": "node dist/index.js",
+    "test": "npm run test:workflow && npm run test:safety && npm run test:prompts && npm run test:prompt-handler && npm run test:schemas && npm run test:resources && npm run test:tools && npm run test:state && npm run test:planner",
+    "test:planner": "node --loader ts-node/esm test/planner/Planner.test.ts",
+    "test:prompt-handler": "node --loader ts-node/esm src/tools/prompt-handler.test.ts",
+    "test:prompts": "node --loader ts-node/esm src/prompts/loader.test.ts",
+    "test:resources": "node --loader ts-node/esm test/integration/resources.test.ts",
+    "test:safety": "TS_NODE_ESM_EXPERIMENTAL_SPECIFIER_RESOLUTION=node npx ts-node --esm src/utils/safety.test.ts",
+    "test:schemas": "node --loader ts-node/esm src/prompts/schema.test.ts",
     "test:state": "node --loader ts-node/esm test/state/StateStore.test.ts",
-    "test:planner": "node --loader ts-node/esm test/planner/Planner.test.ts"
+    "test:tools": "node --loader ts-node/esm test/integration/tools.test.ts",
+    "test:workflow": "node --loader ts-node/esm scripts/__tests__/workflow_sync.test.ts",
+    "validate:metadata": "ts-node --esm scripts/validate_metadata.ts"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.17.5",
+    "commander": "^12.1.0",
     "js-yaml": "^4.1.0",
     "zod": "^3.25.76"
   },
   "devDependencies": {
     "@types/js-yaml": "^4.0.9",
     "@types/node": "^20.14.9",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.4.0",
     "glob": "^10.3.10",
-    "gray-matter": "^4.0.3"
+    "gray-matter": "^4.0.3",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.0"
+  },
+  "bin": {
+    "prompts": "./dist/cli/main.js"
   }
 }

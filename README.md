@@ -17,6 +17,17 @@ Run these commands whenever you add or edit prompts so the generated catalog sta
 
 `npm run build:catalog` must run after each prompt change; it keeps our published metadata accurate for the upcoming [MCP roadmap](#future-enhancements) work on tool exposure and state tracking. The pre-commit hook and CI guard execute these checks and will fail when `catalog.json` or the README tables are stale, so expect local or remote failures if the command is skipped.
 
+### Prompts CLI
+
+Use the bundled CLI to run the same workflows without an MCP client or Task Master:
+
+- `npm run prompts -- list` — show the current task backlog (add `--json` for raw output).
+- `npm run prompts -- refresh` — execute metadata validation and catalog rebuild. Pass `--update-workflow` to regenerate `WORKFLOW.md`.
+- `npm run prompts -- export` — emit the backlog as JSON for downstream tooling.
+- `npm run prompts -- advance <id>` — record state updates and artifacts (accepts `--outputs` and repeated `--artifact` JSON flags).
+
+The CLI shares the same logic as the MCP tools, so any changes remain consistent across all surfaces.
+
 ### Running the MCP server with Inspector
 
 When testing the MCP server via stdio transports, launch the binary directly so stdout remains reserved for JSON-RPC traffic.
@@ -29,6 +40,19 @@ When testing the MCP server via stdio transports, launch the binary directly so 
    - **Working Directory:** project root
 
 All logging is emitted to stderr, so Inspector receives a clean protocol stream without the `npm run start` banner that previously broke parsing.
+
+### MCP tools
+
+The server exposes two workflow helpers:
+
+- `refresh_metadata`: runs the same scripts we call manually:
+  
+- `npm run validate:metadata`
+- `npm run build:catalog` (pass `updateWorkflow: true` to also run with `--update-workflow`)
+
+Invoke this tool from Inspector or any MCP client to regenerate `catalog.json`, README tables, and—optionally—`WORKFLOW.md` in one step.
+
+- `export_task_list`: reads `resources/prompts.meta.yaml` and returns a normalized task list (`[{ id, title, dependsOn, status: 'pending' }]`) to feed external dashboards or automations.
 
 ## Using these prompts
 

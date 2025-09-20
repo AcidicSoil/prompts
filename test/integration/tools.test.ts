@@ -41,6 +41,8 @@ const run = async () => {
       "integration-test",
       "regression-guard",
       "release-notes",
+      "refresh_metadata",
+      "export_task_list",
     ]) {
       assert.ok(toolNames.includes(expected), `Expected tool ${expected}`);
     }
@@ -79,6 +81,25 @@ const run = async () => {
     assert.equal(state.completedTools.length, 1);
     assert.equal(state.completedTools[0].id, "instruction-file");
     assert.equal(state.artifacts.release_notes_context.uri, "file://context.json");
+
+    const exportResult = await client.callTool({
+      name: "export_task_list",
+      arguments: {},
+    });
+    const exportStructured = exportResult.structuredResult as Record<string, unknown>;
+    assert.ok(exportStructured && exportStructured.ok === true, "expected ok result from export_task_list");
+    const tasks = Array.isArray(exportStructured.tasks) ? exportStructured.tasks : [];
+    assert.ok(tasks.length > 0, "expected tasks from export_task_list");
+    const task = tasks.find((item) => (item as { id?: string }).id === "instruction-file");
+    assert.ok(task, "expected instruction-file task in export");
+
+    const refreshResult = await client.callTool({
+      name: "refresh_metadata",
+      arguments: {},
+    });
+    const refreshContent = Array.isArray(refreshResult.content) ? refreshResult.content[0] : undefined;
+    assert.ok(refreshContent && refreshContent.type === "text");
+    assert.ok(refreshContent.text.includes("Metadata validated"));
   } finally {
     await client.close();
     await server.close();
