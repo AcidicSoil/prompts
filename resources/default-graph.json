@@ -1,0 +1,46 @@
+{
+  "nodes": [
+    {
+      "id": "instruction-file",
+      "title": "Instruction File",
+      "phase": 0,
+      "dependsOn": [],
+      "requiresArtifacts": []
+    },
+    {
+      "id": "planning-process",
+      "title": "Planning Process",
+      "phase": 1,
+      "dependsOn": ["instruction-file"],
+      "requiresArtifacts": []
+    },
+    {
+      "id": "scope-control",
+      "title": "Scope Control",
+      "phase": 1,
+      "dependsOn": ["planning-process"],
+      "requiresArtifacts": []
+    },
+    {
+      "id": "integration-test",
+      "title": "Integration Test",
+      "phase": 5,
+      "dependsOn": ["scope-control"],
+      "requiresArtifacts": []
+    },
+    {
+      "id": "regression-guard",
+      "title": "Regression Guard",
+      "phase": 5,
+      "dependsOn": ["integration-test"],
+      "requiresArtifacts": ["test_results"]
+    },
+    {
+      "id": "release-notes",
+      "title": "Release Notes",
+      "phase": 7,
+      "dependsOn": ["regression-guard"],
+      "requiresArtifacts": ["release_notes_context"]
+    }
+  ]
+}

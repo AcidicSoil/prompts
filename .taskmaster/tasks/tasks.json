@@ -348,7 +348,7 @@
           4,
           5
         ],
-        "status": "pending",
+        "status": "done",
         "subtasks": [
           {
             "id": 1,
@@ -356,7 +356,7 @@
             "description": "Create a new file `src/planner.ts` and define a `Planner` class. The constructor should read `resources/default-graph.json`, parse it, and store the graph nodes in a private member. Also, define the necessary types for graph nodes in `src/types.ts`.",
             "dependencies": [],
             "details": "The class should have a private field `private graph: { nodes: any[] }`. The constructor will use `fs.readFileSync` and `JSON.parse` to load the graph data. The path to the graph file should be passed into the constructor. Add a `GraphNode` type definition to `src/types.ts` to represent the structure of nodes in the JSON file.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Unit test the constructor to ensure it correctly loads and parses the JSON file, and that the `graph` member is populated. Test for error handling if the file does not exist."
           },
           {
@@ -367,7 +367,7 @@
               "6.1"
             ],
             "details": "Update the `Planner` constructor signature to accept an instance of `StateStore` (from Task 5). Store the passed `stateStore` in a `private readonly stateStore: StateStore` field. This will be used by other methods to query the project's state.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Update the `Planner` unit tests to mock the `StateStore` and pass it to the constructor. Verify the instance is stored correctly within the `Planner` object."
           },
           {
@@ -378,7 +378,7 @@
               "6.2"
             ],
             "details": "The method will get the set of completed tool IDs from `this.stateStore.getCompletedToolIds()`. It will then iterate through the input node's `dependsOn` array and return `false` if any dependency ID is not in the completed set. If the `dependsOn` array is empty or all dependencies are met, it returns `true`.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Unit test this specific method. Provide a mock `StateStore` with a predefined set of completed tools and test nodes with met, unmet, and empty dependencies to ensure the logic is correct."
           },
           {
@@ -389,7 +389,7 @@
               "6.2"
             ],
             "details": "The method will get the set of available artifact names from `this.stateStore.getAvailableArtifacts()`. It will then iterate through the input node's `requiresArtifacts` array and return `false` if any required artifact is not in the available set. If `requiresArtifacts` is empty or all are available, it returns `true`.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Unit test this method. Provide a mock `StateStore` with a predefined set of available artifacts and test nodes with met, unmet, and empty artifact requirements."
           },
           {
@@ -401,7 +401,7 @@
               "6.4"
             ],
             "details": "The method should first get the list of completed tool IDs from the state. Then, it will `filter` the graph nodes based on three conditions: 1) The node's ID is not in the completed list. 2) `this.areDependenciesMet(node)` is true. 3) `this.areArtifactsAvailable(node)` is true. The resulting array of nodes should then be sorted using a custom comparator for `phase` then `id`.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Write an integration test for `suggest_next_calls`. Given a graph and a mock `StateStore` in various states (e.g., empty, one task done, one task done with artifacts), verify that the correct list of ranked nodes is returned, respecting the sorting order."
           }
         ]
@@ -417,7 +417,7 @@
           5,
           6
         ],
-        "status": "pending",
+        "status": "done",
         "subtasks": [
           {
             "id": 1,
@@ -425,7 +425,7 @@
             "description": "Add a new public method `recordCompletion` to the `StateStore` class in `src/state/state-store.ts`. This method will accept a tool `id`, `outputs`, and a list of `artifacts`. It should create a `ToolCompletion` object with a new timestamp, add it to the `completedTools` map, and merge the new artifacts into the main `artifacts` map within the in-memory `ProjectState` object.",
             "dependencies": [],
             "details": "The method signature should be `recordCompletion(id: string, outputs: Record<string, any>, artifacts: Artifact[])`. It should not call `save()` itself; that responsibility will lie with the tool handler. The new artifacts should overwrite any existing artifacts with the same name. This method directly modifies the in-memory state managed by the `StateStore` instance.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Unit test the `recordCompletion` method. Initialize a `StateStore` with a blank state, call `recordCompletion` with sample data, and then inspect the internal `state` property to verify that `completedTools` and `artifacts` have been updated correctly and a timestamp has been added."
           },
           {
@@ -434,7 +434,7 @@
             "description": "Create a new file `src/tools/definitions/advance-state.ts`. In this file, define and export the Zod schema for the `advance_state` tool's input, which includes a string `id`, a `z.record(z.any())` for `outputs`, and an array of `artifact` objects for `artifacts`. Also, define the `McpTool` object with the name `advance_state`, a suitable description, and a reference to the schema.",
             "dependencies": [],
             "details": "The artifact schema within the input array should validate `source`, `name`, and `uri` as strings, consistent with the `Artifact` type in `src/state/state-types.ts`. The main tool object will be exported to be used for registration later. The handler function can be a placeholder for now.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "No dedicated test is needed for the definition itself, as it will be validated by the tool registry and tested implicitly by the handler's tests."
           },
           {
@@ -446,7 +446,7 @@
               "7.2"
             ],
             "details": "The handler will receive `context: McpToolContext` and `input: { id: string, ... }`. It should destructure these arguments and call `context.stateStore.recordCompletion(input.id, input.outputs, input.artifacts)`. The handler function should be marked as `async`.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Using a mock `StateStore` in a unit test, verify that the handler correctly calls the `recordCompletion` method with the exact arguments passed into the tool."
           },
           {
@@ -457,7 +457,7 @@
               "7.3"
             ],
             "details": "The `save()` method on `StateStore` is asynchronous and must be awaited. The path to the state file can be retrieved from a property on the `stateStore` instance (e.g., `context.stateStore.statePath`). This completes the core logic of the tool.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "In an integration test, call the tool handler and verify that the `save` method on the `StateStore` mock is called. Also, check that the handler's return value matches the specified success format."
           },
           {
@@ -468,7 +468,7 @@
               "7.2"
             ],
             "details": "Locate the code block where other tools are registered, which is typically in the `McpServer` constructor or an initialization method. Add a line like `this.toolRegistry.registerTool(advanceStateTool);` to include the new tool in the server's list of available tools.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Start the server and use an MCP client or a test utility to list available tools. Verify that `advance_state` is present in the list."
           }
         ]
@@ -1284,7 +1284,7 @@
     ],
     "metadata": {
       "created": "2025-09-18T19:25:07.429Z",
-      "updated": "2025-09-20T14:32:59.343Z",
+      "updated": "2025-09-20T15:06:58.908Z",
       "description": "Tasks for master context"
     }
   }

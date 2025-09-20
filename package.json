@@ -12,11 +12,12 @@
     "test:schemas": "node --loader ts-node/esm src/prompts/schema.test.ts",
     "test:resources": "node --loader ts-node/esm test/integration/resources.test.ts",
     "test:tools": "node --loader ts-node/esm test/integration/tools.test.ts",
-    "test": "npm run test:workflow && npm run test:safety && npm run test:prompts && npm run test:prompt-handler && npm run test:schemas && npm run test:resources && npm run test:tools && npm run test:state",
+    "test": "npm run test:workflow && npm run test:safety && npm run test:prompts && npm run test:prompt-handler && npm run test:schemas && npm run test:resources && npm run test:tools && npm run test:state && npm run test:planner",
     "build": "tsc --project tsconfig.build.json",
     "start": "node dist/index.js",
     "inspect": "npx @modelcontextprotocol/inspector --config inspector.config.json",
-    "test:state": "node --loader ts-node/esm test/state/StateStore.test.ts"
+    "test:state": "node --loader ts-node/esm test/state/StateStore.test.ts",
+    "test:planner": "node --loader ts-node/esm test/planner/Planner.test.ts"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.17.5",

@@ -3,6 +3,8 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { secureLogger } from "./logger.js";
 import { registerPromptResources, registerPromptTools } from "./prompts/register.js";
+import { StateStore } from "./state/StateStore.js";
+import { registerWorkflowTools } from "./tools/register.js";
 
 const require = createRequire(import.meta.url);
 const packageJson = require("../package.json") as { version?: string };
@@ -86,10 +88,13 @@ const registerTopLevelErrorHandlers = (shutdown: ShutdownHandler) => {
 async function main(): Promise<void> {
   const server = createServer();
   const transport = new StdioServerTransport();
+  const stateStore = new StateStore(process.cwd());
 
   try {
+    await stateStore.load();
     await registerPromptResources(server, secureLogger);
     await registerPromptTools(server, secureLogger);
+    registerWorkflowTools(server, secureLogger, { stateStore });
     await connectServer(server, transport);
   } catch (error) {
     secureLogger.error("server_start_error", { error });
