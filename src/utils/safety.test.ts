@@ -52,7 +52,7 @@ const runTests = () => {
 
   const snowman = "\u2603";
   const multiByte = snowman.repeat(10);
-  const multiLimit = 80;
+  const multiLimit = 26;
   const capped = capPayload(multiByte, multiLimit);
   const noteMatch = capped.match(/\[truncated (\d+) bytes\]$/);
   assert.ok(noteMatch);
