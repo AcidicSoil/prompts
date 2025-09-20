@@ -61,7 +61,11 @@ const prepareMetadata = (metadata?: LogMetadata): LogMetadata | undefined => {
 };
 
 export class Logger {
-  constructor(private readonly stream: NodeJS.WriteStream = process.stdout) {}
+  private readonly stream: NodeJS.WriteStream;
+
+  constructor(stream: NodeJS.WriteStream = process.stdout) {
+    this.stream = stream;
+  }
 
   private write(level: LogLevel, message: string, metadata?: LogMetadata): void {
     const entry: LogEntry = {

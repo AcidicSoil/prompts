@@ -8,15 +8,20 @@
     "test:workflow": "node --loader ts-node/esm scripts/__tests__/workflow_sync.test.ts",
     "test:safety": "TS_NODE_ESM_EXPERIMENTAL_SPECIFIER_RESOLUTION=node npx ts-node --esm src/utils/safety.test.ts",
     "test:prompts": "node --loader ts-node/esm src/prompts/loader.test.ts",
+    "test:prompt-handler": "node --loader ts-node/esm src/tools/prompt-handler.test.ts",
+    "test:schemas": "node --loader ts-node/esm src/prompts/schema.test.ts",
     "test:resources": "node --loader ts-node/esm test/integration/resources.test.ts",
-    "test": "npm run test:workflow && npm run test:safety && npm run test:prompts && npm run test:resources",
+    "test:tools": "node --loader ts-node/esm test/integration/tools.test.ts",
+    "test": "npm run test:workflow && npm run test:safety && npm run test:prompts && npm run test:prompt-handler && npm run test:schemas && npm run test:resources && npm run test:tools && npm run test:state",
     "build": "tsc --project tsconfig.build.json",
     "start": "node dist/index.js",
-    "inspect": "npx @modelcontextprotocol/inspector --config inspector.config.json"
+    "inspect": "npx @modelcontextprotocol/inspector --config inspector.config.json",
+    "test:state": "node --loader ts-node/esm test/state/StateStore.test.ts"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.17.5",
-    "js-yaml": "^4.1.0"
+    "js-yaml": "^4.1.0",
+    "zod": "^3.25.76"
   },
   "devDependencies": {
     "@types/js-yaml": "^4.0.9",

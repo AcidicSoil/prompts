@@ -1,9 +1,9 @@
-import assert from "node:assert/strict";
+import { strict as assert } from "node:assert";
 
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { InMemoryTransport } from "@modelcontextprotocol/sdk/inMemory.js";
 
-import { secureLogger } from "../../src/logger.js";
+import { secureLogger } from "../../src/logger.ts";
 import { createServer } from "../../src/index.ts";
 import { registerPromptResources } from "../../src/prompts/register.ts";
 

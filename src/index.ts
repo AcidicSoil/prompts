@@ -2,7 +2,7 @@ import { createRequire } from "node:module";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { secureLogger } from "./logger.js";
-import { registerPromptResources } from "./prompts/register.js";
+import { registerPromptResources, registerPromptTools } from "./prompts/register.js";
 
 const require = createRequire(import.meta.url);
 const packageJson = require("../package.json") as { version?: string };
@@ -89,6 +89,7 @@ async function main(): Promise<void> {
 
   try {
     await registerPromptResources(server, secureLogger);
+    await registerPromptTools(server, secureLogger);
     await connectServer(server, transport);
   } catch (error) {
     secureLogger.error("server_start_error", { error });

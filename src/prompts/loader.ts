@@ -162,6 +162,8 @@ export function loadPromptMetadata(options: LoadPromptMetadataOptions = {}): Pro
   });
 }
 
+export const loadPromptDefinitions = loadPromptMetadata;
+
 export function preparePromptResources(
   definitions: PromptDefinition[],
   options: PreparePromptResourcesOptions = {},

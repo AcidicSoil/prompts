@@ -1,4 +1,4 @@
-import assert from "node:assert/strict";
+import { strict as assert } from "node:assert";
 
 import { capPayload, redactSecrets } from "./safety.ts";
 
@@ -29,11 +29,15 @@ const runTests = () => {
     },
   ];
   const arrayResult = redactSecrets(arrayInput) as typeof arrayInput;
-  assert.equal((arrayResult[0] as Record<string, string>).token, "[redacted]");
-  const nestedList = (arrayResult[1] as { list: Array<Record<string, string>> }).list;
+  const firstItem = arrayResult[0] as unknown as Record<string, string>;
+  assert.equal(firstItem.token, "[redacted]");
+  const nestedWrapper = arrayResult[1] as unknown as { list: Array<Record<string, any>> };
+  const nestedList = nestedWrapper.list;
   assert.equal(nestedList[0].key, "[redacted]");
-  assert.equal(nestedList[1].inner.authToken, "[redacted]");
-  assert.equal((arrayInput[0] as Record<string, string>).token, "secret");
+  const inner = nestedList[1].inner as Record<string, string>;
+  assert.equal(inner.authToken, "[redacted]");
+  const originalFirst = arrayInput[0] as unknown as Record<string, string>;
+  assert.equal(originalFirst.token, "secret");
 
   assert.equal(redactSecrets("plain"), "plain");
   assert.equal(redactSecrets(42), 42);

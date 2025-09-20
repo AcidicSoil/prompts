@@ -210,7 +210,7 @@
           2,
           3
         ],
-        "status": "pending",
+        "status": "done",
         "subtasks": [
           {
             "id": 1,
@@ -218,7 +218,7 @@
             "description": "Implement a function that reads `resources/prompts.meta.yaml`, parses it, and returns a validated, typed array of prompt metadata objects. This will serve as the single source of truth for prompt definitions.",
             "dependencies": [],
             "details": "Create a new file `src/lib/prompt-loader.ts`. Add an exported function `loadPromptDefinitions()`. This function should use the `fs` module to read `resources/prompts.meta.yaml` and the `js-yaml` library to parse its content. Define a TypeScript interface for the prompt metadata structure (e.g., `PromptDefinition`) and ensure the parsed data conforms to this type before returning it. This utility will be called during server startup.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Add a unit test to verify that the function correctly parses a sample YAML string and returns the expected array of objects."
           },
           {
@@ -227,7 +227,7 @@
             "description": "Create a generic handler function that can be used by all dynamically generated prompt tools. The handler will be responsible for reading the prompt content, appending a footer, and applying the payload cap.",
             "dependencies": [],
             "details": "In a new file, e.g., `src/tools/prompt-handler.ts`, create a factory function `createPromptHandler(promptFilePath: string)`. This function should return an async `ToolHandler` function. The handler will read the file content from the provided `promptFilePath`, append a standard rendered footer (a simple string for now), and then apply the payload capping utility from Task 2 to the final content. The handler should return an object like `{ content: '...' }`.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Unit test the created handler to ensure it reads a file, appends the footer, and correctly truncates content that exceeds the payload cap."
           },
           {
@@ -238,7 +238,7 @@
               "4.1"
             ],
             "details": "In a new utility file, e.g., `src/lib/schema-generator.ts`, create a function `generateSchemas(metadata: PromptDefinition)`. This function will generate the `inputSchema` by creating a JSON Schema `object` with `properties` corresponding to each item in the metadata's `variables` array. The `outputSchema` should be a static JSON Schema defining an object with a single string property named `content`.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Unit test the schema generator with sample prompt metadata to ensure it produces valid input and output JSON schemas."
           },
           {
@@ -251,7 +251,7 @@
               "4.3"
             ],
             "details": "In the primary tool registration file (e.g., `src/tools/tool-registry.ts`), create a new async function `registerPromptTools(mcpServer: McpServer)`. This function will call `loadPromptDefinitions()` (from subtask 4.1). It will then loop through each definition, calling `generateSchemas()` (subtask 4.3) and `createPromptHandler()` (subtask 4.2) for each. Finally, it will construct the complete `ToolDefinition` object (with `id`, schemas, and handler) and register it using `mcpServer.registerTool()`. Call this new function from the main server entry point (`src/server.ts`) during initialization.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "After implementation, manually start the server and check the logs or use an MCP client to confirm that tools corresponding to `prompts.meta.yaml` are being registered without errors."
           },
           {
@@ -262,7 +262,7 @@
               "4.4"
             ],
             "details": "In a new test file under `test/integration/`, write tests that use an MCP client to interact with the running server. One test should list all available tools and assert that a tool exists for each entry in `prompts.meta.yaml`. Another test should invoke a specific prompt tool and validate that the response body contains the expected markdown content. Add a final test using a large (>1MB) prompt file to ensure the response content is correctly truncated by the payload cap.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "These are the validation tests themselves. Success is defined by all tests passing in the CI/CD pipeline."
           }
         ]
@@ -277,7 +277,7 @@
         "dependencies": [
           1
         ],
-        "status": "pending",
+        "status": "done",
         "subtasks": [
           {
             "id": 1,
@@ -285,7 +285,7 @@
             "description": "Create the file `src/state/StateStore.ts` and define the `StateStore` class. The constructor should accept a project root path and ensure the `.mcp` directory exists.",
             "dependencies": [],
             "details": "Define the `StateStore` class in a new file `src/state/StateStore.ts`. The constructor will take `projectRoot: string`. It should define and store private properties for the paths to the `.mcp` directory, `state.json`, and a temporary file like `state.json.tmp`. Implement a private async method that is called by the constructor to create the `.mcp` directory using `fs.promises.mkdir(mcpDir, { recursive: true })`. This ensures all subsequent file operations have a valid directory to work in.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "In a unit test, instantiate the class with a path to a temporary directory and assert that the `.mcp` subdirectory is created."
           },
           {
@@ -296,7 +296,7 @@
               "5.1"
             ],
             "details": "Add a public async `load` method to the `StateStore` class. This method will attempt to read `.mcp/state.json` using `fs.promises.readFile`. If the file doesn't exist (catch the 'ENOENT' error), it should initialize a default `ProjectState` object: `{ completedTools: [], artifacts: {} }`. The loaded or default state should be stored in a private property (e.g., `_state`). The method should return the state.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Test that `load` returns the default state when `state.json` is missing. Create a mock `state.json` file and test that `load` correctly reads and parses its content."
           },
           {
@@ -307,7 +307,7 @@
               "5.1"
             ],
             "details": "Based on the `ProjectState` interface in `src/state/ProjectState.ts`, add a public getter `getState(): ProjectState` that returns a deep copy of the internal `_state` to prevent outside mutation. Also, add a public method `recordCompletion(completion: ToolCompletion)` which updates the internal `_state` by adding the new completion record to the `completedTools` array and merging the new artifacts into the top-level `artifacts` map.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Write a unit test that loads an initial state, calls `recordCompletion` with a mock `ToolCompletion` object, and then uses `getState` to verify that the in-memory state has been correctly updated."
           },
           {
@@ -318,7 +318,7 @@
               "5.3"
             ],
             "details": "Create a public async `save` method. This method will take the current in-memory state from the `_state` property, stringify it with `JSON.stringify`, and write it to the temporary file path (`.mcp/state.json.tmp`) using `fs.promises.writeFile`. Upon successful write, it will use `fs.promises.rename` to atomically move the temporary file to the final `state.json` path, overwriting any existing file. This two-step process prevents file corruption.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Verify that calling `save` creates `state.json` with the correct content. Check that the temporary file is created during the operation and removed after the rename is complete."
           },
           {
@@ -332,7 +332,7 @@
               "5.4"
             ],
             "details": "Using a testing framework like Jest and a temporary file system utility, create a test file for the `StateStore`. The tests should cover: 1. Directory creation on instantiation. 2. Loading from a non-existent file. 3. Correctly saving state via `recordCompletion` and `save`. 4. Correctly loading a previously saved state. 5. Ensure the `getState` method returns a value-identical but not reference-identical object.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Execute the full test suite to ensure all features work as expected and are isolated from the actual project's file system. Mock the `fs` module to confirm the sequence of `writeFile` then `rename` is called for atomicity."
           }
         ]
@@ -1284,7 +1284,7 @@
     ],
     "metadata": {
       "created": "2025-09-18T19:25:07.429Z",
-      "updated": "2025-09-20T02:12:16.836Z",
+      "updated": "2025-09-20T14:32:59.343Z",
       "description": "Tasks for master context"
     }
   }
