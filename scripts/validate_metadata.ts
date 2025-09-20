@@ -1,8 +1,8 @@
 import { promises as fs } from 'fs';
 import path from 'path';
 
-import { parseFrontMatter, MetadataValue } from './front_matter';
-import { collectMarkdownFiles, loadPhases } from './markdown_utils';
+import { parseFrontMatter, MetadataValue } from './front_matter.js';
+import { collectMarkdownFiles, loadPhases } from './markdown_utils.js';
 
 type Scalar = string;
 

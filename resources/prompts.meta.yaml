@@ -1,0 +1,82 @@
+# Prompt metadata used by the MCP server to expose prompt resources and tools.
+# Each entry maps a markdown playbook to its display metadata and prerequisites.
+- id: instruction-file
+  title: "Instruction File"
+  description: "Generate or update project instruction guardrails before any planning work."
+  path: "instruction-file.md"
+  phase: "P0 Preflight Docs"
+  gate: "DocFetchReport"
+  tags:
+    - preflight
+    - documentation
+  dependsOn: []
+  variables: []
+
+- id: planning-process
+  title: "Planning Process"
+  description: "Draft and refine PLAN.md with goals, milestones, and validation steps."
+  path: "planning-process.md"
+  phase: "P1 Plan & Scope"
+  gate: "Scope Gate"
+  tags:
+    - planning
+    - scope
+  dependsOn:
+    - instruction-file
+  variables: []
+
+- id: scope-control
+  title: "Scope Control"
+  description: "Enforce scope boundaries and keep Won't Do and Ideas for later lists current."
+  path: "scope-control.md"
+  phase: "P1 Plan & Scope"
+  gate: "Scope Gate"
+  tags:
+    - planning
+    - scope
+  dependsOn:
+    - planning-process
+  variables: []
+
+- id: integration-test
+  title: "Integration Test"
+  description: "Author end-to-end tests for the critical happy path before merging."
+  path: "integration-test.md"
+  phase: "P5 Quality Gates & Tests"
+  gate: "Test Gate"
+  tags:
+    - testing
+    - quality
+  dependsOn:
+    - scope-control
+  variables: []
+
+- id: regression-guard
+  title: "Regression Guard"
+  description: "Detect unrelated diffs and add regression coverage before hand-off."
+  path: "regression-guard.md"
+  phase: "P5 Quality Gates & Tests"
+  gate: "Test Gate"
+  tags:
+    - testing
+    - quality
+  dependsOn:
+    - integration-test
+  variables: []
+
+- id: release-notes
+  title: "Release Notes"
+  description: "Summarize recent commits into human-readable release notes grouped by type."
+  path: "release-notes.md"
+  phase: "P7 Release & Ops"
+  gate: "Release Gate"
+  tags:
+    - release
+    - communication
+  dependsOn:
+    - regression-guard
+  variables:
+    - name: range
+      description: "Git commit range or revision selector passed to git log."
+      type: string
+      required: false

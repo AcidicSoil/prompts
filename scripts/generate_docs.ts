@@ -1,8 +1,8 @@
 import { promises as fs } from 'fs';
 import path from 'path';
 
-import { PromptCatalog, PromptCatalogEntry, normalizePhaseLabel } from './catalog_types';
-import { writeFileAtomic } from './file_utils';
+import { PromptCatalog, PromptCatalogEntry, normalizePhaseLabel } from './catalog_types.js';
+import { writeFileAtomic } from './file_utils.js';
 
 interface GenerateDocsOptions {
   updateWorkflow: boolean;

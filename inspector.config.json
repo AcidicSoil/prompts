@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "codex-prompts": {
+      "type": "stdio",
+      "command": "npm",
+      "args": ["run", "start"],
+      "cwd": "."
+    }
+  }
+}

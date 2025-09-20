@@ -1,11 +1,11 @@
 import { promises as fs } from 'fs';
 import path from 'path';
 
-import { MetadataValue, parseFrontMatter } from './front_matter';
-import { collectMarkdownFiles, loadPhases } from './markdown_utils';
-import { PromptCatalog, PromptCatalogEntry, normalizePhaseLabel } from './catalog_types';
-import { writeFileAtomic } from './file_utils';
-import { generateDocs, synchronizeWorkflowDoc } from './generate_docs';
+import { MetadataValue, parseFrontMatter } from './front_matter.js';
+import { collectMarkdownFiles, loadPhases } from './markdown_utils.js';
+import { PromptCatalog, PromptCatalogEntry, normalizePhaseLabel } from './catalog_types.js';
+import { writeFileAtomic } from './file_utils.js';
+import { generateDocs, synchronizeWorkflowDoc } from './generate_docs.js';
 
 type PromptMetadata = Record<string, MetadataValue | undefined> & {
   phase?: MetadataValue;

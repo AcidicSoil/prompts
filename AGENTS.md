@@ -265,6 +265,26 @@ Allowed only for outages/ambiguous scope/timeboxed spikes. Must include:
   - Try **contex7-mcp** → **gitmcp**.
   - Record results in `DocFetchReport`.
 
+### 0.1) Docs Staleness Re-check Policy (**3-turn trigger**)
+
+**Trigger:** If **three assistant responses** have occurred since the first unresolved error report **and** errors persist **after** applying suggested changes and attempting to run allowed checks, **force a docs refresh**.
+
+**Action:**
+
+1. Re-run the **Dynamic Docs MCP Router** (§7) to discover and rank all `*-docs-mcp` servers relevant to the error topics (derive from stack traces, failing commands, and test names).
+2. Fetch **latest pertinent docs** via the ranked chain, then `contex7-mcp` → `gitmcp`.
+3. Rebuild `DocFetchReport` with `refresh_reason: "3_turns_persistent_errors"`, `since_turns: 3`, and `since_time_utc` from the last successful run.
+4. Set `ctx.docs_ready = false` until the refreshed report returns `status == "OK"`.
+5. Compute and record `doc_delta` vs the previous report (changed sources, new guidance, version bumps). Attach to `DocFetchReport.changed_guidance[]`.
+
+**Notes:**
+
+- Count a **turn** as one assistant message replying to the same error class. Reset the counter on a green run or a new error class.
+- If no new guidance is found, record `no_update: true` and continue debugging; otherwise update the plan per new guidance.
+- Log the refresh in memory: `task:${task_id}.observations.staleness_refresh` with UTC timestamp and topics.
+
+---
+
 ## 1) Startup memory bootstrap (memory)
 
 - On chat/session start: initialize **memory**.
@@ -759,6 +779,7 @@ SYSTEM: You operate under a blocking docs-first policy.
 1) Preflight (§A):
    - Call contex7-mcp → gitmcp as needed.
    - Build DocFetchReport (status must be OK).
+   - If the **3-turn staleness trigger** (§0.1) fires, force a docs refresh before proceeding.
 2) Planning:
    - Map each planned change to key_guidance items in DocFetchReport.
    - Build a subtask plan with DoD (§1.1) and record to memory.

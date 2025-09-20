@@ -1,12 +1,26 @@
 {
   "name": "prompts",
   "private": true,
+  "type": "module",
   "scripts": {
-    "validate:metadata": "ts-node scripts/validate_metadata.ts",
-    "build:catalog": "ts-node scripts/build_catalog.ts",
-    "test": "ts-node scripts/__tests__/workflow_sync.test.ts"
+    "validate:metadata": "ts-node --esm scripts/validate_metadata.ts",
+    "build:catalog": "ts-node --esm scripts/build_catalog.ts",
+    "test:workflow": "node --loader ts-node/esm scripts/__tests__/workflow_sync.test.ts",
+    "test:safety": "TS_NODE_ESM_EXPERIMENTAL_SPECIFIER_RESOLUTION=node npx ts-node --esm src/utils/safety.test.ts",
+    "test:prompts": "node --loader ts-node/esm src/prompts/loader.test.ts",
+    "test:resources": "node --loader ts-node/esm test/integration/resources.test.ts",
+    "test": "npm run test:workflow && npm run test:safety && npm run test:prompts && npm run test:resources",
+    "build": "tsc --project tsconfig.build.json",
+    "start": "node dist/index.js",
+    "inspect": "npx @modelcontextprotocol/inspector --config inspector.config.json"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.17.5",
+    "js-yaml": "^4.1.0"
   },
   "devDependencies": {
+    "@types/js-yaml": "^4.0.9",
+    "@types/node": "^20.14.9",
     "ts-node": "^10.9.2",
     "typescript": "^5.4.0"
   }
