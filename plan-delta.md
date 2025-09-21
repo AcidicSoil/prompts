@@ -5,6 +5,7 @@ Trigger: /plan-delta
 Purpose: Orchestrate mid-project planning deltas on an existing task graph with history preservation, lineage, and readiness recalculation.
 
 Steps:
+
 1. Discover repository context:
    1. Detect tasks file path: prefer `tasks.json`; else search `**/tasks.json`.
    2. Detect latest plan doc: prefer `PRD.md` or `docs/PRD.md`; else `**/*(prd|spec|plan)*.md`.
@@ -42,35 +43,42 @@ Steps:
    - Stop when all deltas are merged and readiness recalculated, or when a prerequisite cannot be resolved with available evidence.
 
 Output format:
+
 - Produce three artifacts:
   1. **Updated tasks file**: valid JSON. Preserve existing fields. Append only the new or changed tasks and relations. Do not mutate historical statuses.
   2. **Delta document**: Markdown with the exact headings `# Delta`, `## Objectives`, `## Constraints`, `## Impacts`, `## Decisions`, `## Evidence`.
-  3. **Readiness report**: Plain text with sections `READY`, `BLOCKED`, `DEPRECATED`. Each item as `- <id> <title>`; blocked items add ` [reason=<code>]`.
+  3. **Readiness report**: Plain text with sections `READY`, `BLOCKED`, `DEPRECATED`. Each item as `- <id> <title>`; blocked items add `[reason=<code>]`.
 - Print **Decision hooks** as lines starting with `HOOK: <id> enables <capability>`.
 
 Examples:
+
 - Input →
+
   ```
   Mode: Continue
   New objectives: add offline export for tasks
   Constraints: no DB migrations
   Findings: existing export lib supports JSON only
   ```
+
   Output →
   - Updated `tasks.json` with new task `T-342` { title: "Add CSV export", dependencies: ["T-120"], source_doc: "delta-20250921.md", lineage: ["T-120"], supersedes: [] }.
   - `artifacts/delta-20250921-160500.md` populated with objectives, constraints, impacts, decisions, evidence.
   - Readiness report lists `T-342` under READY if deps done.
 
 - Input →
+
   ```
   Mode: Hybrid Rebaseline
   Changes: ~30% of scope affected by auth provider swap
   ```
+
   Output →
   - Minor-plan version bump recorded in Delta Doc.
   - New tasks added for provider swap; prior tasks kept with `deprecated` or `blocked` and lineage links.
 
 Notes:
+
 - Never write outside the repo. Keep artifacts in `./artifacts/`.
 - Evidence log entries include `source`, `date`, `summary`, and optional `link`.
 - Selection rules: Continue (<20% change), Hybrid (20–40%), Full (>40% or goals/KPIs/architecture pivot).

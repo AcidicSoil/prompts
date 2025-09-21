@@ -1,0 +1,165 @@
+{
+  "master": {
+    "tasks": [
+      {
+        "id": 1,
+        "title": "Project Initialization and Scaffolding",
+        "description": "Set up a new Node.js project using pnpm or npm. Configure TypeScript, Jest for testing, and establish the basic directory structure required by the PRD.",
+        "details": "Initialize a `package.json`. Install `typescript`, `ts-node`, `@types/node`, `jest`, and `ts-jest` as dev dependencies. Create a `tsconfig.json` file with modern settings. Create the initial directory structure: `src/`, `schemas/`, `bin/`, `packages/`, `tests/`.",
+        "testStrategy": "Verify that `pnpm test` runs successfully and that a simple 'hello world' TypeScript file in `src/` can be compiled and executed.",
+        "priority": "high",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 2,
+        "title": "Define Canonical Task JSON Schema",
+        "description": "Create the canonical `task.json` schema file that acts as a superset of the Task-Master task definition, ensuring type safety and forward compatibility.",
+        "details": "Create the file `schemas/task.json`. It must include all Task-Master fields: `id, title, description, status, dependencies, priority, details, testStrategy, subtasks`. Add the new optional fields: `labels, metadata, evidence, artifacts`.",
+        "testStrategy": "Create a test that validates a canonical Task-Master task object against the schema, ensuring it passes. Create another test with the new optional fields to ensure it also passes. A test with a missing required field should fail.",
+        "priority": "high",
+        "dependencies": [
+          1
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 3,
+        "title": "Implement Task-Master Ingest Adapter",
+        "description": "Create a module to read and parse a Task-Master `tasks.json` file, validate it against the canonical schema, and normalize it into an array of `PromptsTask` objects.",
+        "details": "Create `src/adapters/taskmaster/ingest.ts`. The main function will take a file path, read the JSON content, validate it using the schema from `schemas/task.json`, and map the data to an internal `PromptsTask[]` type. It should also handle mapping non-canonical status values and report them.",
+        "testStrategy": "BDD: Given a valid Task-Master `tasks.json`, when the adapter runs, then it produces `PromptsTask[]` with identical core fields and records any non-canonical statuses in a mapping report. Use golden files for testing.",
+        "priority": "high",
+        "dependencies": [
+          2
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 4,
+        "title": "Implement State Engine: Readiness and 'next' Logic",
+        "description": "Develop the core state engine logic to determine task readiness and select the next task based on the specified ordering rules.",
+        "details": "Create `src/state/graph.ts`. Implement `computeReadiness(tasks)` to identify tasks where all dependencies are 'done'. Implement `next(tasks)` to filter for ready tasks and sort them by priority (desc), then dependency count (desc), then ID (asc), returning the top one.",
+        "testStrategy": "BDD: Given a task graph, when `next()` runs, then it returns the highest-priority ready task per tie-break rules and never returns a task with unsatisfied dependencies. Test cases should include multiple ready tasks with different priorities and tie-breaker scenarios.",
+        "priority": "high",
+        "dependencies": [
+          3
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 5,
+        "title": "Implement State Engine: Status Update Logic",
+        "description": "Create a pure function to handle advancing a task's status within the in-memory state.",
+        "details": "Create `src/state/update.ts`. Implement `advance(tasks, id, newStatus)` which takes the current task array, a task ID, and a new status, and returns a new task array with the specified task's status updated. The function should be pure and not mutate the input array.",
+        "testStrategy": "Write unit tests to confirm that calling `advance` with a valid ID and status returns a new array with the correct task updated. Test that the original array remains unchanged.",
+        "priority": "high",
+        "dependencies": [
+          4
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 6,
+        "title": "Implement MCP Stdio Server",
+        "description": "Expose the state engine's capabilities over stdio using the Model Context Protocol (MCP) for consumption by external agentic clients.",
+        "details": "Create `src/mcp/server.ts`. This Node.js script will listen for line-delimited JSON requests on stdin and write JSON responses to stdout. Implement handlers for `next_task`, `set_task_status`, `get_task`, `list_tasks`, and `graph_export`. The `set_task_status` handler must respect a write-mode flag to control persistence.",
+        "testStrategy": "BDD: Given an MCP client connected over stdio, when it calls `next_task`, then the server returns a single task payload. When it calls `set_task_status` without write mode, the underlying file is not changed.",
+        "priority": "medium",
+        "dependencies": [
+          5
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 7,
+        "title": "Implement Thin CLI with Commander.js",
+        "description": "Build a command-line interface to provide fast, local access to the core features for developers and CI/CD pipelines.",
+        "details": "Create `bin/prompts` and use the `commander` library. Implement subcommands: `ingest`, `next`, `advance <id> <status>`, `graph --format dot|json`, and `status`. These commands will call the pure functions from the adapter and state engine. Default output should be machine-readable JSON.",
+        "testStrategy": "BDD: Given a repository containing `tasks.json`, when `prompts next` runs, then it prints a single JSON object for the next task to stdout and exits with code 0. Test graph command for both `dot` and `json` formats.",
+        "priority": "medium",
+        "dependencies": [
+          5
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 8,
+        "title": "Create Mastra Tools Package for AI SDK",
+        "description": "Package the core logic as a set of tools compatible with the Vercel AI SDK to enable integration with Mastra agents.",
+        "details": "In the `packages/` directory, create a new package named `prompts-tools`. This package will export tool handlers (e.g., `next_task`, `set_task_status`) that wrap the core state engine functions in a format consumable by `generateObject` or similar AI SDK functions.",
+        "testStrategy": "BDD: Given a Mastra agent configured with `prompts-tools`, when the agent plans a step requiring the next task, then it successfully invokes the `next_task` tool and incorporates the result into its plan.",
+        "priority": "medium",
+        "dependencies": [
+          5
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 9,
+        "title": "Implement Provider Presets and Fallback Logic",
+        "description": "Configure zero-cost and local-first provider presets for the Mastra integration, ensuring the system is functional out-of-the-box.",
+        "details": "Create provider configuration modules like `src/providers/ollama.ts` and `src/providers/geminiCli.ts`. Implement a runtime factory that checks for provider availability (e.g., Ollama server running) and selects one, defaulting to Ollama. If no primary providers are available, it should use a stub provider and log a warning.",
+        "testStrategy": "BDD: Given no network access and Ollama installed, the agent initializes with the Ollama preset. Given Ollama is unavailable but Gemini CLI is, it selects Gemini. Given neither is available, it selects the stub provider and logs a warning.",
+        "priority": "medium",
+        "dependencies": [
+          8
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 10,
+        "title": "Document Client Configuration for Codex and Gemini",
+        "description": "Create clear documentation with copy-pasteable snippets to help users configure their agentic clients (Codex, Gemini) to use the MCP stdio server.",
+        "details": "Create a `docs/client_setup.md` file. Provide TOML and JSON configuration examples for registering the MCP server. Include placeholder paths and specific examples for Windows+WSL using the `/c/Users/user/...` format.",
+        "testStrategy": "BDD: Given a user copies the provided snippets and updates the path, when the client starts, then the client lists the `prompts` server as available and tool calls succeed over stdio. This will be verified by manual testing following the guide.",
+        "priority": "low",
+        "dependencies": [
+          6
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 11,
+        "title": "Implement Optional Artifact Enrichment",
+        "description": "Add a non-blocking feature to enrich task data with metadata derived from artifact files, providing richer context without creating hard dependencies.",
+        "details": "Create a directory `src/artifacts/`. Implement modules that can detect and parse related artifact files (e.g., complexity reports). If files are found, add the derived data to the `metadata` field of the corresponding task. The entire enrichment process must not block or fail ingestion if artifacts are absent.",
+        "testStrategy": "BDD: Given an artifacts directory is absent, when ingestion runs, then it succeeds and the `metadata` field on tasks remains empty. Given a valid artifact file is present, the corresponding task is enriched with the correct metadata.",
+        "priority": "low",
+        "dependencies": [
+          3
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 12,
+        "title": "Implement Observability and Secure Logging",
+        "description": "Add structured logging and security-conscious defaults to improve observability and prevent accidental leakage of sensitive information.",
+        "details": "Integrate a lightweight logging library. Add a `--verbose` flag to the CLI and a corresponding option for the server to emit structured logs to stderr. By default, log levels should not expose task content. Redact task IDs at `debug` level unless an `--unsafe-logs` flag is explicitly used.",
+        "testStrategy": "Verify that running a command without flags produces no verbose output. Running with `--verbose` produces structured logs on stderr. Check that task titles/descriptions are not present in default logs.",
+        "priority": "low",
+        "dependencies": [
+          7
+        ],
+        "status": "pending",
+        "subtasks": []
+      }
+    ],
+    "metadata": {
+      "created": "2025-09-21T22:38:15.570Z",
+      "updated": "2025-09-21T22:38:15.570Z",
+      "description": "Tasks for master context"
+    }
+  }
+}

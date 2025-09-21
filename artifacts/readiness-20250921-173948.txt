@@ -1,0 +1,16 @@
+READY
+- 25 Project Initialization and Scaffolding
+
+BLOCKED
+- none
+
+DEPRECATED
+- 9 Implement Token Bucket Rate Limiter Utility
+- 13 Author Planning Phase Prompts
+- 14 Author Scaffolding Phase Prompts
+- 15 Author Testing Phase Prompts
+- 16 Author Release Phase Prompts
+- 17 Author Post-Release Hardening Prompts
+- 18 Integrate and Test Full Metadata Workflow
+- 19 Document MCP Evolution Readiness in README
+- 20 Align export_task_list with Task Master backlog

@@ -29,7 +29,7 @@ dist/*
 !dist/element.d.ts
 .cursor/
 package-lock.json
-artifacts/
+
 .vscode
 .mcp/
 codefetch/
