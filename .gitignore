@@ -23,15 +23,15 @@ node_modules/
 # OS specific
 .DS_Store
 
-
+/tmp
 dist/*
 !dist/element.js
 !dist/element.d.ts
 .cursor/
 package-lock.json
-
+artifacts/
 .vscode
-
+.mcp/
 codefetch/
 # Task files
 # tasks.json

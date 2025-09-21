@@ -1,0 +1,236 @@
+# Overview
+
+A lightweight workflow state engine that ingests Task-Master tasks.json, normalizes them to a superset schema, and exposes identical capabilities over an MCP stdio server and a thin CLI, with optional Mastra agent integration and provider presets for local Ollama and Gemini-CLI. The product serves developers, teams, and agent frameworks that need deterministic “next task” selection and status updates without coupling to Task-Master internals. Value: uniform tools surface (MCP + CLI), portable providers, and cross-platform operation with clear fallbacks.
+
+# Core Features
+
+1. Task-Master ingest adapter
+   • What: Parse tasks.json and validate against a canonical superset schema; map statuses and dependencies; emit PromptsTask\[].
+   • Why: Preserve Task-Master compatibility while enabling independent state management.
+   • How: JSON Schema validation, field normalization, status mapping table, non-destructive enrichment.
+   • Acceptance criteria:
+
+* Given a valid tasks.json, when ingest runs, then output matches schema and preserves id, status, and dependencies order.
+* Given unknown fields, when ingest runs, then fields are retained under details.extras.
+* Given invalid JSON, when ingest runs, then a structured error with line/column is returned.
+
+2. Deterministic state engine (next/advance)
+   • What: Compute readiness by dependency closure and priority; provide next() and update()/advance() helpers.
+   • Why: Repeatable task selection and minimal orchestration logic.
+   • How: DAG build, topological readiness, stable tiebreakers (priority → dep count → id).
+   • Acceptance criteria:
+
+* Given tasks with satisfied dependencies, when next() runs, then the highest-priority ready task is returned deterministically.
+* Given update({id,status\:in\_progress}), when next() reruns, then returned task changes only if readiness changed.
+* Given a cycle, when graph builds, then an explicit cycle error is emitted.
+
+3. MCP stdio server
+   • What: Expose tools: tasks.ingest, tasks.next, tasks.update, workflow\.advance/block over Model Context Protocol stdio.
+   • Why: Enable Codex and other MCP clients to consume the engine.
+   • How: Node process on stdio transport, JSON RPC per MCP, schema-checked payloads.
+   • Acceptance criteria:
+
+* Given a running server, when a client calls tasks.next, then a JSON task object is returned within 200 ms for ≤3k tasks.
+* Given tasks.update invalid id, when called, then server returns a typed error and non-zero MCP error code.
+* Given no network, when MCP runs, then all operations still function.
+
+4. CLI binary (prompts)
+   • What: Shell interface mirroring MCP tools: ingest, next, update, graph --format dot|text.
+   • Why: Scriptable, CI-friendly control without MCP client dependency.
+   • How: Commander-based CLI reusing engine modules.
+   • Acceptance criteria:
+
+* Given prompts next, when executed in a repo directory, then stdout prints a single JSON task line by default.
+* Given prompts graph --format text, then an adjacency list prints without requiring Graphviz.
+* Given prompts update --id 42 --status done, then exit code 0 and persisted state file updated.
+
+5. Mastra agent integration package
+   • What: Small tool factory package (getNextTaskTool, updateTaskTool) for Mastra agents using AI-SDK providers.
+   • Why: Allow agent flows to drive work selection and status changes via tools.
+   • How: Wrap engine calls; export AI-SDK compatible tool specs; provider-agnostic.
+   • Acceptance criteria:
+
+* Given a Mastra agent with tools registered, when the agent invokes getNextTaskTool, then the same task as CLI/MCP next() is returned.
+* Given provider unavailable, when agent runs, then tools degrade with actionable errors and do not crash the agent.
+
+6. Provider presets with fallbacks
+   • What: Default local model via Ollama; optional Gemini-CLI provider.
+   • Why: Zero-cost local dev and easy swap to cloud/free preview.
+   • How: AI-SDK provider abstraction, runtime model selection, env-driven configuration.
+   • Acceptance criteria:
+
+* Given no network, when provider=ollama, then agent tools function locally.
+* Given provider=gemini and no OAuth creds, then a clear auth error is returned and users are guided to switch to ollama.
+
+7. Graph export and visualization
+   • What: Export DOT for visualization; text fallback if Graphviz absent.
+   • Why: Debug readiness and dependency structure.
+   • How: Engine→DOT serializer; feature-flagged text output.
+   • Acceptance criteria:
+
+* Given --format dot with Graphviz installed, when invoked, then a valid DOT graph writes to stdout.
+* Given missing Graphviz, when --format dot is requested, then the CLI returns text fallback with warning.
+
+8. Optional artifacts ingestion
+   • What: Read Task-Master side artifacts (e.g., complexity reports) to enrich metadata.
+   • Why: Better triage without hard dependency.
+   • How: Best-effort sidecar readers; schema-version tagged.
+   • Acceptance criteria:
+
+* Given missing artifacts, when ingest runs, then no failures occur.
+* Given recognized artifact, when present, then fields appear under details.metrics without overriding core fields.
+
+# User Experience
+
+Personas
+• Solo developer automating task flow locally.
+• Team lead running CI jobs to surface the next ready task.
+• Agent framework maintainer wiring deterministic task tools into agents.
+
+Key flows
+• Import: User runs prompts ingest ./tasks.json → schema-validated state.
+• Selection: prompts next or MCP tasks.next returns one ready task.
+• Update: prompts update --id X --status in\_progress/done to advance workflow.
+• Agentic: Mastra agent calls getNextTaskTool/updateTaskTool inside a run loop.
+• IDE/Clients: Codex consumes MCP stdio server; Gemini-CLI can also register MCP servers.
+
+UI/UX considerations
+• Default JSON line output for piping; pretty mode via --pretty.
+• Color is optional; never color-only signals.
+• Stable field order for diff-friendly logs.
+• Clear non-zero exit codes on failure.
+
+Accessibility
+• No reliance on terminal color; TTY detection for spinners; plain text fallback.
+• Localized error messages can be added later; English default.
+
+# Technical Architecture
+
+System components
+• adapters/taskmaster: JSON Schema + mapper to PromptsTask.
+• state/graph: DAG builder, readiness checks, cycle detection.
+• state/update: status transitions with guards.
+• mcp/server: stdio server exposing tools.
+• cli/bin: Commander entry that reuses state modules.
+• packages/prompts-tools: Mastra tool factories for AI-SDK.
+
+Data models
+• PromptsTask (superset): id, title, description, status, dependencies\[], priority, details{extras?, metrics?}, testStrategy, subtasks\[].
+• Status enum: pending, in\_progress, blocked, done (map Task-Master variants).
+• Graph: nodes=tasks, edges=dependencies.
+• State store: JSON on disk by default; pluggable interface for future stores.
+
+APIs and integrations
+• MCP tools (stdio): tasks.ingest({source:"taskmaster", path|string|json})→{count}; tasks.next()→{task}; tasks.update({id,status})→{ok}; workflow\.advance/block.
+• CLI: prompts ingest|next|update|graph.
+• Agent: Mastra agent registers getNextTaskTool/updateTaskTool.
+• Providers: AI-SDK provider presets for Ollama (local) and Gemini-CLI (optional).
+• Client configs: Codex reads \~/.codex/config.toml mcp\_servers entries; Gemini-CLI can register MCP servers in settings.json.
+
+Infrastructure requirements
+• Node.js ≥18 LTS, TypeScript build, cross-platform packaging.
+• No server required; local process per invocation.
+• Optional Graphviz for DOT rendering.
+• File I/O only; network optional when using cloud providers.
+
+Non-functional requirements
+• Performance: next() ≤200 ms for ≤3k tasks; O(n+e) graph operations.
+• Reliability: deterministic selection with stable tiebreakers; reproducible outputs.
+• Portability: Linux, macOS, Windows, WSL2 supported.
+• Observability: structured logs; --verbose flag; error codes cataloged.
+• Security: least privilege file reads; no network calls unless a provider is selected; redact secrets in logs.
+• Privacy: process local files only; do not transmit tasks.json by default.
+• Compatibility: MCP stdio compliance; AI-SDK v5 provider interfaces.
+• Testability: unit tests for mapper, readiness, and CLI; golden files for next() results.
+
+Cross-platform strategy and fallbacks
+• Windows/WSL: normalize Windows drives to /c/...; never hardcode /mnt/c; accept HOME from env.
+• DOT fallback: if Graphviz missing, print text adjacency list.
+• Providers: if Gemini-CLI auth missing, fall back to Ollama; if no Ollama daemon, run pure local engine without models.
+• File watching: polling fallback if fs events unsupported.
+
+Security and privacy considerations
+• Local-first by default; explicit opt-in to any remote provider.
+• Schema validation to block malicious payloads in tasks.json.
+• Sandboxed child processes; no shell interpolation of user data.
+• Config files may hold paths only; never store tokens.
+
+# Development Roadmap
+
+MVP scope and acceptance
+• Ingest adapter + schema superset
+
+* Given a sample tasks.json, when ingest runs, then output validates against schema and preserves core fields.
+  • State engine (next/update)
+* Given deterministic inputs, when next() runs twice, then the same task id returns.
+  • MCP stdio server
+* Given tasks.next tool call, then a ready task returns with 2xx MCP result.
+  • CLI parity
+* Given prompts next, then output equals MCP next() result for the same state.
+  • DOT export with text fallback
+* Given missing Graphviz, when graph --format dot runs, then text fallback prints with warning.
+
+Future enhancements and acceptance
+• File watch mode
+
+* Given --watch, then state updates within 1 s of file change.
+  • Web UI/TUI
+* Given web/tui build, then next/update parity with CLI is preserved.
+  • HTTP MCP transport option
+* Given HTTP enabled, then stdio remains default and both pass the same conformance tests.
+  • Multi-source merge (Task-Master + manual tasks)
+* Given two sources, then merged graph remains acyclic or emits a cycle report.
+  • Installers (brew/msi)
+* Given installer path, then prompts is on PATH and runs help successfully.
+  • Provider matrix
+* Given provider switch, then tools work with Ollama and Gemini-CLI without code changes.
+
+# Logical Dependency Chain
+
+1. Define PromptsTask schema and status mapping.
+2. Implement parser/validator and adapter.
+3. Build state engine (graph + update).
+4. Wire CLI to state engine.
+5. Expose MCP stdio server.
+6. Add DOT/text export.
+7. Ship Mastra tool package and sample agent.
+8. Add provider presets and config snippets.
+9. Optional artifacts ingestion and watch mode.
+
+# Risks and Mitigations
+
+• Schema drift between Task-Master versions
+
+* Likelihood: Medium; Impact: High; Mitigation: versioned mapper, strict validation, compatibility tests.
+  • MCP stdio-only client limitations
+* Likelihood: High; Impact: Medium; Mitigation: standardize on stdio now; design adapters for future HTTP transport.
+  • Provider availability/auth issues
+* Likelihood: Medium; Impact: Medium; Mitigation: default to Ollama; detect and guide to fallback; clear errors.
+  • Path normalization on Windows/WSL
+* Likelihood: Medium; Impact: Medium; Mitigation: central path resolver; CI on Windows runner.
+  • Large graphs performance
+* Likelihood: Medium; Impact: Medium; Mitigation: O(n+e) algorithms; memoized readiness; benchmarks.
+  • Missing Graphviz
+* Likelihood: High; Impact: Low; Mitigation: text fallback; optional suggestion to install Graphviz.
+  • Data privacy leakage via logs
+* Likelihood: Low; Impact: High; Mitigation: redact titles/desc on --redact; no uploads by default.
+  • CLI UX complexity
+* Likelihood: Medium; Impact: Low; Mitigation: stable flags, --json default, thorough help.
+
+# Appendix
+
+Assumptions
+• The “Ingest Task-Master schema” document reflects core requirements and desired integrations for this product.
+• Task-Master provides fields: id, title, description, status, dependencies, priority, details, testStrategy, subtasks; variants may exist and are mapped.
+• Deterministic tiebreakers are priority → dependency count → id.
+• Node.js ≥18 is acceptable across target environments.
+• Users may run on Windows 11 with WSL2; drives mount at /c.
+• Providers are optional; engine must function with no model provider.
+• DOT rendering is optional; text output is sufficient when Graphviz is absent.
+
+Research notes and references (anchors only)
+• docs.task-master.dev — task structure, MCP capabilities, artifacts.
+• Mastra docs — AI-SDK integration and agent tools.
+• AI-SDK community providers — Ollama, Gemini-CLI.
+• ai-sdk-provider-gemini-cli — OAuth and v5 compatibility.
+• OpenAI Codex CLI — MCP stdio client configuration.
