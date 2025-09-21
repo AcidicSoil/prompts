@@ -2,11 +2,13 @@ phase: "P2 App Scaffold & Contracts"
 gate: "Test Gate lite"
 status: "boundaries documented and lint/build scripts still pass; revisit during P4 Frontend UX for UI seams."
 previous:
-  - "/openapi-generate"
+
+- "/openapi-generate"
 next:
-  - "/db-bootstrap"
-  - "/ui-screenshots"
-  - "/design-assets"
+- "/db-bootstrap"
+- "/ui-screenshots"
+- "/design-assets"
+
 ---
 
 # Modular Architecture

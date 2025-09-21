@@ -1,6 +1,6 @@
 {
   "name": "prompts",
-  "private": true,
+  "private": false,
   "type": "module",
   "scripts": {
     "build": "tsc --project tsconfig.build.json",
@@ -36,5 +36,14 @@
   },
   "bin": {
     "prompts": "./dist/cli/main.js"
-  }
+  },
+  "version": "0.1.0",
+  "files": [
+    "dist",
+    "resources",
+    "prompts",
+    "README.md",
+    "WORKFLOW.md",
+    "catalog.json"
+  ]
 }

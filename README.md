@@ -28,6 +28,38 @@ Use the bundled CLI to run the same workflows without an MCP client or Task Mast
 
 The CLI shares the same logic as the MCP tools, so any changes remain consistent across all surfaces.
 
+Once the npm package is published you can install the CLI globally with `npm install -g prompts` (or invoke it ad‑hoc via `npx prompts`). Until then, run it locally with the script above or the compiled binary in `dist/cli/main.js`.
+
+### Server capabilities overview
+
+The MCP server bundled in this repository now ships with the following surfaced features:
+
+- **Prompt resources** – every prompt markdown file is exposed as a capped `file://` MCP resource, enabling Inspector or other clients to browse the catalog without direct filesystem access.
+- **Dynamic prompt tools** – `registerPromptTools` converts each prompt definition into a callable MCP tool with Zod‑derived schemas and structured JSON output alongside trimmed previews.
+- **Workflow automation** – `workflow/refresh_metadata`, `workflow/export_task_list`, and `workflow/advance_state` provide scripted catalog regeneration, backlog export, and persistent status logging.
+- **State persistence** – completions recorded through `advance_state` (or the CLI equivalent) are saved atomically to `.mcp/state.json` via the `StateStore`, ensuring MCP clients and local scripts share the same progress view.
+- **Script parity** – the CLI wraps the MCP tools so automation can run from shell environments, CI, or MCP clients with identical behavior.
+
+#### Publishing to npm
+
+Follow this checklist when cutting a release of the CLI package:
+
+1. Bump the version: `npm version <major|minor|patch> --no-git-tag-version` (then commit the change).
+2. Build and validate the tarball:
+
+   ```bash
+   npm run build
+   npm_config_cache=$(pwd)/tmp/npm-cache npm pack --dry-run
+   ```
+
+   Confirm the output is limited to `dist/`, `resources/`, `prompts/`, and top-level docs.
+3. Publish from the repo root with OTP ready: `npm publish --provenance --access public`.
+4. Post-publish verification:
+   - Check the package on npmjs.com for README rendering and metadata accuracy.
+   - Run `npm view prompts version` to confirm the released number.
+   - Share install guidance with users (`npm install -g prompts`, `npm update -g prompts`, `npm uninstall -g prompts`).
+5. Rollback options: adjust dist-tags (`npm dist-tag add prompts@<version> latest`) or, within 24 hours, `npm unpublish prompts@<version>` if absolutely necessary.
+
 ### Running the MCP server with Inspector
 
 When testing the MCP server via stdio transports, launch the binary directly so stdout remains reserved for JSON-RPC traffic.
@@ -43,7 +75,7 @@ All logging is emitted to stderr, so Inspector receives a clean protocol stream 
 
 ### MCP tools
 
-The server exposes two workflow helpers:
+The server exposes three workflow helpers:
 
 - `refresh_metadata`: runs the same scripts we call manually:
   
@@ -53,6 +85,7 @@ The server exposes two workflow helpers:
 Invoke this tool from Inspector or any MCP client to regenerate `catalog.json`, README tables, and—optionally—`WORKFLOW.md` in one step.
 
 - `export_task_list`: reads `resources/prompts.meta.yaml` and returns a normalized task list (`[{ id, title, dependsOn, status: 'pending' }]`) to feed external dashboards or automations.
+- `advance_state`: writes task/tool completion snapshots (with optional artifacts) to `.mcp/state.json`, providing durable history for MCP clients and the CLI.
 
 ## Using these prompts
 
@@ -322,8 +355,10 @@ flowchart TD
 
 ## Future enhancements
 
-We plan to evolve this prompt pack into a full MCP server so teams can integrate Codex-native workflows through a single machine-coordination endpoint. Detailed architectural and rollout plans are forthcoming, but anticipated capabilities include:
+The current release already exposes the prompt catalog as MCP resources/tools, bundles workflow automation, and delivers a publishable CLI. Next milestones focus on rounding out automation and platform ergonomics:
 
-- Hosting the current prompt catalog as callable MCP tools with typed inputs and outputs.
-- Surfacing DocFetch and gating status signals as first-class MCP events.
-- Enabling external automation to trigger prompt flows programmatically while preserving safety gates.
+- **Task Master parity** — Point `workflow/export_task_list` at `.taskmaster/tasks/tasks.json` so MCP clients mirror the Task Master backlog (Task 20).
+- **Rate limiting utilities** — Ship the token-bucket helper (Task 9) for future outbound integrations.
+- **Expanded lifecycle prompts** — Author remaining planning/scaffolding/testing/release prompts (Tasks 13–17) and validate them end-to-end (Task 18).
+- **MCP notifications & sync** — Emit DocFetch and completion events, and optionally push Task Master status updates through MCP once bidirectional APIs are available.
+- **CLI niceties** — After the npm package is live, add command completions, structured logging flags, and richer `export` formats to support external automations.

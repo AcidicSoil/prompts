@@ -2,11 +2,13 @@ phase: "P7 Release & Ops"
 gate: "Release Gate"
 status: "logging guardrails ready for canary/production checks; coordinate with P4 Frontend UX for client telemetry."
 previous:
-  - "/monitoring-setup"
-  - "/slo-setup"
+
+- "/monitoring-setup"
+- "/slo-setup"
 next:
-  - "/audit"
-  - "/error-analysis"
+- "/audit"
+- "/error-analysis"
+
 ---
 
 # Logging Strategy

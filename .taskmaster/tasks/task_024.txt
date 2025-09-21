@@ -1,0 +1,51 @@
+# Task ID: 24
+# Title: Finalize npm Publish Readiness
+# Status: pending
+# Dependencies: 23
+# Priority: high
+# Description: Prepare the package for its initial npm release by updating package.json, removing the private flag, setting a version, and running final pre-flight checks.
+# Details:
+This task involves the final steps to make the package publishable to the public npm registry. It builds upon the dry-run validation performed in Task 23.
+
+1. **Update `package.json`:**
+   - Open `package.json`.
+   - Remove the line `"private": true`.
+   - Set the `"version"` field to `"0.1.0"` for the initial release.
+   - Briefly review other metadata fields like `description`, `repository`, `license`, and `keywords` for accuracy.
+
+2. **Clean and Rebuild:**
+   - Ensure a clean build environment by removing previous artifacts: `rm -rf dist/` and `rm -f *.tgz`.
+   - Re-run the production build process: `npm run build`.
+
+3. **Final Packaging Validation:**
+   - Generate the final package tarball locally: `npm pack`.
+   - Inspect the contents of the generated `.tgz` file (e.g., `tar -tvf prompts-cli-0.1.0.tgz`) to confirm it only contains production-necessary files (`package.json`, `README.md`, the `dist/` directory, etc.) and excludes source code (`src/`) or development configurations (`tsconfig.json`).
+
+4. **Pre-Publish Check:**
+   - Authenticate with npm using `npm login`.
+   - Perform a final check using npm's dry-run feature: `npm publish --dry-run`. This will simulate the publish process and report the exact files being included without actually releasing the package.
+
+# Test Strategy:
+1. After editing `package.json`, use `grep` or `cat` to confirm that the `"private": true` line is removed and the `"version"` is set to `"0.1.0"`.
+2. Run `npm pack` and inspect the resulting tarball's contents using `tar -tvf *.tgz`. Verify that the file list matches expectations for a production package (no `src` folder, no `tsconfig.json`).
+3. Execute `npm publish --dry-run`. The test passes if the command completes successfully and the output lists the expected package contents without any errors or warnings about missing files or authentication issues.
+
+# Subtasks:
+## 1. Update package.json for publishability [pending]
+### Dependencies: None
+### Description: Set "private": false and add an initial version (e.g., 0.1.0) using npm version or direct edit, keeping semver formatting.
+### Details:
+
+
+## 2. Re-run packaging validation [pending]
+### Dependencies: None
+### Description: Execute `npm pack --dry-run` (or `npm pack`) and inspect output tarball contents to ensure readiness.
+### Details:
+
+
+## 3. Prepare publish runbook update [pending]
+### Dependencies: None
+### Description: Revise the release checklist with final commands, note provenance/OTP steps, and capture next actions once approvals land.
+### Details:
+
+

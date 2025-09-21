@@ -1,4 +1,5 @@
 .markdownlint-cli2.jsonc
+
 ```
 1 | {
 2 |   // Ignore patterns for markdownlint-cli2
@@ -13,6 +14,7 @@
 ```
 
 .markdownlint.json
+
 ```
 1 | {
 2 |   "default": true,
@@ -37,6 +39,7 @@
 ```
 
 AGENTS.md
+
 ```
 1 | ## Instruction Loading Model (Extended)
 2 | 
@@ -919,6 +922,7 @@ AGENTS.md
 ```
 
 GEMINI.md
+
 ```
 1 | ## Instruction Loading Model (Extended)
 2 | 
@@ -1757,6 +1761,7 @@ GEMINI.md
 ```
 
 WORKFLOW.md
+
 ```
 1 | # WORKFLOW\.md
 2 | 
@@ -2191,6 +2196,7 @@ WORKFLOW.md
 ```
 
 action-diagram.md
+
 ```
 1 | You are a CLI assistant focused on helping contributors with the task: Explain workflow triggers and dependencies as a diagram‑ready outline.
 2 | 
@@ -2222,6 +2228,7 @@ action-diagram.md
 ```
 
 adr-new.md
+
 ```
 1 | You are a CLI assistant focused on helping contributors with the task: Draft an Architecture Decision Record with pros/cons.
 2 | 
@@ -2244,6 +2251,7 @@ adr-new.md
 ```
 
 api-contract.md
+
 ```
 1 | ---
 2 | phase: "P2 App Scaffold & Contracts"
@@ -2285,6 +2293,7 @@ api-contract.md
 ```
 
 api-docs-local.md
+
 ```
 1 | ---
 2 | phase: "P2 App Scaffold & Contracts"
@@ -2316,6 +2325,7 @@ api-docs-local.md
 ```
 
 api-usage.md
+
 ```
 1 | You are a CLI assistant focused on helping contributors with the task: Show how an internal API is used across the codebase.
 2 | 
@@ -2339,6 +2349,7 @@ api-usage.md
 ```
 
 audit.md
+
 ```
 1 | ---
 2 | phase: "P7 Release & Ops"
@@ -2381,6 +2392,7 @@ audit.md
 ```
 
 auth-scaffold.md
+
 ```
 1 | ---
 2 | phase: "P3 Data & Auth"
@@ -2417,6 +2429,7 @@ auth-scaffold.md
 ```
 
 blame-summary.md
+
 ```
 1 | You are a CLI assistant focused on helping contributors with the task: Summarize authorship hotspots for a file using git blame.
 2 | 
@@ -2439,6 +2452,7 @@ blame-summary.md
 ```
 
 catalog.json
+
 ```
 1 | {
 2 |   "11-evidence-log": [
@@ -3292,6 +3306,7 @@ catalog.json
 ```
 
 changed-files.md
+
 ```
 1 | You are a CLI assistant focused on helping contributors with the task: Summarize changed files between HEAD and origin/main.
 2 | 
@@ -3313,6 +3328,7 @@ changed-files.md
 ```
 
 check.md
+
 ```
 1 | You are a CLI assistant focused on helping contributors with the task: Check adherence to .editorconfig across the repo.
 2 | 
@@ -3335,6 +3351,7 @@ check.md
 ```
 
 cleanup-branches.md
+
 ```
 1 | ---
 2 | phase: "P8 Post-release Hardening"
@@ -3374,6 +3391,7 @@ cleanup-branches.md
 ```
 
 commit.md
+
 ```
 1 | ---
 2 | phase: "P6 CI/CD & Env"
@@ -3415,6 +3433,7 @@ commit.md
 ```
 
 compare-outputs.md
+
 ```
 1 | ---
 2 | phase: "P9 Model Tactics"
@@ -3446,6 +3465,7 @@ compare-outputs.md
 ```
 
 content-generation.md
+
 ```
 1 | ---
 2 | phase: "11) Evidence Log"
@@ -3477,6 +3497,7 @@ content-generation.md
 ```
 
 coverage-guide.md
+
 ```
 1 | ---
 2 | phase: "P5 Quality Gates & Tests"
@@ -3517,6 +3538,7 @@ coverage-guide.md
 ```
 
 db-bootstrap.md
+
 ```
 1 | ---
 2 | phase: "P3 Data & Auth"
@@ -3552,6 +3574,7 @@ db-bootstrap.md
 ```
 
 dead-code-scan.md
+
 ```
 1 | ---
 2 | phase: "P8 Post-release Hardening"
@@ -3591,6 +3614,7 @@ dead-code-scan.md
 ```
 
 design-assets.md
+
 ```
 1 | ---
 2 | phase: "P4 Frontend UX"
@@ -3622,6 +3646,7 @@ design-assets.md
 ```
 
 devops-automation.md
+
 ```
 1 | ---
 2 | phase: "P6 CI/CD & Env"
@@ -3655,6 +3680,7 @@ devops-automation.md
 ```
 
 e2e-runner-setup.md
+
 ```
 1 | ---
 2 | phase: "P5 Quality Gates & Tests"
@@ -3689,6 +3715,7 @@ e2e-runner-setup.md
 ```
 
 env-setup.md
+
 ```
 1 | ---
 2 | phase: "P6 CI/CD & Env"
@@ -3723,6 +3750,7 @@ env-setup.md
 ```
 
 error-analysis.md
+
 ```
 1 | ---
 2 | phase: "P8 Post-release Hardening"
@@ -3760,6 +3788,7 @@ error-analysis.md
 ```
 
 eslint-review.md
+
 ```
 1 | 
 2 | You are a CLI assistant focused on helping contributors with the task: Review ESLint config and suggest rule tweaks.
@@ -3783,6 +3812,7 @@ eslint-review.md
 ```
 
 explain-code.md
+
 ```
 1 | ---
 2 | phase: "P7 Release & Ops"
@@ -3815,6 +3845,7 @@ explain-code.md
 ```
 
 explain-failures.md
+
 ```
 1 | You are a CLI assistant focused on helping contributors with the task: Analyze recent test failures and propose fixes.
 2 | 
@@ -3837,6 +3868,7 @@ explain-failures.md
 ```
 
 explain-symbol.md
+
 ```
 1 | You are a CLI assistant focused on helping contributors with the task: Explain where and how a symbol is defined and used.
 2 | 
@@ -3860,6 +3892,7 @@ explain-symbol.md
 ```
 
 feature-flags.md
+
 ```
 1 | ---
 2 | phase: "P8 Post-release Hardening"
@@ -3893,6 +3926,7 @@ feature-flags.md
 ```
 
 file-modularity.md
+
 ```
 1 | ---
 2 | phase: "P8 Post-release Hardening"
@@ -3924,6 +3958,7 @@ file-modularity.md
 ```
 
 fix.md
+
 ```
 1 | ---
 2 | phase: "P8 Post-release Hardening"
@@ -3970,6 +4005,7 @@ fix.md
 ```
 
 gemini-map.md
+
 ```
 1 | name: Gemini→Codex Mapper
 2 | command: /gemini-map
@@ -4009,6 +4045,7 @@ gemini-map.md
 ```
 
 generate.md
+
 ```
 1 | ---
 2 | phase: "P5 Quality Gates & Tests"
@@ -4062,6 +4099,7 @@ generate.md
 ```
 
 grep.md
+
 ```
 1 | You are a CLI assistant focused on helping contributors with the task: Recursive text search with ripgrep/grep injection.
 2 | 
@@ -4083,6 +4121,7 @@ grep.md
 ```
 
 iac-bootstrap.md
+
 ```
 1 | ---
 2 | phase: "P6 CI/CD & Env"
@@ -4117,6 +4156,7 @@ iac-bootstrap.md
 ```
 
 instruction-file.md
+
 ```
 1 | ---
 2 | phase: "P0 Preflight Docs"
@@ -4149,6 +4189,7 @@ instruction-file.md
 ```
 
 integration-test.md
+
 ```
 1 | ---
 2 | phase: "P5 Quality Gates & Tests"
@@ -4189,6 +4230,7 @@ integration-test.md
 ```
 
 logging-strategy.md
+
 ```
 1 | phase: "P7 Release & Ops"
 2 | gate: "Release Gate"
@@ -4221,6 +4263,7 @@ logging-strategy.md
 ```
 
 migration-plan.md
+
 ```
 1 | ---
 2 | phase: "P3 Data & Auth"
@@ -4254,6 +4297,7 @@ migration-plan.md
 ```
 
 model-evaluation.md
+
 ```
 1 | ---
 2 | phase: "P9 Model Tactics"
@@ -4285,6 +4329,7 @@ model-evaluation.md
 ```
 
 model-strengths.md
+
 ```
 1 | ---
 2 | phase: "P9 Model Tactics"
@@ -4317,6 +4362,7 @@ model-strengths.md
 ```
 
 modular-architecture.md
+
 ```
 1 | phase: "P2 App Scaffold & Contracts"
 2 | gate: "Test Gate lite"
@@ -4349,6 +4395,7 @@ modular-architecture.md
 ```
 
 monitoring-setup.md
+
 ```
 1 | ---
 2 | phase: "P7 Release & Ops"
@@ -4382,6 +4429,7 @@ monitoring-setup.md
 ```
 
 openapi-generate.md
+
 ```
 1 | ---
 2 | phase: "P2 App Scaffold & Contracts"
@@ -4417,6 +4465,7 @@ openapi-generate.md
 ```
 
 owners.md
+
 ```
 1 | ---
 2 | phase: "P7 Release & Ops"
@@ -4458,6 +4507,7 @@ owners.md
 ```
 
 package.json
+
 ```
 1 | {
 2 |   "name": "prompts",
@@ -4482,6 +4532,7 @@ package.json
 ```
 
 planning-process.md
+
 ```
 1 | ---
 2 | phase: "P1 Plan & Scope"
@@ -4533,6 +4584,7 @@ planning-process.md
 ```
 
 pr-desc.md
+
 ```
 1 | ---
 2 | phase: "P7 Release & Ops"
@@ -4574,6 +4626,7 @@ pr-desc.md
 ```
 
 prd-generator.md
+
 ```
 1 | # PRD Generator
 2 | Trigger: /prd-generate
@@ -4602,6 +4655,7 @@ prd-generator.md
 ```
 
 prd.txt
+
 ```
 1 | # Overview  
 2 | Codex Prompts — Vibe Coding Additions is a curated Codex CLI prompt pack that solves the problem of inconsistent engineering workflows by packaging YC-inspired vibe-coding playbooks. It targets Codex CLI individual contributors, staff leads, and prompt librarians who need deterministic guidance for planning, testing, and release gates without creating prompts from scratch. The pack delivers value by enforcing DocFetch preflight discipline, keeping lifecycle prompts discoverable, and preparing teams for machine-coordination automation.
@@ -4673,6 +4727,7 @@ prd.txt
 ```
 
 prettier-adopt_Migration_report.md
+
 ```
 1 | You are a CLI assistant focused on helping contributors with the task: Plan a Prettier adoption or migration with minimal churn.
 2 | 
@@ -4695,6 +4750,7 @@ prettier-adopt_Migration_report.md
 ```
 
 prototype-feature.md
+
 ```
 1 | ---
 2 | phase:
@@ -4729,6 +4785,7 @@ prototype-feature.md
 ```
 
 refactor-file.md
+
 ```
 1 | You are a CLI assistant focused on helping contributors with the task: Suggest targeted refactors for a single file.
 2 | 
@@ -4751,6 +4808,7 @@ refactor-file.md
 ```
 
 refactor-suggestions.md
+
 ```
 1 | ---
 2 | phase: "P8 Post-release Hardening"
@@ -4782,6 +4840,7 @@ refactor-suggestions.md
 ```
 
 reference-implementation.md
+
 ```
 1 | ---
 2 | phase: "P2 App Scaffold & Contracts"
@@ -4814,6 +4873,7 @@ reference-implementation.md
 ```
 
 regression-guard.md
+
 ```
 1 | ---
 2 | phase: "P5 Quality Gates & Tests"
@@ -4849,6 +4909,7 @@ regression-guard.md
 ```
 
 release-notes.md
+
 ```
 1 | ---
 2 | phase: "P7 Release & Ops"
@@ -4893,6 +4954,7 @@ release-notes.md
 ```
 
 reset-strategy.md
+
 ```
 1 | ---
 2 | phase: "Reset Playbook"
@@ -4932,6 +4994,7 @@ reset-strategy.md
 ```
 
 review-branch.md
+
 ```
 1 | ---
 2 | phase: "P7 Release & Ops"
@@ -4972,6 +5035,7 @@ review-branch.md
 ```
 
 review.md
+
 ```
 1 | ---
 2 | phase: "P7 Release & Ops"
@@ -5012,6 +5076,7 @@ review.md
 ```
 
 scaffold-fullstack.md
+
 ```
 1 | ---
 2 | phase: "P2 App Scaffold & Contracts"
@@ -5071,6 +5136,7 @@ scaffold-fullstack.md
 ```
 
 scope-control.md
+
 ```
 1 | ---
 2 | phase: "P1 Plan & Scope"
@@ -5111,6 +5177,7 @@ scope-control.md
 ```
 
 slo-setup.md
+
 ```
 1 | ---
 2 | phase: "P7 Release & Ops"
@@ -5144,6 +5211,7 @@ slo-setup.md
 ```
 
 stack-evaluation.md
+
 ```
 1 | ---
 2 | phase: "P1 Plan & Scope"
@@ -5175,6 +5243,7 @@ stack-evaluation.md
 ```
 
 summary.md
+
 ```
 1 | You are a CLI assistant focused on helping contributors with the task: Produce a README‑level summary of the repo.
 2 | 
@@ -5196,6 +5265,7 @@ summary.md
 ```
 
 switch-model.md
+
 ```
 1 | ---
 2 | phase: "P9 Model Tactics"
@@ -5227,6 +5297,7 @@ switch-model.md
 ```
 
 todo-report.md
+
 ```
 1 | You are a CLI assistant focused on helping contributors with the task: Summarize TODO/FIXME/XXX annotations across the codebase.
 2 | 
@@ -5249,6 +5320,7 @@ todo-report.md
 ```
 
 todos.md
+
 ```
 1 | You are a CLI assistant focused on helping contributors with the task: Find and group TODO/FIXME annotations.
 2 | 
@@ -5270,6 +5342,7 @@ todos.md
 ```
 
 tsconfig-review.md
+
 ```
 1 | You are a CLI assistant focused on helping contributors with the task: Review tsconfig for correctness and DX.
 2 | 
@@ -5292,6 +5365,7 @@ tsconfig-review.md
 ```
 
 tsconfig.json
+
 ```
 1 | {
 2 |   "compilerOptions": {
@@ -5315,6 +5389,7 @@ tsconfig.json
 ```
 
 ui-screenshots.md
+
 ```
 1 | ---
 2 | phase: "P4 Frontend UX"
@@ -5347,6 +5422,7 @@ ui-screenshots.md
 ```
 
 version-control-guide.md
+
 ```
 1 | ---
 2 | phase: "P6 CI/CD & Env"
@@ -5387,6 +5463,7 @@ version-control-guide.md
 ```
 
 version-proposal.md
+
 ```
 1 | ---
 2 | phase: "P7 Release & Ops"
@@ -5427,6 +5504,7 @@ version-proposal.md
 ```
 
 vibe-coders.md
+
 ```
 1 | # YC Guide to Vibe Coding
 2 | 
@@ -5520,6 +5598,7 @@ vibe-coders.md
 ```
 
 voice-input.md
+
 ```
 1 | ---
 2 | phase: "Support"
@@ -5550,6 +5629,7 @@ voice-input.md
 ```
 
 workflow.mmd
+
 ```
 1 | flowchart TD
 2 |   subgraph phase_p0_preflight_docs["P0 Preflight Docs"]
@@ -5679,29 +5759,31 @@ workflow.mmd
 ```
 
 .gemini/settings.json
+
 ```
 1 | {
-2 | 	"mcpServers": {
-3 | 		"task-master-ai": {
-4 | 			"command": "npx",
-5 | 			"args": ["-y", "--package=task-master-ai", "task-master-ai"],
-6 | 			"env": {
-7 | 				"ANTHROPIC_API_KEY": "YOUR_ANTHROPIC_API_KEY_HERE",
-8 | 				"PERPLEXITY_API_KEY": "YOUR_PERPLEXITY_API_KEY_HERE",
-9 | 				"OPENAI_API_KEY": "YOUR_OPENAI_KEY_HERE",
-10 | 				"GOOGLE_API_KEY": "YOUR_GOOGLE_KEY_HERE",
-11 | 				"XAI_API_KEY": "YOUR_XAI_KEY_HERE",
-12 | 				"OPENROUTER_API_KEY": "YOUR_OPENROUTER_KEY_HERE",
-13 | 				"MISTRAL_API_KEY": "YOUR_MISTRAL_KEY_HERE",
-14 | 				"AZURE_OPENAI_API_KEY": "YOUR_AZURE_KEY_HERE",
-15 | 				"OLLAMA_API_KEY": "YOUR_OLLAMA_API_KEY_HERE"
-16 | 			}
-17 | 		}
-18 | 	}
+2 |  "mcpServers": {
+3 |   "task-master-ai": {
+4 |    "command": "npx",
+5 |    "args": ["-y", "--package=task-master-ai", "task-master-ai"],
+6 |    "env": {
+7 |     "ANTHROPIC_API_KEY": "YOUR_ANTHROPIC_API_KEY_HERE",
+8 |     "PERPLEXITY_API_KEY": "YOUR_PERPLEXITY_API_KEY_HERE",
+9 |     "OPENAI_API_KEY": "YOUR_OPENAI_KEY_HERE",
+10 |     "GOOGLE_API_KEY": "YOUR_GOOGLE_KEY_HERE",
+11 |     "XAI_API_KEY": "YOUR_XAI_KEY_HERE",
+12 |     "OPENROUTER_API_KEY": "YOUR_OPENROUTER_KEY_HERE",
+13 |     "MISTRAL_API_KEY": "YOUR_MISTRAL_KEY_HERE",
+14 |     "AZURE_OPENAI_API_KEY": "YOUR_AZURE_KEY_HERE",
+15 |     "OLLAMA_API_KEY": "YOUR_OLLAMA_API_KEY_HERE"
+16 |    }
+17 |   }
+18 |  }
 19 | }
 ```
 
 .taskmaster/AGENTS.md
+
 ```
 1 | # Task Master AI - Agent Integration Guide
 2 | 
@@ -6123,6 +6205,7 @@ workflow.mmd
 ```
 
 .taskmaster/config.json
+
 ```
 1 | {
 2 |   "models": {
@@ -6165,6 +6248,7 @@ workflow.mmd
 ```
 
 .taskmaster/state.json
+
 ```
 1 | {
 2 |   "currentTag": "master",
@@ -6175,6 +6259,7 @@ workflow.mmd
 ```
 
 MCP/MCP server resources.md
+
 ```
 1 | 
 2 | Converting Markdown Prompt Repo into Local MCP Server with DAG-Aware Planning
@@ -6223,6 +6308,7 @@ MCP/MCP server resources.md
 ```
 
 MCP/mcp_cli_integration_brief_prompts_claude_task_master.md
+
 ```
 1 | # MCP CLI Integration Brief — `AcidicSoil/prompts` & `AcidicSoil/claude-task-master`
 2 | 
@@ -6496,6 +6582,7 @@ MCP/mcp_cli_integration_brief_prompts_claude_task_master.md
 ```
 
 MCP/mcp_server_research_report_docs-proactive_workflow_assistant_local_stdio_mermaid_dag.md
+
 ```
 1 | # MCP Server Research Report — Converting a Markdown Prompt Library into a Proactive Workflow Assistant (Local/STDIO, Mermaid DAG)
 2 | 
@@ -6669,6 +6756,7 @@ MCP/mcp_server_research_report_docs-proactive_workflow_assistant_local_stdio_mer
 ```
 
 scripts/build_catalog.ts
+
 ```
 1 | import { promises as fs } from 'fs';
 2 | import path from 'path';
@@ -6979,6 +7067,7 @@ scripts/build_catalog.ts
 ```
 
 scripts/catalog_types.ts
+
 ```
 1 | export interface PromptCatalogEntry {
 2 |   phase: string;
@@ -7005,6 +7094,7 @@ scripts/catalog_types.ts
 ```
 
 scripts/file_utils.ts
+
 ```
 1 | import { promises as fs } from 'fs';
 2 | import path from 'path';
@@ -7053,6 +7143,7 @@ scripts/file_utils.ts
 ```
 
 scripts/front_matter.ts
+
 ```
 1 | export type Scalar = string;
 2 | 
@@ -7120,6 +7211,7 @@ scripts/front_matter.ts
 ```
 
 scripts/generate_docs.ts
+
 ```
 1 | import { promises as fs } from 'fs';
 2 | import path from 'path';
@@ -7625,6 +7717,7 @@ scripts/generate_docs.ts
 ```
 
 scripts/markdown_utils.ts
+
 ```
 1 | import { promises as fs } from 'fs';
 2 | import path from 'path';
@@ -7669,6 +7762,7 @@ scripts/markdown_utils.ts
 ```
 
 scripts/validate_metadata.ts
+
 ```
 1 | import { promises as fs } from 'fs';
 2 | import path from 'path';
@@ -7776,6 +7870,7 @@ scripts/validate_metadata.ts
 ```
 
 src/index.ts
+
 ```
 1 | import { McpServer } from "@modelcontextprotocol/sdk/server/mcp";
 2 | import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio";
@@ -7891,6 +7986,7 @@ src/index.ts
 ```
 
 src/logger.ts
+
 ```
 1 | export type LogLevel = "info" | "warn" | "error";
 2 | 
@@ -7987,6 +8083,7 @@ src/logger.ts
 ```
 
 .taskmaster/docs/prd.txt
+
 ```
 1 | # Overview  
 2 | Codex Prompts — Vibe Coding Additions is a curated Codex CLI prompt pack that solves the problem of inconsistent engineering workflows by packaging YC-inspired vibe-coding playbooks. It targets Codex CLI individual contributors, staff leads, and prompt librarians who need deterministic guidance for planning, testing, and release gates without creating prompts from scratch. The pack delivers value by enforcing DocFetch preflight discipline, keeping lifecycle prompts discoverable, and preparing teams for machine-coordination automation.
@@ -8058,175 +8155,177 @@ src/logger.ts
 ```
 
 .taskmaster/reports/task-complexity-report.json
+
 ```
 1 | {
-2 | 	"meta": {
-3 | 		"generatedAt": "2025-09-19T23:04:04.198Z",
-4 | 		"tasksAnalyzed": 19,
-5 | 		"totalTasks": 19,
-6 | 		"analysisCount": 19,
-7 | 		"thresholdScore": 5,
-8 | 		"projectName": "Taskmaster",
-9 | 		"usedResearch": true
-10 | 	},
-11 | 	"complexityAnalysis": [
-12 | 		{
-13 | 			"taskId": 1,
-14 | 			"taskTitle": "Project Setup and Server Bootstrap",
-15 | 			"complexityScore": 4,
-16 | 			"recommendedSubtasks": 4,
-17 | 			"expansionPrompt": "Expand this task to set up the Node.js/TypeScript project. Create subtasks for: 1. Configuring `package.json` with necessary scripts (build, start, dev) and installing dependencies (`@modelcontextprotocol/sdk`, `typescript`, `ts-node`, etc.). 2. Configuring `tsconfig.json` for compilation into the `dist` directory. 3. Creating the main server entry point `src/index.ts` that initializes the `StdioServerTransport` and registers server info. 4. Implementing a basic NDJSON logger and adding graceful shutdown handlers for SIGINT and SIGTERM signals.",
-18 | 			"reasoning": "Codebase analysis shows this is a greenfield task. The `package.json` and `tsconfig.json` are skeletons, and the `src` directory is empty. The task requires creating the core project configuration, the main application entry point, and foundational features like logging and process handling. These are four distinct areas of setup that can be worked on sequentially, making them ideal subtasks."
-19 | 		},
-20 | 		{
-21 | 			"taskId": 2,
-22 | 			"taskTitle": "Implement Safety Control Utilities",
-23 | 			"complexityScore": 3,
-24 | 			"recommendedSubtasks": 2,
-25 | 			"expansionPrompt": "Expand this task into two subtasks for creating safety utilities. The first subtask should be to implement and unit test the `redactSecrets` function, which takes a log object and redacts values for keys matching a specific regex. The second subtask should be to implement and unit test the `capPayload` function, which truncates large strings and adds a truncation notice.",
-26 | 			"reasoning": "Codebase analysis confirms no utility files or functions for redaction or payload capping exist. This is greenfield development of two distinct, pure functions. They have no dependencies on each other and can be implemented and unit-tested in isolation, making a two-subtask split natural and efficient."
-27 | 		},
-28 | 		{
-29 | 			"taskId": 5,
-30 | 			"taskTitle": "Implement Atomic State Store",
-31 | 			"complexityScore": 5,
-32 | 			"recommendedSubtasks": 3,
-33 | 			"expansionPrompt": "Expand this task to implement the atomic `StateStore`. Create subtasks for: 1. Defining the `StateStore` class structure, including methods for initializing the `.mcp` directory and loading `state.json` (or a default state if it doesn't exist). 2. Implementing the atomic `save` method using the write-to-temp-then-rename pattern. 3. Writing comprehensive tests to verify that the directory is created, state is saved correctly, and the save operation is atomic and prevents file corruption.",
-34 | 			"reasoning": "Codebase analysis shows no existing state management logic. The complexity is not just in creating a class, but in correctly implementing the atomic write-then-rename pattern to prevent data corruption, which requires careful handling of file system operations and errors. Breaking this into class structure, the critical save logic, and dedicated testing is a robust approach."
-35 | 		},
-36 | 		{
-37 | 			"taskId": 9,
-38 | 			"taskTitle": "Implement Token Bucket Rate Limiter Utility",
-39 | 			"complexityScore": 4,
-40 | 			"recommendedSubtasks": 2,
-41 | 			"expansionPrompt": "Expand this task to create the `TokenBucket` rate limiter. Create two subtasks: 1. Implement the `TokenBucket` class structure, including the constructor, properties for capacity, refill rate, and the internal token refill logic. 2. Implement the asynchronous `take(count)` method, including the logic to wait for tokens to be refilled if necessary, and write time-sensitive unit tests to verify its correctness.",
-42 | 			"reasoning": "This is a greenfield implementation of a classic, self-contained algorithm. No related code exists. The complexity lies in managing the time-based state and the asynchronous waiting logic. Separating the core class and refill mechanism from the async `take` method and its specific testing requirements simplifies development."
-43 | 		},
-44 | 		{
-45 | 			"taskId": 3,
-46 | 			"taskTitle": "Implement Resource Exposure",
-47 | 			"complexityScore": 4,
-48 | 			"recommendedSubtasks": 3,
-49 | 			"expansionPrompt": "Expand this task to expose prompts as MCP resources. Create subtasks for: 1. Adding a YAML parsing library and creating a utility function to load and parse `resources/prompts.meta.yaml` on server startup. 2. In the main server file, iterating over the parsed prompt metadata and calling the MCP server's `registerResource` method for each, constructing the `file://` URI. 3. Integrating the `capPayload` utility to truncate the content preview for each registered resource.",
-50 | 			"reasoning": "Codebase analysis shows `resources/prompts.meta.yaml` exists but there is no server logic to process it. This task involves orchestrating multiple pieces: file I/O, data parsing (YAML), and integration with the MCP SDK. It also depends on the `capPayload` utility from another task. Breaking it down by concern (data loading, resource registration, safety feature integration) makes the implementation more manageable."
-51 | 		},
-52 | 		{
-53 | 			"taskId": 12,
-54 | 			"taskTitle": "Create DocFetch Preflight Guardrail Prompt",
-55 | 			"complexityScore": 1,
-56 | 			"recommendedSubtasks": 1,
-57 | 			"expansionPrompt": "Create the `prompts/preflight/docfetch-check.md` file. The file must contain YAML front matter with an appropriate `id`, `title`, and `phase`. The markdown body should instruct the user on how to run DocFetch, what a successful `DocFetchReport` looks like, and the steps to take if the check fails.",
-58 | 			"reasoning": "Codebase analysis shows the `prompts` directory does not exist. This task is purely content authoring—creating a single markdown file. It involves no code logic and is an atomic unit of work, so it does not require further subtask breakdown."
-59 | 		},
-60 | 		{
-61 | 			"taskId": 13,
-62 | 			"taskTitle": "Author Planning Phase Prompts",
-63 | 			"complexityScore": 1,
-64 | 			"recommendedSubtasks": 1,
-65 | 			"expansionPrompt": "Create a new markdown prompt file in the `prompts/` directory for the 'planning' phase. The file must include YAML front matter with `phase: planning` and a unique `id` and `title`. The prompt's content should guide a user through a specific planning activity, such as feature breakdown or defining acceptance criteria.",
-66 | 			"reasoning": "Similar to task 12, this is a content authoring task. It requires creating a new markdown file with specific content and metadata. It is a simple, atomic task with no implementation complexity."
-67 | 		},
-68 | 		{
-69 | 			"taskId": 14,
-70 | 			"taskTitle": "Author Scaffolding Phase Prompts",
-71 | 			"complexityScore": 1,
-72 | 			"recommendedSubtasks": 1,
-73 | 			"expansionPrompt": "Create a new markdown prompt file in the `prompts/` directory for the 'scaffolding' phase. The file must include YAML front matter with `phase: scaffolding` and a unique `id` and `title`. The prompt's content should assist a developer in generating boilerplate code or setting up initial file structures for a new feature.",
-74 | 			"reasoning": "This is another content authoring task. It involves creating a single markdown file and has no associated coding logic. It is a minimal, atomic piece of work."
-75 | 		},
-76 | 		{
-77 | 			"taskId": 19,
-78 | 			"taskTitle": "Document MCP Evolution Readiness in README",
-79 | 			"complexityScore": 1,
-80 | 			"recommendedSubtasks": 1,
-81 | 			"expansionPrompt": "Edit the `README.md` file to add a new H2 section titled 'Future Enhancements'. Under this section, describe the planned evolution to a full MCP server, including typed inputs and event signals. Also, explicitly mention that the current slash-command workflow will remain as a manual fallback.",
-82 | 			"reasoning": "Codebase analysis shows `README.md` exists but is minimal. This task is a simple documentation update, requiring editing a single text file. The complexity is in the quality of the writing, not the implementation, making it a very low-complexity task."
-83 | 		},
-84 | 		{
-85 | 			"taskId": 18,
-86 | 			"taskTitle": "Integrate and Test Full Metadata Workflow",
-87 | 			"complexityScore": 2,
-88 | 			"recommendedSubtasks": 1,
-89 | 			"expansionPrompt": "This is a manual testing task. The steps are: 1. Modify the YAML front matter of an existing prompt file (e.g., change its `title`). 2. Run the `npm run validate:metadata` script and confirm it passes. 3. Run the `npm run build:catalog` script. 4. Verify that the `catalog.json` file and the prompt tables in `README.md` have been updated to reflect the change. 5. (Optional) Introduce an invalid change to the metadata and confirm the validation script fails with a clear error.",
-90 | 			"reasoning": "This task does not involve writing any new code; it is a manual end-to-end testing procedure. While it has many dependencies (the scripts and prompts must exist), the task itself is a single, sequential set of verification steps. The complexity score of 2 reflects the coordination required, but it's not a development task that can be broken down further."
-91 | 		},
-92 | 		{
-93 | 			"taskId": 4,
-94 | 			"taskTitle": "Implement Dynamic Prompt Tools",
-95 | 			"complexityScore": 5,
-96 | 			"recommendedSubtasks": 3,
-97 | 			"expansionPrompt": "Break down this task with a focus on implement dynamic prompt tools.",
-98 | 			"reasoning": "Automatically added due to missing analysis in AI response."
-99 | 		},
-100 | 		{
-101 | 			"taskId": 6,
-102 | 			"taskTitle": "Implement Planner `suggest_next_calls` Tool",
-103 | 			"complexityScore": 5,
-104 | 			"recommendedSubtasks": 3,
-105 | 			"expansionPrompt": "Break down this task with a focus on implement planner `suggest_next_calls` tool.",
-106 | 			"reasoning": "Automatically added due to missing analysis in AI response."
-107 | 		},
-108 | 		{
-109 | 			"taskId": 7,
-110 | 			"taskTitle": "Implement `advance_state` Tool",
-111 | 			"complexityScore": 5,
-112 | 			"recommendedSubtasks": 3,
-113 | 			"expansionPrompt": "Break down this task with a focus on implement `advance_state` tool.",
-114 | 			"reasoning": "Automatically added due to missing analysis in AI response."
-115 | 		},
-116 | 		{
-117 | 			"taskId": 8,
-118 | 			"taskTitle": "Implement `export_task_list` Tool",
-119 | 			"complexityScore": 5,
-120 | 			"recommendedSubtasks": 3,
-121 | 			"expansionPrompt": "Break down this task with a focus on implement `export_task_list` tool.",
-122 | 			"reasoning": "Automatically added due to missing analysis in AI response."
-123 | 		},
-124 | 		{
-125 | 			"taskId": 10,
-126 | 			"taskTitle": "Implement Prompt Metadata Validation Script",
-127 | 			"complexityScore": 5,
-128 | 			"recommendedSubtasks": 3,
-129 | 			"expansionPrompt": "Break down this task with a focus on implement prompt metadata validation script.",
-130 | 			"reasoning": "Automatically added due to missing analysis in AI response."
-131 | 		},
-132 | 		{
-133 | 			"taskId": 11,
-134 | 			"taskTitle": "Implement Catalog and README Build Script",
-135 | 			"complexityScore": 5,
-136 | 			"recommendedSubtasks": 3,
-137 | 			"expansionPrompt": "Break down this task with a focus on implement catalog and readme build script.",
-138 | 			"reasoning": "Automatically added due to missing analysis in AI response."
-139 | 		},
-140 | 		{
-141 | 			"taskId": 15,
-142 | 			"taskTitle": "Author Testing Phase Prompts",
-143 | 			"complexityScore": 5,
-144 | 			"recommendedSubtasks": 3,
-145 | 			"expansionPrompt": "Break down this task with a focus on author testing phase prompts.",
-146 | 			"reasoning": "Automatically added due to missing analysis in AI response."
-147 | 		},
-148 | 		{
-149 | 			"taskId": 16,
-150 | 			"taskTitle": "Author Release Phase Prompts",
-151 | 			"complexityScore": 5,
-152 | 			"recommendedSubtasks": 3,
-153 | 			"expansionPrompt": "Break down this task with a focus on author release phase prompts.",
-154 | 			"reasoning": "Automatically added due to missing analysis in AI response."
-155 | 		},
-156 | 		{
-157 | 			"taskId": 17,
-158 | 			"taskTitle": "Author Post-Release Hardening Prompts",
-159 | 			"complexityScore": 5,
-160 | 			"recommendedSubtasks": 3,
-161 | 			"expansionPrompt": "Break down this task with a focus on author post-release hardening prompts.",
-162 | 			"reasoning": "Automatically added due to missing analysis in AI response."
-163 | 		}
-164 | 	]
+2 |  "meta": {
+3 |   "generatedAt": "2025-09-19T23:04:04.198Z",
+4 |   "tasksAnalyzed": 19,
+5 |   "totalTasks": 19,
+6 |   "analysisCount": 19,
+7 |   "thresholdScore": 5,
+8 |   "projectName": "Taskmaster",
+9 |   "usedResearch": true
+10 |  },
+11 |  "complexityAnalysis": [
+12 |   {
+13 |    "taskId": 1,
+14 |    "taskTitle": "Project Setup and Server Bootstrap",
+15 |    "complexityScore": 4,
+16 |    "recommendedSubtasks": 4,
+17 |    "expansionPrompt": "Expand this task to set up the Node.js/TypeScript project. Create subtasks for: 1. Configuring `package.json` with necessary scripts (build, start, dev) and installing dependencies (`@modelcontextprotocol/sdk`, `typescript`, `ts-node`, etc.). 2. Configuring `tsconfig.json` for compilation into the `dist` directory. 3. Creating the main server entry point `src/index.ts` that initializes the `StdioServerTransport` and registers server info. 4. Implementing a basic NDJSON logger and adding graceful shutdown handlers for SIGINT and SIGTERM signals.",
+18 |    "reasoning": "Codebase analysis shows this is a greenfield task. The `package.json` and `tsconfig.json` are skeletons, and the `src` directory is empty. The task requires creating the core project configuration, the main application entry point, and foundational features like logging and process handling. These are four distinct areas of setup that can be worked on sequentially, making them ideal subtasks."
+19 |   },
+20 |   {
+21 |    "taskId": 2,
+22 |    "taskTitle": "Implement Safety Control Utilities",
+23 |    "complexityScore": 3,
+24 |    "recommendedSubtasks": 2,
+25 |    "expansionPrompt": "Expand this task into two subtasks for creating safety utilities. The first subtask should be to implement and unit test the `redactSecrets` function, which takes a log object and redacts values for keys matching a specific regex. The second subtask should be to implement and unit test the `capPayload` function, which truncates large strings and adds a truncation notice.",
+26 |    "reasoning": "Codebase analysis confirms no utility files or functions for redaction or payload capping exist. This is greenfield development of two distinct, pure functions. They have no dependencies on each other and can be implemented and unit-tested in isolation, making a two-subtask split natural and efficient."
+27 |   },
+28 |   {
+29 |    "taskId": 5,
+30 |    "taskTitle": "Implement Atomic State Store",
+31 |    "complexityScore": 5,
+32 |    "recommendedSubtasks": 3,
+33 |    "expansionPrompt": "Expand this task to implement the atomic `StateStore`. Create subtasks for: 1. Defining the `StateStore` class structure, including methods for initializing the `.mcp` directory and loading `state.json` (or a default state if it doesn't exist). 2. Implementing the atomic `save` method using the write-to-temp-then-rename pattern. 3. Writing comprehensive tests to verify that the directory is created, state is saved correctly, and the save operation is atomic and prevents file corruption.",
+34 |    "reasoning": "Codebase analysis shows no existing state management logic. The complexity is not just in creating a class, but in correctly implementing the atomic write-then-rename pattern to prevent data corruption, which requires careful handling of file system operations and errors. Breaking this into class structure, the critical save logic, and dedicated testing is a robust approach."
+35 |   },
+36 |   {
+37 |    "taskId": 9,
+38 |    "taskTitle": "Implement Token Bucket Rate Limiter Utility",
+39 |    "complexityScore": 4,
+40 |    "recommendedSubtasks": 2,
+41 |    "expansionPrompt": "Expand this task to create the `TokenBucket` rate limiter. Create two subtasks: 1. Implement the `TokenBucket` class structure, including the constructor, properties for capacity, refill rate, and the internal token refill logic. 2. Implement the asynchronous `take(count)` method, including the logic to wait for tokens to be refilled if necessary, and write time-sensitive unit tests to verify its correctness.",
+42 |    "reasoning": "This is a greenfield implementation of a classic, self-contained algorithm. No related code exists. The complexity lies in managing the time-based state and the asynchronous waiting logic. Separating the core class and refill mechanism from the async `take` method and its specific testing requirements simplifies development."
+43 |   },
+44 |   {
+45 |    "taskId": 3,
+46 |    "taskTitle": "Implement Resource Exposure",
+47 |    "complexityScore": 4,
+48 |    "recommendedSubtasks": 3,
+49 |    "expansionPrompt": "Expand this task to expose prompts as MCP resources. Create subtasks for: 1. Adding a YAML parsing library and creating a utility function to load and parse `resources/prompts.meta.yaml` on server startup. 2. In the main server file, iterating over the parsed prompt metadata and calling the MCP server's `registerResource` method for each, constructing the `file://` URI. 3. Integrating the `capPayload` utility to truncate the content preview for each registered resource.",
+50 |    "reasoning": "Codebase analysis shows `resources/prompts.meta.yaml` exists but there is no server logic to process it. This task involves orchestrating multiple pieces: file I/O, data parsing (YAML), and integration with the MCP SDK. It also depends on the `capPayload` utility from another task. Breaking it down by concern (data loading, resource registration, safety feature integration) makes the implementation more manageable."
+51 |   },
+52 |   {
+53 |    "taskId": 12,
+54 |    "taskTitle": "Create DocFetch Preflight Guardrail Prompt",
+55 |    "complexityScore": 1,
+56 |    "recommendedSubtasks": 1,
+57 |    "expansionPrompt": "Create the `prompts/preflight/docfetch-check.md` file. The file must contain YAML front matter with an appropriate `id`, `title`, and `phase`. The markdown body should instruct the user on how to run DocFetch, what a successful `DocFetchReport` looks like, and the steps to take if the check fails.",
+58 |    "reasoning": "Codebase analysis shows the `prompts` directory does not exist. This task is purely content authoring—creating a single markdown file. It involves no code logic and is an atomic unit of work, so it does not require further subtask breakdown."
+59 |   },
+60 |   {
+61 |    "taskId": 13,
+62 |    "taskTitle": "Author Planning Phase Prompts",
+63 |    "complexityScore": 1,
+64 |    "recommendedSubtasks": 1,
+65 |    "expansionPrompt": "Create a new markdown prompt file in the `prompts/` directory for the 'planning' phase. The file must include YAML front matter with `phase: planning` and a unique `id` and `title`. The prompt's content should guide a user through a specific planning activity, such as feature breakdown or defining acceptance criteria.",
+66 |    "reasoning": "Similar to task 12, this is a content authoring task. It requires creating a new markdown file with specific content and metadata. It is a simple, atomic task with no implementation complexity."
+67 |   },
+68 |   {
+69 |    "taskId": 14,
+70 |    "taskTitle": "Author Scaffolding Phase Prompts",
+71 |    "complexityScore": 1,
+72 |    "recommendedSubtasks": 1,
+73 |    "expansionPrompt": "Create a new markdown prompt file in the `prompts/` directory for the 'scaffolding' phase. The file must include YAML front matter with `phase: scaffolding` and a unique `id` and `title`. The prompt's content should assist a developer in generating boilerplate code or setting up initial file structures for a new feature.",
+74 |    "reasoning": "This is another content authoring task. It involves creating a single markdown file and has no associated coding logic. It is a minimal, atomic piece of work."
+75 |   },
+76 |   {
+77 |    "taskId": 19,
+78 |    "taskTitle": "Document MCP Evolution Readiness in README",
+79 |    "complexityScore": 1,
+80 |    "recommendedSubtasks": 1,
+81 |    "expansionPrompt": "Edit the `README.md` file to add a new H2 section titled 'Future Enhancements'. Under this section, describe the planned evolution to a full MCP server, including typed inputs and event signals. Also, explicitly mention that the current slash-command workflow will remain as a manual fallback.",
+82 |    "reasoning": "Codebase analysis shows `README.md` exists but is minimal. This task is a simple documentation update, requiring editing a single text file. The complexity is in the quality of the writing, not the implementation, making it a very low-complexity task."
+83 |   },
+84 |   {
+85 |    "taskId": 18,
+86 |    "taskTitle": "Integrate and Test Full Metadata Workflow",
+87 |    "complexityScore": 2,
+88 |    "recommendedSubtasks": 1,
+89 |    "expansionPrompt": "This is a manual testing task. The steps are: 1. Modify the YAML front matter of an existing prompt file (e.g., change its `title`). 2. Run the `npm run validate:metadata` script and confirm it passes. 3. Run the `npm run build:catalog` script. 4. Verify that the `catalog.json` file and the prompt tables in `README.md` have been updated to reflect the change. 5. (Optional) Introduce an invalid change to the metadata and confirm the validation script fails with a clear error.",
+90 |    "reasoning": "This task does not involve writing any new code; it is a manual end-to-end testing procedure. While it has many dependencies (the scripts and prompts must exist), the task itself is a single, sequential set of verification steps. The complexity score of 2 reflects the coordination required, but it's not a development task that can be broken down further."
+91 |   },
+92 |   {
+93 |    "taskId": 4,
+94 |    "taskTitle": "Implement Dynamic Prompt Tools",
+95 |    "complexityScore": 5,
+96 |    "recommendedSubtasks": 3,
+97 |    "expansionPrompt": "Break down this task with a focus on implement dynamic prompt tools.",
+98 |    "reasoning": "Automatically added due to missing analysis in AI response."
+99 |   },
+100 |   {
+101 |    "taskId": 6,
+102 |    "taskTitle": "Implement Planner `suggest_next_calls` Tool",
+103 |    "complexityScore": 5,
+104 |    "recommendedSubtasks": 3,
+105 |    "expansionPrompt": "Break down this task with a focus on implement planner `suggest_next_calls` tool.",
+106 |    "reasoning": "Automatically added due to missing analysis in AI response."
+107 |   },
+108 |   {
+109 |    "taskId": 7,
+110 |    "taskTitle": "Implement `advance_state` Tool",
+111 |    "complexityScore": 5,
+112 |    "recommendedSubtasks": 3,
+113 |    "expansionPrompt": "Break down this task with a focus on implement `advance_state` tool.",
+114 |    "reasoning": "Automatically added due to missing analysis in AI response."
+115 |   },
+116 |   {
+117 |    "taskId": 8,
+118 |    "taskTitle": "Implement `export_task_list` Tool",
+119 |    "complexityScore": 5,
+120 |    "recommendedSubtasks": 3,
+121 |    "expansionPrompt": "Break down this task with a focus on implement `export_task_list` tool.",
+122 |    "reasoning": "Automatically added due to missing analysis in AI response."
+123 |   },
+124 |   {
+125 |    "taskId": 10,
+126 |    "taskTitle": "Implement Prompt Metadata Validation Script",
+127 |    "complexityScore": 5,
+128 |    "recommendedSubtasks": 3,
+129 |    "expansionPrompt": "Break down this task with a focus on implement prompt metadata validation script.",
+130 |    "reasoning": "Automatically added due to missing analysis in AI response."
+131 |   },
+132 |   {
+133 |    "taskId": 11,
+134 |    "taskTitle": "Implement Catalog and README Build Script",
+135 |    "complexityScore": 5,
+136 |    "recommendedSubtasks": 3,
+137 |    "expansionPrompt": "Break down this task with a focus on implement catalog and readme build script.",
+138 |    "reasoning": "Automatically added due to missing analysis in AI response."
+139 |   },
+140 |   {
+141 |    "taskId": 15,
+142 |    "taskTitle": "Author Testing Phase Prompts",
+143 |    "complexityScore": 5,
+144 |    "recommendedSubtasks": 3,
+145 |    "expansionPrompt": "Break down this task with a focus on author testing phase prompts.",
+146 |    "reasoning": "Automatically added due to missing analysis in AI response."
+147 |   },
+148 |   {
+149 |    "taskId": 16,
+150 |    "taskTitle": "Author Release Phase Prompts",
+151 |    "complexityScore": 5,
+152 |    "recommendedSubtasks": 3,
+153 |    "expansionPrompt": "Break down this task with a focus on author release phase prompts.",
+154 |    "reasoning": "Automatically added due to missing analysis in AI response."
+155 |   },
+156 |   {
+157 |    "taskId": 17,
+158 |    "taskTitle": "Author Post-Release Hardening Prompts",
+159 |    "complexityScore": 5,
+160 |    "recommendedSubtasks": 3,
+161 |    "expansionPrompt": "Break down this task with a focus on author post-release hardening prompts.",
+162 |    "reasoning": "Automatically added due to missing analysis in AI response."
+163 |   }
+164 |  ]
 165 | }
 ```
 
 .taskmaster/tasks/tasks.json
+
 ```
 1 | {
 2 |   "master": {
@@ -8961,6 +9060,7 @@ src/logger.ts
 ```
 
 .taskmaster/templates/example_prd.txt
+
 ```
 1 | <context>
 2 | # Overview  
@@ -9012,6 +9112,7 @@ src/logger.ts
 ```
 
 scripts/__tests__/workflow_sync.test.ts
+
 ```
 1 | import assert from 'node:assert/strict';
 2 | import { promises as fs } from 'fs';
@@ -9094,6 +9195,7 @@ scripts/__tests__/workflow_sync.test.ts
 ```
 
 docs/llms.txt/E2B/llms-ctx-full.txt
+
 ```
 1 | <project title="Mcp Server" summary="The E2B MCP server enables users to run code in a sandboxed environment within the Claude Desktop app, providing code interpretation capabilities through the E2B Sandbox. The project aims to offer a server implementation that supports both JavaScript and Python, allowing developers to execute code securely and efficiently in a controlled environment.">**Remember:**
 2 | - MCP server

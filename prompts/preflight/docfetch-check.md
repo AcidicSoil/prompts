@@ -30,21 +30,27 @@ Purpose: Enforce the documentation freshness gate before planning work begins. R
    - Note the tech stack elements you will touch (frameworks, SDKs, infra). For each, pick the primary doc provider (contex7-mcp first, gitmcp as fallback).
 3. **Fetch docs via MCP**
    - For each library/tool:
+
      ```bash
      # Example using contex7-mcp via CLI helper (adjust topic per dependency)
      docfetch contex7-mcp "<library-id>" --topic "<focus-topic>"
      ```
+
    - When contex7-mcp fails, retry with gitmcp:
+
      ```bash
      docfetch gitmcp "owner/repo" --path docs --topic "<focus-topic>"
      ```
+
    - Capture timestamps, tool calls, and URLs; you will paste them into the report.
 4. **Run local metadata checks**
    - Keep prompt metadata synchronized before recording the report:
+
      ```bash
      npm run validate:metadata
      npm run build:catalog
      ```
+
    - Fix any validation errors before proceeding.
 5. **Update `DocFetchReport`**
    - Open (or create) `.docfetch/DocFetchReport.json`.
