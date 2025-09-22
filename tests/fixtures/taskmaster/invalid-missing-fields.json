@@ -1,0 +1,14 @@
+{
+  "tasks": [
+    {
+      "id": 1,
+      "title": "Incomplete",
+      "description": "Missing required fields should fail validation.",
+      "status": "pending",
+      "dependencies": [],
+      "priority": "low",
+      "testStrategy": "",
+      "subtasks": []
+    }
+  ]
+}

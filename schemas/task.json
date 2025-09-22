@@ -1,5 +1,5 @@
 {
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://acidosoil.github.io/prompts/schemas/task.json",
   "title": "Prompts Task",
   "description": "Superset schema for Task-Master tasks with optional Prompts-specific metadata.",

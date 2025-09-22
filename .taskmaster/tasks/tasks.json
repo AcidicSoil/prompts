@@ -1729,7 +1729,7 @@
         "dependencies": [
           26
         ],
-        "status": "pending",
+        "status": "done",
         "subtasks": [
           {
             "id": 1,
@@ -1737,7 +1737,7 @@
             "description": "Add the AJV runtime dependency (`pnpm add ajv`) and create `src/adapters/taskmaster/ingest.ts` plus `src/types/prompts-task.ts` exporting the superset `PromptsTask` interface shared across the state engine.",
             "dependencies": [],
             "details": "Install `ajv` in the root workspace. In `src/types/prompts-task.ts`, define the TypeScript interface mirroring `schemas/task.json`, including optional `labels`, `metadata`, `evidence`, and `artifacts`. Export a `StatusAliasMap` stub for later normalization. Stub the ingest module with a named async function signature `ingestTasks(filePath: string): Promise<PromptsTask[]>`.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Run `pnpm exec tsc --noEmit` to confirm the new types compile and the ingest module exports the planned symbols."
           },
           {
@@ -1748,7 +1748,7 @@
               "27.1"
             ],
             "details": "In `src/adapters/taskmaster/ingest.ts`, load and compile the schema via AJV, throw on validation failures with aggregated errors, and map tasks to the `PromptsTask` shape. Normalize statuses (e.g., `todo` -> `pending`) using the alias map and attach any non-canonical statuses to a side-channel report exported from the module.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Create fixtures under `test/fixtures/taskmaster/` for valid and invalid inputs. Run targeted unit tests (next subtask) to assert validation failures and normalization outcomes."
           },
           {
@@ -1759,7 +1759,7 @@
               "27.2"
             ],
             "details": "Configure Jest to load TypeScript via `ts-jest`. Mock filesystem reads with `fs.promises`. Assert that invalid payloads produce descriptive errors and that the normalization report lists each remapped status.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Run `pnpm exec jest tests/adapters/ingest.test.ts --runInBand` and confirm all cases pass with deterministic snapshots where applicable."
           }
         ],
@@ -2395,7 +2395,7 @@
     ],
     "metadata": {
       "created": "2025-09-18T19:25:07.429Z",
-      "updated": "2025-09-21T23:56:15.888Z",
+      "updated": "2025-09-22T01:02:10.165Z",
       "description": "Tasks for master context"
     }
   }

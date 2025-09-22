@@ -1,0 +1,35 @@
+{
+  "master": {
+    "tasks": [
+      {
+        "id": 1,
+        "title": "Normalize statuses",
+        "description": "Ensure aliases canonicalise as expected.",
+        "status": "todo",
+        "dependencies": [2],
+        "priority": "High",
+        "details": "Pending execution until dependencies clear.",
+        "testStrategy": "Unit tests cover alias mapping.",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Alias handling",
+            "status": "in-progress",
+            "dependencies": ["2.1"]
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "title": "Completed task",
+        "description": "Represents a finished workflow.",
+        "status": "deferred",
+        "dependencies": [],
+        "priority": "medium",
+        "details": "No further work required.",
+        "testStrategy": "None",
+        "subtasks": []
+      }
+    ]
+  }
+}

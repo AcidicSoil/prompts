@@ -1,27 +1,48 @@
-
 > prompts@0.1.0 test
-> npm run test:workflow && npm run test:safety && npm run test:prompts && npm run test:prompt-handler && npm run test:schemas && npm run test:resources && npm run test:tools && npm run test:state && npm run test:planner && npm run test:jest
-
+> npm run test:workflow && npm run test:jest
 
 > prompts@0.1.0 test:workflow
 > node --loader ts-node/esm scripts/__tests__/workflow_sync.test.ts
 
-(node:236104) ExperimentalWarning: `--experimental-loader` may be removed in the future; instead use `register()`:
+(node:4154) ExperimentalWarning: `--experimental-loader` may be removed in the future; instead use `register()`:
 --import 'data:text/javascript,import { register } from "node:module"; import { pathToFileURL } from "node:url"; register("ts-node/esm", pathToFileURL("./"));'
 (Use `node --trace-warnings ...` to show where the warning was created)
-(node:236104) [DEP0180] DeprecationWarning: fs.Stats constructor is deprecated.
+(node:4154) [DEP0180] DeprecationWarning: fs.Stats constructor is deprecated.
 (Use `node --trace-deprecation ...` to show where the warning was created)
 workflow sync regression test passed.
 
-> prompts@0.1.0 test:safety
-> TS_NODE_ESM_EXPERIMENTAL_SPECIFIER_RESOLUTION=node npx ts-node --esm src/utils/safety.test.ts
+> prompts@0.1.0 test:jest
+> NODE_OPTIONS=--experimental-vm-modules jest --runInBand
 
-(node:236147) [DEP0180] DeprecationWarning: fs.Stats constructor is deprecated.
-(Use `node --trace-deprecation ...` to show where the warning was created)
-file:///home/user/.codex/prompts/src/utils/safety.test.ts:3
-import { describe, test } from "@jest/globals";
-         ^^^^^^^^
-SyntaxError: The requested module '@jest/globals' does not provide an export named 'describe'
-    at ModuleJob.#_instantiate (node:internal/modules/esm/module_job:254:21)
-    at async ModuleJob.run (node:internal/modules/esm/module_job:363:5)
-    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:702:26)
+{"timestamp":"2025-09-22T01:00:50.619Z","level":"info","message":"prompt_resources_registered","metadata":{"count":6}}
+{"timestamp":"2025-09-22T01:00:50.621Z","level":"info","message":"prompt_tools_registered","metadata":{"count":6}}
+(node:4178) ExperimentalWarning: VM Modules is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+{"timestamp":"2025-09-22T01:00:50.623Z","level":"info","message":"prompt_resources_registered","metadata":{"count":6}}
+{"timestamp":"2025-09-22T01:00:50.624Z","level":"info","message":"prompt_tools_registered","metadata":{"count":6}}
+{"timestamp":"2025-09-22T01:00:50.624Z","level":"info","message":"workflow_tools_registered","metadata":{"count":3,"tools":["refresh_metadata","export_task_list","advance_state"]}}
+{"timestamp":"2025-09-22T01:00:50.624Z","level":"info","message":"server_started","metadata":{"transport":"stdio","server":"Proactive Workflow Assistant MCP","version":"0.1.0"}}
+{"timestamp":"2025-09-22T01:00:50.625Z","level":"info","message":"workflow_tools_registered","metadata":{"count":3,"tools":["refresh_metadata","export_task_list","advance_state"]}}
+{"timestamp":"2025-09-22T01:00:50.656Z","level":"info","message":"advance_state_recorded","metadata":{"id":"instruction-file","artifactCount":1}}
+{"timestamp":"2025-09-22T01:00:50.657Z","level":"info","message":"export_task_list_completed","metadata":{"count":6}}
+{"timestamp":"2025-09-22T01:00:51.832Z","level":"info","message":"refresh_metadata_completed","metadata":{"updateWorkflow":false}}
+PASS test/integration/tools.test.ts
+PASS test/planner/Planner.test.ts
+PASS test/state/StateStore.test.ts
+PASS src/utils/safety.test.ts
+PASS src/prompts/loader.test.ts
+{"timestamp":"2025-09-22T01:00:52.191Z","level":"info","message":"prompt_resources_registered","metadata":{"count":6}}
+PASS test/integration/resources.test.ts
+{"timestamp":"2025-09-22T01:00:52.263Z","level":"info","message":"prompt_resources_registered","metadata":{"count":6}}
+{"timestamp":"2025-09-22T01:00:52.264Z","level":"info","message":"prompt_tools_registered","metadata":{"count":6}}
+{"timestamp":"2025-09-22T01:00:52.265Z","level":"info","message":"workflow_tools_registered","metadata":{"count":3,"tools":["refresh_metadata","export_task_list","advance_state"]}}
+{"timestamp":"2025-09-22T01:00:52.265Z","level":"info","message":"server_started","metadata":{"transport":"stdio","server":"Proactive Workflow Assistant MCP","version":"0.1.0"}}
+PASS src/tools/prompt-handler.test.ts
+PASS src/prompts/schema.test.ts
+PASS tests/adapters/ingest.test.ts
+
+Test Suites: 9 passed, 9 total
+Tests:       14 passed, 14 total
+Snapshots:   0 total
+Time:        2.126 s
+Ran all test suites.

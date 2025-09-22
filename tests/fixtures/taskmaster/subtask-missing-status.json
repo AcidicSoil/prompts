@@ -1,0 +1,22 @@
+{
+  "master": {
+    "tasks": [
+      {
+        "id": 1,
+        "title": "Task without subtask status",
+        "description": "Demonstrates defaulting subtask status when omitted.",
+        "status": "pending",
+        "dependencies": [],
+        "priority": "medium",
+        "details": "",
+        "testStrategy": "",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Review defaults"
+          }
+        ]
+      }
+    ]
+  }
+}

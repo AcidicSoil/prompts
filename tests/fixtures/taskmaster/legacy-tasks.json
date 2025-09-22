@@ -1,0 +1,15 @@
+{
+  "tasks": [
+    {
+      "id": 1,
+      "title": "Legacy format task",
+      "description": "Supports historic Task Master layout.",
+      "status": "pending",
+      "dependencies": [],
+      "priority": "low",
+      "details": "Legacy support case",
+      "testStrategy": "Manual",
+      "subtasks": []
+    }
+  ]
+}
