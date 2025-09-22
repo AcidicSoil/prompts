@@ -35,12 +35,14 @@ The MCP server exposes the same domain logic over stdio so Codex, Gemini, Cursor
 
 1. Build the project: `npm run build`.
 2. Start the server with stdio transport:
+
    ```bash
    node dist/mcp/server.js \
      --tasks /path/to/tasks.json \
      --tag master \
      --write=false
    ```
+
 3. Register the process with your client as a Command (stdio) MCP server.
 
 ### Tool surface
@@ -59,6 +61,7 @@ The MCP server exposes the same domain logic over stdio so Codex, Gemini, Cursor
 ### Client configuration snippets
 
 **Codex CLI (`~/.codex/config.toml`):**
+
 ```toml
 [servers.prompts]
 command = "node"
@@ -67,6 +70,7 @@ transport = "stdio"
 ```
 
 **Gemini CLI (`~/.gemini/settings.json`):**
+
 ```json
 {
   "servers": [

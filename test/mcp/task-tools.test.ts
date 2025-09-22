@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url';
 
 import { describe, expect, test, beforeEach, afterEach } from '@jest/globals';
 
-import { buildTaskToolDefinitions } from '../../src/mcp/task-tools.ts';
+import { buildTaskToolDefinitions } from '../../src/tools/task-tools.ts';
 import { TaskService } from '../../src/mcp/task-service.ts';
 import { createSecureLogger, logger as baseLogger } from '../../src/logger.ts';
 

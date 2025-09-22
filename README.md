@@ -22,14 +22,18 @@ Run these commands whenever you add or edit prompts so the generated catalog sta
 Use the bundled CLI to drive Task-Master ingestion and readiness logic without an MCP client:
 
 - `npm run prompts -- ingest [--tasks <path>] [--tag <tag>]` — validate `tasks.json` against the canonical schema and emit the normalized task list with a remap report.
+
   ```bash
   npm run prompts -- ingest --tasks .taskmaster/tasks/tasks.json --tag master --pretty
   ```
+
 - `npm run prompts -- next` — print the highest-priority ready task alongside the full ready queue.
 - `npm run prompts -- advance <id> <status> [--write]` — update a task’s canonical status. Without `--write` the command runs in dry-run mode and leaves the source file untouched.
+
   ```bash
   npm run prompts -- advance 42 done --write --tasks ./project/tasks.json
   ```
+
 - `npm run prompts -- graph [--format dot|json]` — export the dependency graph as JSON (default) or Graphviz DOT text.
 - `npm run prompts -- status` — summarise totals per status, the current `next` pick, and the ready list. Pass `--pretty` to pretty-print JSON.
 
@@ -60,9 +64,11 @@ The MCP server bundled in this repository now ships with the following surfaced 
 
 1. Build the project (`npm run build`) so the compiled server exists under `dist/mcp/server.js`.
 2. Launch the server with stdio transport:
+
    ```bash
    node dist/mcp/server.js --tasks .taskmaster/tasks/tasks.json --tag master --write=false
    ```
+
    - `--tasks` and `--tag` mirror the CLI flags and default to `.taskmaster/tasks/tasks.json` and `master` respectively.
    - `--write` defaults to `false`; set to `true` only when you want `set_task_status` calls to persist changes back to `tasks.json`.
 3. Register the process with your MCP client (Codex, Gemini, Cursor, etc.) as a Command/stdio server.
@@ -131,23 +137,23 @@ Share these steps with downstream users when announcing a new release so they ca
 
 ### Running the MCP server with Inspector
 
-When testing the MCP server via stdio transports, launch the binary directly so stdout remains reserved for JSON-RPC traffic.
+When testing the MCP server via stdio transports, launch the CLI entrypoint so stdout remains reserved for JSON-RPC traffic.
 
-1. Build the server once: `npm run build` (produces `dist/index.js`).
+1. Build the server once: `npm run build` (produces `dist/mcp/server.js`).
 2. In MCP Inspector set:
    - **Transport Type:** `STDIO`
    - **Command:** `node`
-   - **Arguments:** `dist/index.js`
+   - **Arguments:** `dist/mcp/server.js`
    - **Working Directory:** project root
 
-All logging is emitted to stderr, so Inspector receives a clean protocol stream without the `npm run start` banner that previously broke parsing.
+All logging is emitted to stderr, so Inspector receives a clean protocol stream without any npm banners.
 
 ### MCP tools
 
 The server exposes three workflow helpers:
 
 - `refresh_metadata`: runs the same scripts we call manually:
-  
+
 - `npm run validate:metadata`
 - `npm run build:catalog` (pass `updateWorkflow: true` to also run with `--update-workflow`)
 

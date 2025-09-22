@@ -3,7 +3,7 @@
     "codex-prompts": {
       "type": "stdio",
       "command": "node",
-      "args": ["dist/index.js"],
+      "args": ["dist/mcp/server.js", "--tasks", ".taskmaster/tasks/tasks.json", "--tag", "master"],
       "cwd": "."
     }
   }

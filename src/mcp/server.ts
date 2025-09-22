@@ -1,19 +1,18 @@
 #!/usr/bin/env node
-import { createRequire } from 'node:module';
+// (no require needed)
 import { resolve } from 'node:path';
 import process from 'node:process';
 import { pathToFileURL } from 'node:url';
 
 import { Command } from 'commander';
-import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 
 import { createSecureLogger, logger as baseLogger } from '../logger.js';
 import { TaskService } from './task-service.js';
-import { registerTaskTools } from './task-tools.js';
+import { StateStore } from '../state/StateStore.js';
+import { createServer, connectServer } from '../server.js';
+import { registerAllTools } from '../tools/index.js';
 
-const require = createRequire(import.meta.url);
-const packageJson = require('../../package.json') as { name?: string; version?: string };
 
 export interface TaskServerOptions {
   tasksPath: string;
@@ -35,20 +34,20 @@ export const createTaskService = (options: TaskServerOptions): TaskService => {
   });
 };
 
-export const startServer = async (options: StartServerOptions): Promise<{ server: McpServer; transport: StdioServerTransport }> => {
+export const startServer = async (options: StartServerOptions): Promise<{ server: ReturnType<typeof createServer>; transport: StdioServerTransport }> => {
   const transport = options.transport ?? new StdioServerTransport();
 
   const service = createTaskService(options);
   await service.load();
 
-  const serverInfo = {
-    name: packageJson.name ? `${packageJson.name}-server` : 'prompts-mcp-server',
-    version: packageJson.version ?? '0.0.0'
-  };
+  const server = createServer();
 
-  const mcpServer = new McpServer(serverInfo);
+  // Initialize StateStore for workflow tools
+  const stateStore = new StateStore(process.cwd());
+  await stateStore.load();
 
-  registerTaskTools(mcpServer, { service, logger: secureLogger });
+  // Register all tools from a single hub
+  await registerAllTools(server, secureLogger, { service, stateStore });
 
   transport.onerror = (error) => {
     secureLogger.error('transport_error', { error });
@@ -58,11 +57,7 @@ export const startServer = async (options: StartServerOptions): Promise<{ server
     secureLogger.info('transport_closed');
   };
 
-  mcpServer.server.onerror = (error) => {
-    secureLogger.error('server_error', { error });
-  };
-
-  await mcpServer.connect(transport);
+  await connectServer(server, transport);
 
   secureLogger.info('server_started', {
     tasksPath: options.tasksPath,
@@ -73,7 +68,7 @@ export const startServer = async (options: StartServerOptions): Promise<{ server
   const shutdown = async (signal: string): Promise<void> => {
     secureLogger.info('server_shutdown_signal', { signal });
     try {
-      await mcpServer.close();
+      await server.close();
       await transport.close();
     } catch (error) {
       secureLogger.error('server_shutdown_error', { error });
@@ -99,7 +94,7 @@ export const startServer = async (options: StartServerOptions): Promise<{ server
     void shutdown('unhandledRejection');
   });
 
-  return { server: mcpServer, transport };
+  return { server, transport };
 };
 
 const buildCli = (): Command => {

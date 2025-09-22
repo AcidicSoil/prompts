@@ -8,7 +8,7 @@ import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { InMemoryTransport } from "@modelcontextprotocol/sdk/inMemory.js";
 
 import { secureLogger } from "../../src/logger.ts";
-import { createServer } from "../../src/index.ts";
+import { createServer } from "../../src/server.ts";
 import { registerPromptResources, registerPromptTools } from "../../src/prompts/register.ts";
 import { StateStore } from "../../src/state/StateStore.ts";
 import { registerWorkflowTools } from "../../src/tools/register.ts";

@@ -2,8 +2,8 @@ import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
 
 import type { SecureLogger } from '../logger.js';
-import type { TaskService, SetTaskStatusResult } from './task-service.js';
-import { computeReadyTasks } from './task-service.js';
+import type { TaskService, SetTaskStatusResult } from '../mcp/task-service.js';
+import { computeReadyTasks } from '../mcp/task-service.js';
 
 const statusSchema = z.enum(['pending', 'in_progress', 'blocked', 'done', 'deprecated']);
 
@@ -209,3 +209,4 @@ export const registerTaskTools = (server: McpServer, options: RegisterTaskToolsO
     );
   }
 };
+

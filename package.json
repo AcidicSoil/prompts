@@ -7,7 +7,7 @@
     "build:catalog": "ts-node --esm scripts/build_catalog.ts",
     "inspect": "npx @modelcontextprotocol/inspector --config inspector.config.json",
     "prompts": "node --enable-source-maps dist/cli/main.js",
-    "start": "node dist/index.js",
+    "start": "node dist/mcp/server.js --tasks .taskmaster/tasks/tasks.json --tag master",
     "test": "npm run test:workflow && npm run test:jest",
     "test:jest": "NODE_OPTIONS=--experimental-vm-modules jest --runInBand",
     "test:planner": "npm run test:jest -- test/planner/Planner.test.ts",

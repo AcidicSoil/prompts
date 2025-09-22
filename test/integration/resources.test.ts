@@ -5,7 +5,7 @@ import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { InMemoryTransport } from "@modelcontextprotocol/sdk/inMemory.js";
 
 import { secureLogger } from "../../src/logger.ts";
-import { createServer } from "../../src/index.ts";
+import { createServer } from "../../src/server.ts";
 import { registerPromptResources } from "../../src/prompts/register.ts";
 
 describe("prompt resources registration", () => {

@@ -1,0 +1,22 @@
+export const STATUS_ALIASES = {
+    pending: 'pending',
+    todo: 'pending',
+    backlog: 'pending',
+    ready: 'pending',
+    'in-progress': 'in_progress',
+    in_progress: 'in_progress',
+    started: 'in_progress',
+    doing: 'in_progress',
+    blocked: 'blocked',
+    deferred: 'blocked',
+    impeded: 'blocked',
+    done: 'done',
+    completed: 'done',
+    complete: 'done',
+    shipped: 'done',
+    review: 'in_progress',
+    deprecated: 'deprecated',
+    retired: 'deprecated',
+    cancelled: 'deprecated',
+    canceled: 'deprecated'
+};
