@@ -7,6 +7,8 @@ The format is based on Keep a Changelog, and this project adheres to Semantic Ve
 ## [Unreleased]
 ### Added
 
+- Add new `@prompts/tools` package to expose core task management logic
+- Implement a stateful workflow engine with a dedicated CLI and MCP server
 - Introduce structured research and planning workflow with new prompt tools
 - Add a comprehensive CLI and MCP server guide
 - Introduce Task-Master CLI and MCP server
@@ -47,6 +49,8 @@ The format is based on Keep a Changelog, and this project adheres to Semantic Ve
 
 ### Changed
 
+- Centralize state management into a new `TaskService`
+- Implement batched memory updates for the agent, synchronized with Task Master status
 - Update README with usage examples and server launch instructions
 - Update `AGENTS.md` with Task Master integration guides
 - Formalize PRD in Markdown and refactor research log

@@ -58,6 +58,46 @@ The MCP server exposes the same domain logic over stdio so Codex, Gemini, Cursor
 | `workflow/export_task_list` | Emits curated task list for clients. | Matches CLI tooling. |
 | `workflow/advance_state` | Records tool completions into `.mcp/state.json`. | Mutating. |
 
+### How this improves your workflow (use cases)
+
+- Personal triage: ask for `next_task` to focus on the highest-value work that is actually unblocked.
+- Fast status hygiene: flip status with `set_task_status` right from your AI client; plans and dashboards stay accurate.
+- Planning visibility: `graph_export` and `workflow/export_task_list` power simple dashboards and dependency views.
+- Safer automation: default read-only mode lets agents explore without side effects; opt-in `--write=true` when ready.
+
+### End-to-end example (copy/paste)
+
+1. Start server (read-only):
+
+```bash
+node dist/mcp/server.js --tasks .taskmaster/tasks/tasks.json --tag master --write=false
+```
+
+2. From your MCP client:
+
+- Call `next_task` → returns `{ task, ready }`.
+- Do the work locally.
+
+3. Persist status (enable write mode):
+
+```bash
+node dist/mcp/server.js --tasks .taskmaster/tasks/tasks.json --tag master --write=true
+```
+
+- Call `set_task_status` with the chosen `id` and status (e.g., `done`).
+- Optionally call `workflow/advance_state` to attach artifacts or notes.
+
+4. Re-plan and visualize:
+
+- Call `graph_export` for `{ nodes }` (render DOT in your tooling if desired).
+- Call `workflow/export_task_list` to feed a lightweight dashboard.
+
+### Troubleshooting / FAQ
+
+- Schema not found when embedding: the server resolves `schemas/task.json` relative to the module/package by default. You can also pass an absolute override via the ingest options (programmatic) or ensure the packaged `schemas/` directory ships with your distribution (it does in this repo).
+- Write mode: you’ll see `persisted: false` until the server is launched with `--write=true`.
+- Logging: protocol JSON uses stdout; logs are emitted to stderr. If your client shows garbled output, ensure stdout isn’t mixed with logs.
+
 ### Client configuration snippets
 
 **Codex CLI (`~/.codex/config.toml`):**

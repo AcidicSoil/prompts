@@ -148,6 +148,44 @@ When testing the MCP server via stdio transports, launch the CLI entrypoint so s
 
 All logging is emitted to stderr, so Inspector receives a clean protocol stream without any npm banners.
 
+### Daily MCP User Flow
+
+The MCP server is meant to sit alongside your editor or chat client all day. It exposes the same task logic as the CLI so humans and agents share a single source of truth.
+
+1) Discover next work item (prioritized and dependency-aware)
+
+```bash
+node dist/mcp/server.js --tasks .taskmaster/tasks/tasks.json --tag master --write=false
+# From your MCP client, call: next_task → { task, ready }
+```
+
+2) Do the work, then record completion (safe by default)
+
+- Read-only by default (`--write=false`).
+- Enable persistence only when ready:
+
+```bash
+node dist/mcp/server.js --tasks .taskmaster/tasks/tasks.json --tag master --write=true
+# From MCP: set_task_status { id, status: "done" } → { task, persisted: true }
+# Or: workflow/advance_state to log richer completion context
+```
+
+3) Re-plan quickly with visibility
+
+- Inspect dependencies and risk:
+
+```bash
+# From MCP: graph_export → { nodes }
+# From MCP: workflow/export_task_list → curated list for dashboards/agents
+```
+
+Why this helps daily:
+
+- Deterministic “what’s next” signal that respects dependencies.
+- Fast feedback loop: status updates immediately inform the next suggestion.
+- Shared truth for people and tools (CLI, MCP clients, automations) so plans don’t drift.
+- Safety-first defaults (read-only), with an explicit gate for persistence.
+
 ### MCP tools
 
 The server exposes three workflow helpers:
