@@ -22,14 +22,29 @@ Run these commands whenever you add or edit prompts so the generated catalog sta
 Use the bundled CLI to drive Task-Master ingestion and readiness logic without an MCP client:
 
 - `npm run prompts -- ingest [--tasks <path>] [--tag <tag>]` — validate `tasks.json` against the canonical schema and emit the normalized task list with a remap report.
+  ```bash
+  npm run prompts -- ingest --tasks .taskmaster/tasks/tasks.json --tag master --pretty
+  ```
 - `npm run prompts -- next` — print the highest-priority ready task alongside the full ready queue.
 - `npm run prompts -- advance <id> <status> [--write]` — update a task’s canonical status. Without `--write` the command runs in dry-run mode and leaves the source file untouched.
+  ```bash
+  npm run prompts -- advance 42 done --write --tasks ./project/tasks.json
+  ```
 - `npm run prompts -- graph [--format dot|json]` — export the dependency graph as JSON (default) or Graphviz DOT text.
 - `npm run prompts -- status` — summarise totals per status, the current `next` pick, and the ready list. Pass `--pretty` to pretty-print JSON.
 
+CLI options:
+
+- `--tasks <path>` defaults to `.taskmaster/tasks/tasks.json` relative to the current working directory.
+- `--tag <tag>` selects a named Task Master tag; defaults to `master`.
+- `--write` toggles persistence for `advance`. When omitted the command runs in read-only mode and returns the updated payload without saving.
+- `--pretty` enables multi-line, indented JSON output.
+
 The CLI shares the same logic as the MCP tools, so any changes remain consistent across all surfaces.
 
-Once the npm package is published you can install the CLI globally with `npm install -g prompts` (or invoke it ad‑hoc via `npx prompts`). Until then, run it locally with the script above after `npm run build`, or execute `node bin/prompts <command>` directly.
+👉 For a full command reference (including options and example output), see [`docs/mcp-cli.md`](docs/mcp-cli.md).
+
+Once the npm package is published you can install the CLI globally with `npm install -g prompts` (or invoke it ad‑hoc via `npx prompts`). Until then, run it locally with the script above after `npm run build`, or execute `node bin/prompts <command>` directly. The shim loads `dist/cli/main.js`, so remember to rebuild after TypeScript edits.
 
 ### Server capabilities overview
 
@@ -40,6 +55,29 @@ The MCP server bundled in this repository now ships with the following surfaced 
 - **Workflow automation** – `workflow/refresh_metadata`, `workflow/export_task_list`, and `workflow/advance_state` provide scripted catalog regeneration, backlog export, and persistent status logging.
 - **State persistence** – completions recorded through `advance_state` (or the CLI equivalent) are saved atomically to `.mcp/state.json` via the `StateStore`, ensuring MCP clients and local scripts share the same progress view.
 - **Script parity** – the CLI wraps the MCP tools so automation can run from shell environments, CI, or MCP clients with identical behavior.
+
+#### Running the stdio server
+
+1. Build the project (`npm run build`) so the compiled server exists under `dist/mcp/server.js`.
+2. Launch the server with stdio transport:
+   ```bash
+   node dist/mcp/server.js --tasks .taskmaster/tasks/tasks.json --tag master --write=false
+   ```
+   - `--tasks` and `--tag` mirror the CLI flags and default to `.taskmaster/tasks/tasks.json` and `master` respectively.
+   - `--write` defaults to `false`; set to `true` only when you want `set_task_status` calls to persist changes back to `tasks.json`.
+3. Register the process with your MCP client (Codex, Gemini, Cursor, etc.) as a Command/stdio server.
+
+Available task tools:
+
+- `next_task` — returns the highest-priority ready task plus the full ready queue.
+- `list_tasks` — emits the normalized task list exactly as the ingest adapter provides it.
+- `get_task` — fetches a single task (including subtasks) by numeric ID.
+- `graph_export` — returns dependency graph nodes suitable for DOT conversion.
+- `set_task_status` — updates a task when the server runs with `--write=true`.
+
+Workflow tools (`refresh_metadata`, `export_task_list`, `advance_state`) remain available for prompt maintenance and state capture. Each tool uses the same shared utilities as the CLI, keeping behaviour consistent across surfaces.
+
+👉 Detailed setup instructions and MCP client snippets live in [`docs/mcp-cli.md`](docs/mcp-cli.md).
 
 ## CLI Distribution and Usage Lifecycle
 
