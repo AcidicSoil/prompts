@@ -5,15 +5,19 @@
 ---
 
 ## Contents
-- [Item 1: Ingest Task‑Master and run `prompts` state engine](#item-1-ingest-task-master-and-run-prompts-state-engine)
-- [Item 2: Ship a CLI for shell use](#item-2-ship-a-cli-for-shell-use)
-- [Item 3: Wire Mastra as the agentic layer](#item-3-wire-mastra-as-the-agentic-layer)
-- [Item 4: Zero‑cost model options for Mastra](#item-4-zero-cost-model-options-for-mastra)
-- [Item 5: Are Codex and Gemini‑CLI “providers”?](#item-5-are-codex-and-gemini-cli-providers)
-- [Item 6: Exact touch points to add](#item-6-exact-touch-points-to-add)
-- [Item 7: Minimal migration plan](#item-7-minimal-migration-plan)
-- [Item 8: Gemini‑CLI free usage context](#item-8-gemini-cli-free-usage-context)
-- [Roll‑up Summary](#roll-up-summary)
+
+- [Integration Plan: Task‑Master, MCP/CLI, and Mastra in `AcidicSoil/prompts`](#integration-plan-taskmaster-mcpcli-and-mastra-in-acidicsoilprompts)
+  - [Contents](#contents)
+  - [Item 1: Ingest Task‑Master and run `prompts` state engine](#item-1-ingest-taskmaster-and-run-prompts-state-engine)
+  - [Item 2: Ship a CLI for shell use](#item-2-ship-a-cli-for-shell-use)
+  - [Item 3: Wire Mastra as the agentic layer](#item-3-wire-mastra-as-the-agentic-layer)
+  - [Item 4: Zero‑cost model options for Mastra](#item-4-zerocost-model-options-for-mastra)
+  - [Item 5: Are Codex and Gemini‑CLI “providers”? What to do](#item-5-are-codex-and-geminicli-providers-what-to-do)
+  - [Item 6: Exact touch points to add](#item-6-exact-touch-points-to-add)
+  - [Item 7: Minimal migration plan for `prompts`](#item-7-minimal-migration-plan-for-prompts)
+  - [Item 8: Gemini‑CLI free usage context](#item-8-geminicli-free-usage-context)
+  - [Roll‑up Summary](#rollup-summary)
+    - [Monitoring Note](#monitoring-note)
 
 ---
 
@@ -358,6 +362,7 @@ Position Gemini‑CLI as “often zero‑cost for dev,” with a recheck step on
 ### Monitoring Note
 
 We will track upstream changes that might impact this plan:
+
 - Task‑Master docs/repo: schema fields, `next` semantics, MCP tools
 - Mastra docs/examples: provider integration, tool interfaces, Node version
 - AI SDK providers (Ollama, Gemini CLI): install/auth/compat

@@ -47,6 +47,7 @@
   "files": [
     "bin",
     "dist",
+    "schemas",
     "resources",
     "prompts",
     "README.md",

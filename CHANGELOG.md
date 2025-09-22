@@ -6,6 +6,7 @@ The format is based on Keep a Changelog, and this project adheres to Semantic Ve
 
 ## [Unreleased]
 ### Added
+
 - Introduce structured research and planning workflow with new prompt tools
 - Add a comprehensive CLI and MCP server guide
 - Introduce Task-Master CLI and MCP server
@@ -43,7 +44,9 @@ The format is based on Keep a Changelog, and this project adheres to Semantic Ve
 - Define an end-to-end application development workflow document
 - Add full reference implementation documentation for a Prompts MCP server
 - Add `GEMINI.md` and `AGENTS.md` for project context
+
 ### Changed
+
 - Update README with usage examples and server launch instructions
 - Update `AGENTS.md` with Task Master integration guides
 - Formalize PRD in Markdown and refactor research log
@@ -58,23 +61,32 @@ The format is based on Keep a Changelog, and this project adheres to Semantic Ve
 - Align prompts with the gated lifecycle workflow
 - Refactor agent's instructional context and planning artifacts with a formal PRD
 - Overhaul and categorize the prompt catalog in the README
+
 ### Deprecated
+
 - Deprecate previous prompt-authoring workstream as part of PRDv2 rebaseline
+
 ### Removed
+
 - Remove the automated documentation maintenance flow in favor of a dynamic router
 - Remove obsolete workflow and PRD documentation
 - Remove duplicate `/pr-desc` prompt
 - Delete old `PRD-v2.txt` file
+
 ### Fixed
+
 - Consolidate and fix the test suite to run via Jest
 - Correct test limit for multi-byte character truncation
 - Improve payload capping logic for UTF-8 character boundaries and edge cases
 - Correct Mermaid syntax in workflow diagrams
+
 ### Security
+
 - Placeholder for upcoming changes.
 
 ## [0.1.0] - 2025-09-22
 ### Added
+
 - MCP/acidic_soil_prompts_integration_rollup_2025_09_21_america_chicago.md
 - cross-check.md
 - evidence-capture.md

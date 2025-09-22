@@ -5,6 +5,7 @@ Trigger: /research-item
 Purpose: Run the full per-item research workflow for one objective and return queries, evidence, synthesis, contradictions, gaps, decision hook, plus a conversation state update.
 
 Steps:
+
 1. Read the objective text following the trigger.
 2. Capture starting context if provided.
 3. Apply the Process (per item): Goal, Assumptions, Query Set (4–8), Search Plan, Run & Capture, Cross-check, Synthesis, Gaps & Next, Decision Hook.
@@ -12,6 +13,7 @@ Steps:
 5. Enforce quotes ≤25 words; mark inferences as "Inference".
 
 Output format:
+
 ```
 ## Item 1: {short title}
 
@@ -52,9 +54,11 @@ Output format:
 ```
 
 Examples:
+
 - Input: `/research-item Compare OpenAPI 3.1 tooling for Python clients in 2024; budget $0; prefer official docs.`
 - Output: As per format with SourceIDs and dates.
 
 Notes:
+
 - Safety: No personal data. Do not fabricate sources.
 - Provenance: Cite reputable sources; record n/a for missing PubDate.

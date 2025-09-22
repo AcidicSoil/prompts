@@ -5,6 +5,7 @@ Trigger: /update-changelog
 Purpose: Generate a user-facing CHANGELOG entry for the latest merge range and insert under the correct version or Unreleased with the six standard sections.
 
 Steps:
+
 1. Inspect repo state:
    - Detect current branch and latest tag: `git describe --tags --abbrev=0`.
    - Identify range: `${SINCE:-<latest-tag>}..HEAD`. If a merge commit hash or tag is provided, use that.
@@ -22,6 +23,7 @@ Steps:
 6. Provide a unified diff showing insertion into `CHANGELOG.md`. Do not run it; just output the patch.
 
 Output format:
+
 - Heading line with target section (Unreleased or version)
 - Six-section block in Markdown with only non-empty sections in order: Added, Changed, Deprecated, Removed, Fixed, Security
 - A short "Link references" block suggestion for `[Unreleased]` and new version comparison links
@@ -29,10 +31,13 @@ Output format:
 
 Examples:
 Input →
+
 ```
 /update-changelog since=v1.4.2 notes=include-prs
 ```
+
 Output →
+
 ```
 ## [Unreleased]
 ### Added
@@ -48,6 +53,7 @@ Output →
 ```
 
 Notes:
+
 - Assumes git repository is available and tags follow SemVer.
 - Keep content end-user focused. Avoid internal file names and refactor notes.
 - If no Conventional Commits, infer section from message heuristics.

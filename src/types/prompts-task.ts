@@ -91,6 +91,11 @@ export interface IngestOptions {
    * Optional tag to extract from Task-Master tagged task files. Defaults to "master".
    */
   tag?: string;
+  /**
+   * Optional absolute path to a tasks JSON Schema file. When omitted, the loader
+   * resolves the schema relative to the installed module/package location.
+   */
+  schemaPath?: string;
 }
 
 export interface IngestResult {
