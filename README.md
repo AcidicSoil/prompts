@@ -19,16 +19,17 @@ Run these commands whenever you add or edit prompts so the generated catalog sta
 
 ### Prompts CLI
 
-Use the bundled CLI to run the same workflows without an MCP client or Task Master:
+Use the bundled CLI to drive Task-Master ingestion and readiness logic without an MCP client:
 
-- `npm run prompts -- list` — show the current task backlog (add `--json` for raw output).
-- `npm run prompts -- refresh` — execute metadata validation and catalog rebuild. Pass `--update-workflow` to regenerate `WORKFLOW.md`.
-- `npm run prompts -- export` — emit the backlog as JSON for downstream tooling.
-- `npm run prompts -- advance <id>` — record state updates and artifacts (accepts `--outputs` and repeated `--artifact` JSON flags).
+- `npm run prompts -- ingest [--tasks <path>] [--tag <tag>]` — validate `tasks.json` against the canonical schema and emit the normalized task list with a remap report.
+- `npm run prompts -- next` — print the highest-priority ready task alongside the full ready queue.
+- `npm run prompts -- advance <id> <status> [--write]` — update a task’s canonical status. Without `--write` the command runs in dry-run mode and leaves the source file untouched.
+- `npm run prompts -- graph [--format dot|json]` — export the dependency graph as JSON (default) or Graphviz DOT text.
+- `npm run prompts -- status` — summarise totals per status, the current `next` pick, and the ready list. Pass `--pretty` to pretty-print JSON.
 
 The CLI shares the same logic as the MCP tools, so any changes remain consistent across all surfaces.
 
-Once the npm package is published you can install the CLI globally with `npm install -g prompts` (or invoke it ad‑hoc via `npx prompts`). Until then, run it locally with the script above or the compiled binary in `dist/cli/main.js`.
+Once the npm package is published you can install the CLI globally with `npm install -g prompts` (or invoke it ad‑hoc via `npx prompts`). Until then, run it locally with the script above after `npm run build`, or execute `node bin/prompts <command>` directly.
 
 ### Server capabilities overview
 
@@ -40,25 +41,55 @@ The MCP server bundled in this repository now ships with the following surfaced 
 - **State persistence** – completions recorded through `advance_state` (or the CLI equivalent) are saved atomically to `.mcp/state.json` via the `StateStore`, ensuring MCP clients and local scripts share the same progress view.
 - **Script parity** – the CLI wraps the MCP tools so automation can run from shell environments, CI, or MCP clients with identical behavior.
 
-#### Publishing to npm
+## CLI Distribution and Usage Lifecycle
 
-Follow this checklist when cutting a release of the CLI package:
+The CLI ships alongside the MCP server, so publishing it cleanly keeps both entry points in sync. Use the checklist below whenever you cut a release or help teammates install the tool locally.
 
-1. Bump the version: `npm version <major|minor|patch> --no-git-tag-version` (then commit the change).
-2. Build and validate the tarball:
+### Prepare the package
+
+1. Confirm the `bin` field in `package.json` still maps the public command (`prompts`) to the shim at `bin/prompts`.
+2. Ensure the CLI source (`src/cli/main.ts`) retains its shebang (`#!/usr/bin/env node`) before compiling.
+3. Keep the `files` array limited to distributable assets (`bin/`, `dist/`, `resources/`, `prompts/`, docs) so source tests stay out of the tarball.
+4. Run `npm run validate:metadata` and `npm run build` to refresh generated artifacts.
+5. The `prepublishOnly` script now executes `npm run test && npm run build`; leave it intact so `npm publish` fails fast when tests or builds break.
+
+### Local development workflow
+
+1. Compile the CLI: `npm run build` (rerun after any TypeScript change).
+2. Exercise the command directly without linking: `node bin/prompts next`.
+3. Link globally for shell usage:
 
    ```bash
+   npm link
+   prompts next
+   ```
+
+4. When finished, remove the symlink: `npm unlink` (in the project) and `npm unlink -g prompts` (globally) to avoid stale binaries.
+
+### Publishing to npm
+
+1. Authenticate (`npm login`) and bump the version: `npm version <major|minor|patch>`.
+2. Build and inspect the package before shipping:
+
+   ```bash
+   npm run test
    npm run build
    npm_config_cache=$(pwd)/tmp/npm-cache npm pack --dry-run
    ```
 
-   Confirm the output is limited to `dist/`, `resources/`, `prompts/`, and top-level docs.
-3. Publish from the repo root with OTP ready: `npm publish --provenance --access public`.
-4. Post-publish verification:
-   - Check the package on npmjs.com for README rendering and metadata accuracy.
-   - Run `npm view prompts version` to confirm the released number.
-   - Share install guidance with users (`npm install -g prompts`, `npm update -g prompts`, `npm uninstall -g prompts`).
-5. Rollback options: adjust dist-tags (`npm dist-tag add prompts@<version> latest`) or, within 24 hours, `npm unpublish prompts@<version>` if absolutely necessary.
+   Verify only the expected files appear in the dry-run output.
+3. Publish with provenance: `npm publish --provenance --access public` (have OTP ready for 2FA accounts).
+4. Post-publish, double-check `npm view prompts version` and skim the npm README for formatting regressions.
+5. Tag corrections or rollbacks: adjust dist-tags (`npm dist-tag add prompts@<version> latest`) or, within the 24-hour window, `npm unpublish prompts@<version>` if absolutely necessary.
+
+### End-user installation and maintenance
+
+- Install globally: `npm install -g prompts` (or run once with `npx prompts list`).
+- Update to the latest release: `npm update -g prompts`.
+- Remove the CLI when no longer needed: `npm uninstall -g prompts`.
+- If troubleshooting, check the published README on npm or run `npm view prompts readme` to confirm the expected commands and flags.
+
+Share these steps with downstream users when announcing a new release so they can upgrade confidently.
 
 ### Running the MCP server with Inspector
 

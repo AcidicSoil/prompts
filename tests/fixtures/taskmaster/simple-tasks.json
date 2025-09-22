@@ -1,0 +1,28 @@
+{
+  "master": {
+    "tasks": [
+      {
+        "id": 1,
+        "title": "Initial work",
+        "description": "First task in the backlog.",
+        "status": "pending",
+        "dependencies": [],
+        "priority": "medium",
+        "details": "",
+        "testStrategy": "",
+        "subtasks": []
+      },
+      {
+        "id": 2,
+        "title": "Follow-up",
+        "description": "Second task blocked until first completes.",
+        "status": "pending",
+        "dependencies": [1],
+        "priority": "low",
+        "details": "",
+        "testStrategy": "",
+        "subtasks": []
+      }
+    ]
+  }
+}

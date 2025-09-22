@@ -1,5 +1,3 @@
-import type { JSONSchemaType } from 'ajv';
-
 export type TaskPriority = 'high' | 'medium' | 'low';
 export type CanonicalTaskStatus = 'pending' | 'in_progress' | 'blocked' | 'done' | 'deprecated';
 
@@ -99,5 +97,3 @@ export interface IngestResult {
   tasks: PromptsTask[];
   report: StatusNormalizationReport;
 }
-
-export type PromptsTaskSchema = JSONSchemaType<PromptsTask>;

@@ -11,10 +11,11 @@ import {
   type IngestResult,
   type PromptsSubtask,
   type PromptsTask,
+  type PromptsArtifactReference,
   type StatusNormalizationEntry,
   type StatusNormalizationReport,
   type TaskPriority
-} from '../../types/prompts-task.ts';
+} from '../../types/prompts-task.js';
 
 export class TaskIngestError extends Error {
   constructor(message: string, readonly context?: Record<string, unknown>) {
@@ -33,22 +34,21 @@ export class TaskValidationError extends TaskIngestError {
 const DEFAULT_SCHEMA_PATH = resolve(process.cwd(), 'schemas/task.json');
 const DEFAULT_SUBTASK_STATUS: CanonicalTaskStatus = 'pending';
 const ajv = new Ajv({
-  strict: false,
   allErrors: true,
-  allowUnionTypes: true
+  jsonPointers: true
 });
 
-let validatorCache: ValidateFunction<PromptsTask> | null = null;
+let validatorCache: ValidateFunction | null = null;
 let cachedSchemaPath: string | null = null;
 
-async function getValidator(schemaPath: string): Promise<ValidateFunction<PromptsTask>> {
+async function getValidator(schemaPath: string): Promise<ValidateFunction> {
   if (validatorCache && cachedSchemaPath === schemaPath) {
     return validatorCache;
   }
 
   const schemaRaw = await readFile(schemaPath, 'utf8');
   const schemaJson = JSON.parse(schemaRaw) as unknown;
-  const validator = ajv.compile<PromptsTask>(schemaJson);
+  const validator = ajv.compile(schemaJson as object) as ValidateFunction;
   validatorCache = validator;
   cachedSchemaPath = schemaPath;
   return validator;
@@ -149,7 +149,7 @@ function sanitizeString(value: unknown, context?: Record<string, unknown>, fallb
 
 function buildRequiredError(field: string): ErrorObject {
   return {
-    instancePath: '',
+    dataPath: '',
     schemaPath: '#/required',
     keyword: 'required',
     params: { missingProperty: field },
@@ -200,6 +200,39 @@ function sanitizeNumberArray(value: unknown, context: Record<string, unknown>): 
       throw new TaskIngestError('Array entry must be a positive integer', { ...context, entry, index });
     }
     return entry;
+  });
+}
+
+function sanitizeArtifacts(
+  value: unknown,
+  context: { taskId: number; subtaskId?: number }
+): Array<string | PromptsArtifactReference> | undefined {
+  if (value === undefined) {
+    return undefined;
+  }
+  if (!Array.isArray(value)) {
+    throw new TaskIngestError('Artifacts must be provided as an array', { ...context, value });
+  }
+
+  return value.map((entry, index) => {
+    if (typeof entry === 'string') {
+      return entry;
+    }
+
+    if (!entry || typeof entry !== 'object') {
+      throw new TaskIngestError('Artifact entry must be a string or object', { ...context, entry, index });
+    }
+
+    const record = entry as Record<string, unknown>;
+    const name = sanitizeString(record.name, { ...context, index, field: 'name' });
+    const path = record.path === undefined ? undefined : sanitizeString(record.path, { ...context, index, field: 'path' });
+    const type = record.type === undefined ? undefined : sanitizeString(record.type, { ...context, index, field: 'type' });
+
+    return {
+      name,
+      path,
+      type
+    } satisfies PromptsArtifactReference;
   });
 }
 
@@ -292,7 +325,7 @@ function normalizeTask(rawTask: RawTask, report: StatusNormalizationReport): Pro
         ? (rawTask.metadata as Record<string, unknown>)
         : undefined,
     evidence: Array.isArray(rawTask.evidence) ? (rawTask.evidence as Array<string | Record<string, unknown>>) : undefined,
-    artifacts: Array.isArray(rawTask.artifacts) ? (rawTask.artifacts as Array<string | Record<string, unknown>>) : undefined,
+    artifacts: sanitizeArtifacts(rawTask.artifacts, { taskId }),
     source_doc: rawTask.source_doc === undefined ? undefined : sanitizeString(rawTask.source_doc, { taskId }),
     lineage: sanitizeNumberArray(rawTask.lineage, { taskId, field: 'lineage' }),
     supersedes: sanitizeNumberArray(rawTask.supersedes, { taskId, field: 'supersedes' }),

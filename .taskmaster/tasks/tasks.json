@@ -1513,7 +1513,7 @@
         "description": "Create comprehensive documentation in the README.md for publishing the Node.js CLI to npm and for end-user installation and usage, based on the CLI created in Task 21.",
         "details": "A new section, titled 'CLI Distribution and Usage', should be added to the main `README.md`. This section must provide clear guidance for developers on the entire lifecycle of the CLI tool.\n\n1.  **Prepare for Publishing:**\n    *   Confirm the `bin` field in `package.json` correctly maps a command name (e.g., `prompts-cli`) to the compiled JavaScript entry point (e.g., `dist/bin/prompts.js`).\n    *   Ensure the main CLI source file (likely `src/bin/prompts.ts` or similar from Task 21) includes a shebang at the very top: `#!/usr/bin/env node`.\n    *   Add or verify the `files` array in `package.json` to include `\"dist\"`, `\"README.md\"`, and other necessary assets, ensuring no source or test files are published.\n\n2.  **Local Development Workflow:**\n    *   Document the `npm link` process for testing the CLI globally without publishing. The steps are: `npm run build` (to compile TypeScript), followed by `npm link`.\n    *   Provide an example of how to test the linked command (e.g., `prompts-cli list`).\n    *   Include instructions for `npm unlink` to remove the local symlink.\n\n3.  **Publishing to npm:**\n    *   Outline the standard procedure: `npm login`, version bumping with `npm version <patch|minor|major>`, and publishing with `npm publish`.\n    *   Recommend adding a `prepublishOnly` script to `package.json` that runs the build and test scripts (`npm run test && npm run build`) to prevent accidental publishing of broken code.\n\n4.  **End-User Installation and Usage:**\n    *   Provide the command for global installation: `npm install -g <package-name>`.\n    *   Show a basic usage example, referencing the commands implemented in Task 21, such as `prompts-cli list` and `prompts-cli refresh`.",
         "testStrategy": "1. Review the `README.md` file to confirm the new 'CLI Distribution and Usage' section is present and covers all points from the implementation details.\n2. Manually execute the documented local development workflow: run `npm run build`, then `npm link`. Open a new terminal session and execute one of the CLI commands (e.g., `prompts-cli list`). Confirm it works as expected. Run `npm unlink` and verify the command is no longer available.\n3. Inspect `package.json` to ensure the `bin`, `files`, and recommended `prepublishOnly` script are correctly configured.\n4. Check the primary CLI source file (e.g., `src/bin/prompts.ts`) to verify the `#!/usr/bin/env node` shebang is present.",
-        "status": "pending",
+        "status": "done",
         "dependencies": [
           21
         ],
@@ -1524,7 +1524,7 @@
             "title": "Capture local CLI build smoke test",
             "description": "Write the guidance for building the CLI (`npm run build` / `node dist/cli/main.js`) and verifying command output locally before any linking. Definition of done: instructions mention rebuilding after changes and checking the command via Node directly.",
             "details": "",
-            "status": "pending",
+            "status": "done",
             "dependencies": [],
             "parentTaskId": 22
           },
@@ -1533,7 +1533,7 @@
             "title": "Document npm link workflow for local testing",
             "description": "Detail the two-step `npm link` process (global link from CLI project, then link into a sample consumer) plus cleanup commands. Definition of done: guidance covers shortcut usage, unlinking, and cautions about re-running after rebuilds.",
             "details": "",
-            "status": "pending",
+            "status": "done",
             "dependencies": [],
             "parentTaskId": 22
           },
@@ -1542,7 +1542,7 @@
             "title": "Outline publish preparation checklist",
             "description": "Capture the pre-publish steps: package.json metadata review, `npm version` bump, `npm pack` inspection, optional dry run, and scoped package access flags. Definition of done: checklist references provenance/OTP considerations and stresses not to overwrite versions.",
             "details": "",
-            "status": "pending",
+            "status": "done",
             "dependencies": [],
             "parentTaskId": 22
           },
@@ -1551,7 +1551,7 @@
             "title": "Describe global install and maintenance guidance",
             "description": "Add instructions for publishing (`npm publish`), global installation (`npm install -g`), updates, and uninstall paths for end users. Definition of done: notes include verifying README on npm, recommending `npm update -g`, and documenting uninstall commands.",
             "details": "",
-            "status": "pending",
+            "status": "done",
             "dependencies": [],
             "parentTaskId": 22
           }
@@ -1797,7 +1797,7 @@
         "dependencies": [
           27
         ],
-        "status": "pending",
+        "status": "done",
         "subtasks": [
           {
             "id": 1,
@@ -1805,7 +1805,7 @@
             "description": "Introduce `src/state/graph.ts` exporting placeholders for `computeReadiness` and `next`, along with helper types and priority mappings.",
             "dependencies": [],
             "details": "Define enums or lookup maps translating textual priorities to numeric weights. Add utility functions for dependency lookup (`buildStatusMap`, `countDependents`). Ensure the module exports the helpers for reuse in tests.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Run `pnpm exec tsc --noEmit` to ensure the scaffold compiles and exports the expected signatures."
           },
           {
@@ -1816,7 +1816,7 @@
               "28.1"
             ],
             "details": "Implement `computeReadiness(tasks: PromptsTask[]): PromptsTask[]` and add tests in `test/state/graph/computeReadiness.test.ts` covering tasks with missing dependencies, blocked tasks, and alias statuses.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Run `pnpm exec jest test/state/graph/computeReadiness.test.ts`. Ensure coverage includes edge cases such as self-dependencies and circular detection returning an empty set."
           },
           {
@@ -1827,7 +1827,7 @@
               "28.2"
             ],
             "details": "Leverage the helper utilities to compute dependent counts. Write tests in `test/state/graph/next.test.ts` verifying deterministic ordering across identical priorities and dependency fan-out, plus the null case when no tasks ready.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Run `pnpm exec jest test/state/graph/next.test.ts --runInBand` to verify ordering logic."
           }
         ],
@@ -1865,7 +1865,7 @@
         "dependencies": [
           28
         ],
-        "status": "pending",
+        "status": "done",
         "subtasks": [],
         "source_doc": "artifacts/delta-20250921-173948.md",
         "lineage": [
@@ -1901,7 +1901,7 @@
         "dependencies": [
           29
         ],
-        "status": "pending",
+        "status": "done",
         "subtasks": [
           {
             "id": 1,
@@ -1909,7 +1909,7 @@
             "description": "Create `src/mcp/server.ts` with a readline loop over stdin/stdout, structured logging hooks, and graceful shutdown handlers.",
             "dependencies": [],
             "details": "Set up the readline interface, ensure JSON parse errors are caught and reported, and wire SIGINT/SIGTERM to close the interface. Export a `startServer(options)` function for reuse in tests.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Run the server manually with `node src/mcp/server.ts` piping a sample line to confirm it echoes a well-formed error on invalid JSON."
           },
           {
@@ -1921,7 +1921,7 @@
               "27.3"
             ],
             "details": "Introduce configuration for the tasks file path and write-mode flag. Ensure state persists via atomic write (temporary file rename) to avoid corruption.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Add unit tests in `test/mcp/server/state.test.ts` mocking filesystem operations to verify load and flush behavior."
           },
           {
@@ -1933,7 +1933,7 @@
               "28.3"
             ],
             "details": "Create a handler map keyed by method names. Ensure each response includes `jsonrpc`, `id`, and `result` fields and that errors return `error` objects with codes.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Add integration tests in `test/mcp/server/handlers.test.ts` sending mock JSON lines and asserting the parsed responses."
           },
           {
@@ -1945,7 +1945,7 @@
               "29"
             ],
             "details": "Reuse the state update utilities to mutate in-memory tasks. Guard writes when `options.writeEnabled` is false and return a warning message instead of persisting.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Add a Jest integration test covering both write-enabled and read-only modes, asserting file writes and response structure."
           }
         ],
@@ -1983,7 +1983,7 @@
         "dependencies": [
           29
         ],
-        "status": "pending",
+        "status": "done",
         "subtasks": [
           {
             "id": 1,
@@ -1991,7 +1991,7 @@
             "description": "Add `src/bin/cli.ts` with shebang, initialize `commander` program, and wire common options (verbose, task file path).",
             "dependencies": [],
             "details": "Ensure the entry compiles to `dist/bin/cli.js` and update `package.json` bin mapping. Export a `runCli(processArgs)` function for testability.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Run `node src/bin/cli.ts --help` to verify command registration and help output."
           },
           {
@@ -2004,7 +2004,7 @@
               "28.3"
             ],
             "details": "Ensure commands accept `--pretty` flag and handle empty results. Share option parsing logic across commands.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Add CLI smoke tests using `execa` snapshots to assert command output for sample tasks fixture."
           },
           {
@@ -2016,7 +2016,7 @@
               "29"
             ],
             "details": "Validate status inputs, surface normalization warnings from the ingest adapter, and honor a `--dry-run` flag to skip writes during CI.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Add tests in `test/cli/advance.test.ts` stubbing filesystem writes to confirm dry-run vs write behavior."
           },
           {
@@ -2027,7 +2027,7 @@
               "31.2"
             ],
             "details": "Create a formatter utility that converts the task list into DOT syntax. Warn when Graphviz is unavailable but still emit DOT text.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Add unit tests for the formatter ensuring deterministic node and edge ordering."
           }
         ],
@@ -2395,7 +2395,7 @@
     ],
     "metadata": {
       "created": "2025-09-18T19:25:07.429Z",
-      "updated": "2025-09-22T01:02:10.165Z",
+      "updated": "2025-09-22T02:54:18.798Z",
       "description": "Tasks for master context"
     }
   }

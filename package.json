@@ -6,7 +6,7 @@
     "build": "tsc --project tsconfig.build.json",
     "build:catalog": "ts-node --esm scripts/build_catalog.ts",
     "inspect": "npx @modelcontextprotocol/inspector --config inspector.config.json",
-    "prompts": "TS_NODE_ESM_EXPERIMENTAL_SPECIFIER_RESOLUTION=node node --loader ts-node/esm src/cli/main.ts",
+    "prompts": "node --enable-source-maps dist/cli/main.js",
     "start": "node dist/index.js",
     "test": "npm run test:workflow && npm run test:jest",
     "test:jest": "NODE_OPTIONS=--experimental-vm-modules jest --runInBand",
@@ -19,7 +19,8 @@
     "test:state": "npm run test:jest -- test/state/StateStore.test.ts",
     "test:tools": "npm run test:jest -- test/integration/tools.test.ts",
     "test:workflow": "node --loader ts-node/esm scripts/__tests__/workflow_sync.test.ts",
-    "validate:metadata": "ts-node --esm scripts/validate_metadata.ts"
+    "validate:metadata": "ts-node --esm scripts/validate_metadata.ts",
+    "prepublishOnly": "npm run test && npm run build"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.17.5",
@@ -40,10 +41,11 @@
     "typescript": "^5.4.0"
   },
   "bin": {
-    "prompts": "./dist/cli/main.js"
+    "prompts": "./bin/prompts"
   },
   "version": "0.1.0",
   "files": [
+    "bin",
     "dist",
     "resources",
     "prompts",
