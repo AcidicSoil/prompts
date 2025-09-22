@@ -1,0 +1,27 @@
+
+> prompts@0.1.0 test
+> npm run test:workflow && npm run test:safety && npm run test:prompts && npm run test:prompt-handler && npm run test:schemas && npm run test:resources && npm run test:tools && npm run test:state && npm run test:planner && npm run test:jest
+
+
+> prompts@0.1.0 test:workflow
+> node --loader ts-node/esm scripts/__tests__/workflow_sync.test.ts
+
+(node:236104) ExperimentalWarning: `--experimental-loader` may be removed in the future; instead use `register()`:
+--import 'data:text/javascript,import { register } from "node:module"; import { pathToFileURL } from "node:url"; register("ts-node/esm", pathToFileURL("./"));'
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:236104) [DEP0180] DeprecationWarning: fs.Stats constructor is deprecated.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+workflow sync regression test passed.
+
+> prompts@0.1.0 test:safety
+> TS_NODE_ESM_EXPERIMENTAL_SPECIFIER_RESOLUTION=node npx ts-node --esm src/utils/safety.test.ts
+
+(node:236147) [DEP0180] DeprecationWarning: fs.Stats constructor is deprecated.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+file:///home/user/.codex/prompts/src/utils/safety.test.ts:3
+import { describe, test } from "@jest/globals";
+         ^^^^^^^^
+SyntaxError: The requested module '@jest/globals' does not provide an export named 'describe'
+    at ModuleJob.#_instantiate (node:internal/modules/esm/module_job:254:21)
+    at async ModuleJob.run (node:internal/modules/esm/module_job:363:5)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:702:26)
