@@ -105,7 +105,8 @@ const buildCli = (): Command => {
     .description('Expose task management helpers over the Model Context Protocol stdio transport.')
     .option('--tasks <path>', 'Path to Task-Master tasks.json', '.taskmaster/tasks/tasks.json')
     .option('--tag <tag>', 'Task-Master tag to load', 'master')
-    .option('--write-enabled', 'Persist task status changes to disk', false);
+    .option('--write-enabled', 'Persist task status changes to disk', false)
+    .option('--exec-enabled', 'Enable execution of allowlisted scripts via workflow tools', false);
 
   return program;
 };
@@ -118,6 +119,10 @@ const runCli = async (): Promise<void> => {
   const tasksPath = resolve(process.cwd(), opts.tasks);
 
   try {
+    if (parsed.opts<{ execEnabled?: boolean }>().execEnabled) {
+      process.env.PROMPTS_EXEC_ALLOW = '1';
+      secureLogger.warn('exec_enabled', { via: '--exec-enabled' });
+    }
     await startServer({
       tasksPath,
       tag: opts.tag,

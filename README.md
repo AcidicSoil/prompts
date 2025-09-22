@@ -170,7 +170,23 @@ node dist/mcp/server.js --tasks .taskmaster/tasks/tasks.json --tag master --writ
 # Or: workflow/advance_state to log richer completion context
 ```
 
-3) Re-plan quickly with visibility
+3) Execute mapped actions (optional, gated)
+
+- Map a task id to a local script via task `metadata.action` or `actions.json`.
+- Preview first:
+
+```bash
+# From MCP: workflow/run_task_action { taskId, dryRun: true } → shows `npm run` command
+```
+
+- Enable exec when ready (allowlisted scripts only):
+
+```bash
+node dist/mcp/server.js --tasks .taskmaster/tasks/tasks.json --tag master --write=true --exec-enabled
+# From MCP: workflow/run_task_action { taskId, dryRun: false } → { ok, exitCode, output }
+```
+
+4) Re-plan quickly with visibility
 
 - Inspect dependencies and risk:
 
@@ -184,7 +200,7 @@ Why this helps daily:
 - Deterministic “what’s next” signal that respects dependencies.
 - Fast feedback loop: status updates immediately inform the next suggestion.
 - Shared truth for people and tools (CLI, MCP clients, automations) so plans don’t drift.
-- Safety-first defaults (read-only), with an explicit gate for persistence.
+- Safety-first defaults (read-only), with explicit gates for persistence and execution.
 
 ### MCP tools
 

@@ -20,7 +20,8 @@
     "test:tools": "npm run test:jest -- test/integration/tools.test.ts",
     "test:workflow": "node --loader ts-node/esm scripts/__tests__/workflow_sync.test.ts",
     "validate:metadata": "ts-node --esm scripts/validate_metadata.ts",
-    "prepublishOnly": "npm run test && npm run build"
+    "prepublishOnly": "npm run test && npm run build",
+    "noop": "node -e \"process.exit(0)\""
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.17.5",
@@ -40,6 +41,13 @@
     "ts-jest": "^29.1.1",
     "typescript": "^5.4.0"
   },
+  "mcpAllowScripts": [
+    "validate:metadata",
+    "build:catalog",
+    "noop",
+    "build",
+    "test:jest"
+  ],
   "bin": {
     "prompts": "./bin/prompts"
   },

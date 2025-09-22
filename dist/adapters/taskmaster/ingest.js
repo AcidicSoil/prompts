@@ -1,5 +1,6 @@
-import { readFile } from 'node:fs/promises';
-import { resolve } from 'node:path';
+import { access, readFile } from 'node:fs/promises';
+import { dirname, join, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import Ajv from 'ajv';
 import { STATUS_ALIASES } from '../../types/prompts-task.js';
 export class TaskIngestError extends Error {
@@ -16,7 +17,32 @@ export class TaskValidationError extends TaskIngestError {
         this.name = 'TaskValidationError';
     }
 }
-const DEFAULT_SCHEMA_PATH = resolve(process.cwd(), 'schemas/task.json');
+async function resolveDefaultSchemaPath() {
+    // 1) Try module-relative path for source layout (src/... -> ../../.. to repo root)
+    const moduleDir = dirname(fileURLToPath(import.meta.url));
+    const srcRelative = resolve(moduleDir, '../../../schemas/task.json');
+    try {
+        await access(srcRelative);
+        return srcRelative;
+    }
+    catch { }
+    // 2) Walk up to package root and use schemas/task.json next to package.json
+    let dir = moduleDir;
+    for (let i = 0; i < 6 && dir; i++) {
+        try {
+            await access(join(dir, 'package.json'));
+            const candidate = join(dir, 'schemas', 'task.json');
+            await access(candidate);
+            return candidate;
+        }
+        catch {
+            const parent = dirname(dir);
+            dir = parent !== dir ? parent : undefined;
+        }
+    }
+    // 3) Fallback to CWD-based resolution (legacy behavior)
+    return resolve(process.cwd(), 'schemas/task.json');
+}
 const DEFAULT_SUBTASK_STATUS = 'pending';
 const ajv = new Ajv({
     allErrors: true,
@@ -274,7 +300,7 @@ function canonicaliseTasks(rawTasks) {
 }
 export async function ingestTasks(filePath, options = {}) {
     const tag = options.tag ?? 'master';
-    const schemaPath = DEFAULT_SCHEMA_PATH;
+    const schemaPath = options.schemaPath ?? (await resolveDefaultSchemaPath());
     const rawFile = await readFile(filePath, 'utf8');
     let parsed;
     try {

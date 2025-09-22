@@ -66,6 +66,66 @@
         ]
       },
       {
+        "id": 37,
+        "title": "Wire Execution Loop and Action Mapping",
+        "description": "Enable full-loop automation by mapping tasks to executable actions and expanding MCP execution tools.",
+        "details": "Map tasks to scripts (or actions.json), extend workflow tools to resolve actions by task id, add domain-runner tools (tests, lint, build), and introduce a server flag to mirror exec enablement.",
+        "testStrategy": "Integration test that picks the next task, resolves an action, runs it in dry-run, then executes in gated mode and marks status done.",
+        "priority": "medium",
+        "dependencies": [
+          32
+        ],
+        "status": "done",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Add action mapping for tasks",
+            "description": "Allow tasks to declare { action: { script, args } } in metadata or a new actions.json; extend run_script to look up by task id.",
+            "dependencies": [
+              32
+            ],
+            "details": "Teach the adapter to read per-task action metadata. If not present, look into actions.json keyed by task id. Provide a new MCP tool workflow/run_task_action that resolves and dispatches to run_script.",
+            "status": "pending",
+            "testStrategy": "Fixture with a task containing action metadata; verify dry-run shows correct command; enable exec and assert ok exit code for a harmless script."
+          },
+          {
+            "id": 2,
+            "title": "Add domain execution tools",
+            "description": "Register first-class tools for common domains: workflow/run_tests, workflow/run_lint, workflow/run_build, each with Zod schemas.",
+            "dependencies": [
+              "37.1"
+            ],
+            "details": "Wrap package scripts like test, lint, build. Tools should support dryRun, timeoutMs, and surface structured results { ok, exitCode, output }.",
+            "status": "pending",
+            "testStrategy": "Unit tests for each tool's dryRun; integration test for a no-op or trivial command that always succeeds."
+          },
+          {
+            "id": 3,
+            "title": "Exec flag parity",
+            "description": "Add a --exec-enabled server flag that mirrors PROMPTS_EXEC_ALLOW for controlled execution via MCP.",
+            "dependencies": [
+              "37.1"
+            ],
+            "details": "Server parses --exec-enabled and sets PROMPTS_EXEC_ALLOW=1 internally when true; logs a warning banner. Document in docs/mcp-cli.md.",
+            "status": "pending",
+            "testStrategy": "Server boot test verifying the flag toggles execution state and that run_script is permitted only when enabled."
+          },
+          {
+            "id": 4,
+            "title": "Full-loop automation test",
+            "description": "Agent-style test: next_task → resolve action → dry-run → live run (gated) → set_task_status done → graph_export.",
+            "dependencies": [
+              "37.1",
+              "37.2",
+              "37.3"
+            ],
+            "details": "Leverage examples/agent-demo.md flow; ensure the loop completes and persists status.",
+            "status": "pending",
+            "testStrategy": "Integration test under test/integration that exercises the entire loop with a harmless script."
+          }
+        ]
+      },
+      {
         "id": 2,
         "title": "Implement Safety Control Utilities",
         "description": "Create utility functions for redacting secrets in logs and capping payload sizes to prevent data leakage and excessive resource usage.",
@@ -2135,7 +2195,7 @@
         "dependencies": [
           32
         ],
-        "status": "pending",
+        "status": "done",
         "subtasks": [
           {
             "id": 1,

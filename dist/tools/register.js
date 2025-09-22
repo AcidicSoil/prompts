@@ -1,4 +1,7 @@
 import { createAdvanceStateTool } from './definitions/advance-state.js';
+import { createRunScriptTool } from './definitions/run-script.js';
+import { createRunTaskActionTool } from './definitions/run-task-action.js';
+import { createRunTestsTool, createRunBuildTool } from './definitions/run-domain.js';
 import { createExportTaskListTool } from './definitions/export-task-list.js';
 import { createRefreshMetadataTool } from './definitions/refresh-metadata.js';
 const formatIssues = (issues) => issues
@@ -8,6 +11,10 @@ export const registerWorkflowTools = (server, logger, options) => {
     const refreshMetadata = createRefreshMetadataTool();
     const exportTaskList = createExportTaskListTool();
     const advanceState = createAdvanceStateTool(options.stateStore);
+    const runScript = createRunScriptTool();
+    const runTaskAction = options.service ? createRunTaskActionTool(options.service) : null;
+    const runTests = createRunTestsTool();
+    const runBuild = createRunBuildTool();
     server.registerTool(exportTaskList.name, {
         title: exportTaskList.title,
         description: exportTaskList.description,
@@ -42,6 +49,58 @@ export const registerWorkflowTools = (server, logger, options) => {
             };
         }
     });
+    if (runTaskAction) {
+        server.registerTool(runTaskAction.name, {
+            title: runTaskAction.title,
+            description: runTaskAction.description,
+            inputSchema: runTaskAction.inputSchema.shape,
+            annotations: {
+                idempotentHint: false,
+            },
+        }, async (rawArgs) => {
+            const result = await runTaskAction.handler(rawArgs ?? {});
+            return {
+                isError: result.isError,
+                content: [
+                    { type: 'text', text: result.summary },
+                ],
+                structuredResult: result,
+            };
+        });
+    }
+    server.registerTool(runScript.name, {
+        title: runScript.title,
+        description: runScript.description,
+        inputSchema: runScript.inputSchema.shape,
+        annotations: {
+            idempotentHint: false,
+        },
+    }, async (rawArgs) => {
+        const result = await runScript.handler(rawArgs ?? {});
+        return {
+            isError: Boolean(result.isError),
+            content: [
+                { type: 'text', text: String(result.summary) },
+            ],
+            structuredResult: result,
+        };
+    });
+    // Domain runners
+    for (const tool of [runTests, runBuild]) {
+        server.registerTool(tool.name, {
+            title: tool.title,
+            description: tool.description,
+            inputSchema: tool.inputSchema.shape,
+            annotations: { idempotentHint: false },
+        }, async (rawArgs) => {
+            const result = await tool.handler(rawArgs ?? {});
+            return {
+                isError: result.isError,
+                content: [{ type: 'text', text: String(result.summary) }],
+                structuredResult: result,
+            };
+        });
+    }
     server.registerTool(refreshMetadata.name, {
         title: refreshMetadata.title,
         description: refreshMetadata.description,
@@ -133,8 +192,11 @@ export const registerWorkflowTools = (server, logger, options) => {
             structuredResult: result,
         };
     });
+    const tools = [refreshMetadata.name, exportTaskList.name, advanceState.name, runScript.name, runTests.name, runBuild.name];
+    if (runTaskAction)
+        tools.push(runTaskAction.name);
     logger.info('workflow_tools_registered', {
-        count: 3,
-        tools: [refreshMetadata.name, exportTaskList.name, advanceState.name],
+        count: tools.length,
+        tools,
     });
 };
