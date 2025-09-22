@@ -1,21 +1,117 @@
 {
 	"meta": {
-		"generatedAt": "2025-09-20T18:57:22.722Z",
-		"tasksAnalyzed": 1,
-		"totalTasks": 21,
-		"analysisCount": 1,
+		"generatedAt": "2025-09-21T22:54:40.875Z",
+		"tasksAnalyzed": 13,
+		"totalTasks": 36,
+		"analysisCount": 13,
 		"thresholdScore": 5,
 		"projectName": "Taskmaster",
 		"usedResearch": true
 	},
 	"complexityAnalysis": [
 		{
-			"taskId": 21,
-			"taskTitle": "Provide CLI surface for prompts workflow",
+			"taskId": 22,
+			"taskTitle": "Document CLI Distribution and Usage Lifecycle",
+			"complexityScore": 3,
+			"recommendedSubtasks": 4,
+			"expansionPrompt": "1. **Configuration**: Modify `package.json` to add the `bin` field mapping `prompts-cli` to `dist/bin/cli.js`, add `dist` to the `files` array, and add a `prepublishOnly` script set to `npm run test && npm run build`. \n2. **Shebang**: Add `#!/usr/bin/env node` to the top of the main CLI source file (likely `src/bin/cli.ts` or similar).\n3. **Documentation**: Create a new 'CLI Distribution and Usage' section in `README.md`. Document the four required areas: 'Prepare for Publishing' (referencing the `package.json` changes), 'Local Development Workflow' (detailing `npm link`), 'Publishing to npm' (including the `prepublishOnly` script), and 'End-User Installation and Usage'. Provide clear, copy-pasteable commands for each step.",
+			"reasoning": "This task is primarily documentation and configuration. The codebase analysis reveals that the required changes are localized to `package.json`, `README.md`, and the addition of a single line (shebang) to the CLI entry point. There is no complex algorithmic work involved. The complexity score of 3 reflects the need to touch multiple files and write clear, verifiable instructions for a multi-step developer workflow (`npm link`, `npm publish`), which is more involved than a simple code change but is not fundamentally difficult."
+		},
+		{
+			"taskId": 25,
+			"taskTitle": "Project Initialization and Scaffolding",
+			"complexityScore": 2,
+			"recommendedSubtasks": 2,
+			"expansionPrompt": "1. **Initialize Project**: Run `pnpm init`. Install dev dependencies: `pnpm add -D typescript ts-node @types/node jest ts-jest`. \n2. **Configure TypeScript**: Create `tsconfig.json` with `\"target\": \"ES2022\"`, `\"module\": \"NodeNext\"`, `\"moduleResolution\": \"NodeNext\"`, `\"outDir\": \"./dist\"`, `\"rootDir\": \"./src\"`, and `\"strict\": true`. \n3. **Configure Jest**: Create `jest.config.js` with the `ts-jest` preset. \n4. **Create Directories**: Create the following empty directories: `src`, `schemas`, `bin`, `packages`, `tests`.",
+			"reasoning": "This is a standard, greenfield setup task. It involves running a series of well-known commands and creating configuration files from templates. The status is 'in-progress', but a codebase analysis shows these foundational files and directories do not yet exist. The complexity is low (2) because it follows a standard recipe with no custom logic or problem-solving required. It's a foundational step but mechanically simple. Breaking it into 'dependency installation' and 'config file creation' is a logical split."
+		},
+		{
+			"taskId": 26,
+			"taskTitle": "Define Canonical Task JSON Schema",
+			"complexityScore": 2,
+			"recommendedSubtasks": 1,
+			"expansionPrompt": "Create the file `schemas/task.json`. In this file, define a JSON Schema object. Set `$schema` to `\"http://json-schema.org/draft-07/schema#\"`. The schema `type` should be `\"object\"`. Define properties for all fields listed in the description (`id`, `title`, etc.). Mark the original Task-Master fields (`id`, `title`, `description`, `status`, `dependencies`, `priority`) as `required`. The new fields (`labels`, `metadata`, etc.) should be optional. Ensure `subtasks` is defined as an array of objects.",
+			"reasoning": "This task involves creating a single, declarative JSON file. The structure and fields are explicitly defined in the task description. The complexity (2) comes from needing to know the correct JSON Schema syntax for defining types, properties, and the `required` array. It is not algorithmic and is a self-contained, atomic unit of work, hence 1 subtask is sufficient."
+		},
+		{
+			"taskId": 27,
+			"taskTitle": "Implement Task-Master Ingest Adapter",
+			"complexityScore": 4,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "1. **Setup**: Create `src/adapters/taskmaster/ingest.ts`. Install `ajv` (`pnpm add ajv`). Define the internal `PromptsTask` type in a new file `src/types.ts`, mirroring the schema from Task 26.\n2. **Implementation**: In `ingest.ts`, create a main function that accepts a file path. Use Node's `fs` module to read and parse the JSON file. Instantiate `ajv` and use it to validate the parsed data against the schema from `schemas/task.json`. If valid, map the data to `PromptsTask[]`. Handle status value normalization. The function should be asynchronous and return the task array.\n3. **Testing**: Create `tests/adapters/ingest.test.ts`. Write Jest tests using a sample `tasks.json` file. Test for successful parsing, schema validation failure on an invalid file, and correct mapping of data.",
+			"reasoning": "This task is the first piece of real application logic. It involves file I/O, data parsing, integration with a validation library (`ajv`), and data transformation (mapping to an internal type). Codebase analysis shows no existing adapters or validation patterns, so this is greenfield development. The complexity score of 4 reflects the need to orchestrate these multiple steps into a single, robust function. It can be broken down into defining the types, implementing the core logic, and writing tests."
+		},
+		{
+			"taskId": 28,
+			"taskTitle": "Implement State Engine: Readiness and 'next' Logic",
+			"complexityScore": 5,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "1. **Setup**: Create `src/state/graph.ts` and import the `PromptsTask` type.\n2. **Readiness Logic**: Implement `computeReadiness(tasks: PromptsTask[]): PromptsTask[]`. Inside, first create a `Map<number, string>` of task IDs to their statuses for efficient lookups. Then, filter the input `tasks` array, returning only those where all `dependencies` exist in the map with a status of 'done'.\n3. **'next' Logic**: Implement `next(tasks: PromptsTask[]): PromptsTask | null`. This function should first call `computeReadiness` to get the pool of available tasks. Then, sort this pool using a multi-level sort: priority descending (map 'high' to 3, 'medium' to 2, 'low' to 1), then by the number of tasks that depend on it (dependency count) descending, and finally by task ID ascending. Return the first element of the sorted array, or null if empty.",
+			"reasoning": "This is the core algorithmic task of the project. It involves graph traversal logic (dependency checking) and a complex multi-key sort. The complexity (5) is justified because the implementation must be correct and reasonably efficient, especially the dependency checking part, which can be slow if not implemented with a lookup map. This is a greenfield implementation of a non-trivial algorithm. It naturally splits into implementing the readiness filter, the 'next' sorter, and comprehensive tests."
+		},
+		{
+			"taskId": 29,
+			"taskTitle": "Implement State Engine: Status Update Logic",
+			"complexityScore": 1,
+			"recommendedSubtasks": 1,
+			"expansionPrompt": "Create the file `src/state/update.ts`. Import the `PromptsTask` type. Implement and export a pure function `advance(tasks: PromptsTask[], id: number, newStatus: string): PromptsTask[]`. The implementation should use `tasks.map()` to iterate over the array. For the task where `task.id` matches the `id` parameter, return a new object using the spread syntax `{ ...task, status: newStatus }`. For all other tasks, return the original task object. Add a unit test in `tests/state/update.test.ts` to verify that the correct task is updated and that the original input array is not mutated.",
+			"reasoning": "This task requires implementing a pure function for an immutable update, which is a standard pattern in modern JavaScript/TypeScript. The implementation is a single line of code using `Array.prototype.map`. Codebase analysis confirms no existing state update logic exists, but the pattern is universal. The complexity is minimal (1), as it's a simple, self-contained function with no external dependencies or complex algorithms. It is an atomic operation."
+		},
+		{
+			"taskId": 30,
+			"taskTitle": "Implement MCP Stdio Server",
+			"complexityScore": 6,
+			"recommendedSubtasks": 4,
+			"expansionPrompt": "1. **Server Shell**: Create `src/mcp/server.ts`. Use Node's `readline` module to create an interface that reads from `process.stdin` line by line.\n2. **State Management**: The server should load tasks from a file on startup using the ingest adapter (Task 27) and hold the task array in memory.\n3. **Request Loop**: In the `readline` 'line' event handler, parse the incoming line as JSON. Use a `switch` statement or a handler map based on the request's `method` property.\n4. **Handlers**: Implement handlers for `next_task` (calls `next` from Task 28), `set_task_status` (calls `advance` from Task 29 and updates the in-memory state), `get_task`, `list_tasks`, and `graph_export`. Each handler should construct a JSON response object and write it to `process.stdout` as a string followed by a newline. Implement the write-mode flag logic for `set_task_status`.",
+			"reasoning": "This task involves building a small, protocol-specific server that runs as a persistent process. It's not just a simple script. It requires managing an event loop (`readline`), handling I/O streams, managing in-memory state, and dispatching requests. The complexity (6) comes from orchestrating these components, implementing the line-delimited JSON protocol correctly, and integrating the previously built state-engine functions into a live server context. This is a significant piece of infrastructure for the project."
+		},
+		{
+			"taskId": 31,
+			"taskTitle": "Implement Thin CLI with Commander.js",
 			"complexityScore": 4,
 			"recommendedSubtasks": 4,
-			"expansionPrompt": "Based on your analysis of the codebase, implement the CLI for the prompts workflow. Create a new executable file `bin/prompts.ts`.\n\n1.  **Setup Framework:** Add `commander` as a dependency and configure it in `bin/prompts.ts` to be the command router. Add a `bin` entry in `package.json` pointing to this new file, and an npm script `\"prompts\": \"tsx ./bin/prompts.ts\"` for easy execution.\n2.  **Implement Read-Only Commands:**\n    *   **`list`**: Reuse the logic from the `export_task_list` tool found in `src/tools.ts`. By default, format the output as a human-readable table using `console.table`. If a `--json` flag is present, output the raw JSON.\n    *   **`refresh`**: Create a command that programmatically executes the existing `scripts/validate_metadata.ts` and `scripts/build_catalog.ts` scripts in sequence. You can use a library like `execa` to invoke them via `tsx` and stream their output to the console.\n    *   **`export`**: Create a command that reuses the logic from the `export_task_list` tool in `src/tools.ts` and prints the resulting JSON to stdout.\n3.  **Implement State-Mutating Command:**\n    *   **`advance <id>`**: Create a command that accepts a prompt `id` and optional arguments for outputs and artifacts. Import and use the `advance_state` logic from `src/tools.ts` and the `StateStore` from `src/state.ts` to update the `.mcp/state.json` file.\n4.  **Documentation:** Update `README.md` with a new section documenting the CLI commands, their arguments, and example usage, including the `npm run prompts -- ...` invocation pattern.",
-			"reasoning": "The complexity is low-to-moderate (4/10) because the core business logic for all required features already exists in a well-decoupled and reusable state. The `export_task_list` tool (Task 8) provides the logic for `export` and `list`. The `advance_state` tool (Task 7) and `StateStore` class provide the logic for state mutation. The metadata validation and catalog build processes are already encapsulated in standalone scripts (`scripts/validate_metadata.ts`, `scripts/build_catalog.ts`) as confirmed by Task 10. The main effort is greenfield plumbing: adding the `commander` library, creating the `bin/prompts.ts` entry point, wiring commands to the existing functions/scripts, and handling CLI-specific concerns like argument parsing and output formatting (`--json` vs. human-readable). No significant refactoring is required. The task is primarily about creating a new interface for existing functionality."
+			"expansionPrompt": "1. **Setup**: Create `src/bin/cli.ts`. Add `#!/usr/bin/env node`. Install `commander` (`pnpm add commander`). Set up the main `program` object.\n2. **Read-only Commands**: Add commands for `next`, `status`, and `graph`. Each command's action handler should load tasks using the ingest adapter, call the appropriate state engine function (e.g., `next()`), and print the result to the console as a JSON string using `JSON.stringify`.\n3. **Write Command**: Add the `advance <id> <status>` command. Its action handler should load tasks, call the `advance()` function, and then write the *entire updated task list* back to the source file, overwriting it.\n4. **Graph Command**: For the `graph` command, add an option `--format <type>` (defaulting to `json`). If `json`, output the task graph. If `dot`, transform the task graph into the DOT language format for Graphviz.",
+			"reasoning": "This task involves wiring up the core logic to a user-facing CLI using a framework. Codebase analysis shows `commander` is not yet a dependency. The complexity (4) is not in the core logic (which is already written), but in setting up the command structure, parsing arguments, handling file I/O for both reading and writing state, and formatting output correctly for multiple commands. It touches many parts of the system (ingest, state, file system) and requires careful implementation of the command actions."
+		},
+		{
+			"taskId": 32,
+			"taskTitle": "Create Mastra Tools Package for AI SDK",
+			"complexityScore": 4,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "1. **Package Setup**: Create a new directory `packages/prompts-tools`. Inside, create a `package.json` defining the package name and its dependencies (e.g., `zod`, Vercel AI SDK). Configure the root `pnpm-workspace.yaml` to include `packages/*`.\n2. **Tool Definitions**: Create `packages/prompts-tools/src/index.ts`. Import the state engine functions (`next`, `advance`) from the main project. For each function, create a tool definition compatible with the Vercel AI SDK's `generateObject`. Use `zod` to define the `parameters` schema (e.g., `z.object({ id: z.number(), status: z.string() })` for `set_task_status`).\n3. **Tool Handlers**: The `execute` property of each tool should be an async function that calls the corresponding state engine function and returns the result. Export all tool definitions from the main `index.ts` file.",
+			"reasoning": "This is an integration task that requires knowledge of a specific third-party library (Vercel AI SDK) and monorepo project structure. The complexity (4) arises from creating a new, separately published package, managing its dependencies, and wrapping the existing core logic in the specific adapter format required by the AI SDK, including schema definitions with `zod`. While the core logic is simple, the packaging and adapter boilerplate add a moderate level of effort."
+		},
+		{
+			"taskId": 33,
+			"taskTitle": "Implement Provider Presets and Fallback Logic",
+			"complexityScore": 6,
+			"recommendedSubtasks": 4,
+			"expansionPrompt": "1. **Provider Interface**: Create `src/providers/interface.ts`. Define a `LLMProvider` interface with a method like `generate(prompt: string): Promise<string>`.\n2. **Implementations**: Create `src/providers/ollama.ts`, `src/providers/geminiCli.ts`, and `src/providers/stub.ts`, each exporting a class that implements the `LLMProvider` interface. The `stub` provider should return a hardcoded warning message.\n3. **Availability Checks**: The Ollama provider's constructor or a static method should check for server availability by making a `fetch` call to the Ollama health endpoint. The Gemini provider should check for the CLI tool's existence in the system PATH.\n4. **Factory**: Create `src/providers/factory.ts`. Implement an async function `getProvider()` that attempts to instantiate providers in a preferred order (e.g., Ollama, then Gemini). It should use `try/catch` blocks around each instantiation. Return the first one that succeeds, and if all fail, return an instance of the `StubProvider`.",
+			"reasoning": "This task introduces a significant new abstraction layer (the Provider interface) and deals with the complexities of runtime environment detection and external service interaction. The complexity (6) is high because it involves designing an abstraction, implementing multiple versions of it, and creating a factory with fallback logic that must gracefully handle failures (like network errors or missing executables). This is a robust piece of infrastructure, not a simple function call."
+		},
+		{
+			"taskId": 34,
+			"taskTitle": "Document Client Configuration for Codex and Gemini",
+			"complexityScore": 2,
+			"recommendedSubtasks": 2,
+			"expansionPrompt": "1. **File Creation**: Create a new file at `docs/client_setup.md`.\n2. **Content Structure**: Add a main heading 'Client Configuration'. Create two sub-sections: 'Codex Client Setup' and 'Gemini Client Setup'.\n3. **Configuration Snippets**: In each section, provide a brief explanation and then a copy-pasteable code block for the client's configuration file. Provide examples in both TOML and JSON formats. The configuration must show how to register the MCP stdio server as a tool or command source.\n4. **Path Examples**: Use a clear placeholder like `</path/to/your/project>` for the command path. Crucially, add a note and a specific example for Windows Subsystem for Linux (WSL) users, showing the `/mnt/c/Users/...` path format.",
+			"reasoning": "This is a straightforward documentation task. Codebase analysis shows no existing `docs` directory, so it's a net-new file. The complexity is low (2) because it involves writing clear technical instructions and providing configuration examples, not writing code. The main effort is ensuring the examples are correct, clear, and account for common edge cases like WSL paths. It can be split into creating the doc and then populating the content for each client."
+		},
+		{
+			"taskId": 35,
+			"title": "Implement Optional Artifact Enrichment",
+			"complexityScore": 4,
+			"recommendedSubtasks": 3,
+			"expansionPrompt": "1. **Enrichment Module**: Create a new directory `src/enrichment`. Inside, create `index.ts` which exports a main async function `enrichTasks(tasks: PromptsTask[]): Promise<PromptsTask[]>`. This function will orchestrate all enrichment steps.\n2. **Artifact Parser**: Create `src/enrichment/complexity.ts`. It should export a function that, given a task, checks for a corresponding artifact file (e.g., `artifacts/task-22-complexity.json`), reads it, and parses its content. This function must be wrapped in a `try-catch` block to handle missing files or parse errors gracefully, returning the original task on failure.\n3. **Integration**: Modify the `ingest` adapter from Task 27. After the initial list of tasks is parsed and validated, call the main `enrichTasks` function, passing the task list to it. The enrichment must be non-blocking; the ingest process must succeed even if all enrichment fails. The final, enriched list of tasks should be the return value of the ingest function.",
+			"reasoning": "This task requires modifying the existing `ingest` pipeline to add an optional, fault-tolerant step. The complexity (4) comes from the need to design this process to be non-blocking and modular. It involves file system logic, data parsing, and carefully modifying an existing critical path (ingestion) without introducing fragility. The logic must handle errors gracefully so that missing artifacts don't break the entire application. This is more complex than a simple function, as it involves architectural considerations for extensibility and robustness."
+		},
+		{
+			"taskId": 36,
+			"title": "Implement Observability and Secure Logging",
+			"complexityScore": 5,
+			"recommendedSubtasks": 4,
+			"expansionPrompt": "1. **Library and Setup**: Install a structured logging library like `pino` (`pnpm add pino`). Create `src/logging.ts`. In this file, create a factory function `createLogger(options)` that initializes and returns a `pino` logger instance.\n2. **Secure Defaults**: Configure the default logger to have a `redact` option for paths like `*.title`, `*.description`, and `*.details` to prevent logging sensitive task content. The log level should default to `info`.\n3. **CLI Integration**: Modify the CLI entry point (Task 31). Add global `--verbose` and `--unsafe-logs` flags using `commander`. Based on these flags, call `createLogger` with appropriate options (e.g., `level: 'debug'` for verbose, empty `redact` array for unsafe) and pass the logger instance to the command handlers.\n4. **Server Integration**: Modify the MCP server (Task 30) to accept similar flags or environment variables to configure its logger instance, ensuring all server output is structured and secure by default.",
+			"reasoning": "This is a cross-cutting concern that touches multiple parts of the application (CLI, server). The complexity (5) is not just in adding a library, but in implementing the security-conscious defaults. The redaction logic requires a deep understanding of the logger's API and the application's data structures. Propagating the logger instance and its configuration based on runtime flags through the application adds another layer of complexity. It's a foundational infrastructure task that requires careful design."
 		}
 	]
 }

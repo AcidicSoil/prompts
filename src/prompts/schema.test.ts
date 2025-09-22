@@ -1,5 +1,6 @@
 import { strict as assert } from "node:assert";
 
+import { describe, test } from "@jest/globals";
 import { z } from "zod";
 
 import { generateToolSchemas } from "./schema.ts";
@@ -17,23 +18,17 @@ const definition: PromptDefinition = {
   ],
 };
 
-const runTests = () => {
-  const schemas = generateToolSchemas(definition);
-  assert.ok(schemas.output.content);
-  assert.equal(typeof schemas.output.content.parse("hello"), "string");
-  assert.ok(schemas.input);
-  const inputObject = schemas.input ?? {};
-  const inputSchema = z.object(inputObject);
-  const parsed = inputSchema.safeParse({ limit: 10 });
-  assert.ok(parsed.success, `Expected schema to parse input: ${parsed.error?.toString()}`);
-  assert.equal(parsed.data.limit, 10);
-  assert.equal(parsed.data.range, undefined);
-};
-
-try {
-  runTests();
-  console.log("schema generator tests passed.");
-} catch (error) {
-  console.error("Schema generator tests failed:", error);
-  process.exitCode = 1;
-}
+describe("generateToolSchemas", () => {
+  test("builds zod schemas for inputs and outputs", () => {
+    const schemas = generateToolSchemas(definition);
+    assert.ok(schemas.output.content);
+    assert.equal(typeof schemas.output.content.parse("hello"), "string");
+    assert.ok(schemas.input);
+    const inputObject = schemas.input ?? {};
+    const inputSchema = z.object(inputObject);
+    const parsed = inputSchema.safeParse({ limit: 10 });
+    assert.ok(parsed.success, `Expected schema to parse input: ${parsed.error?.toString()}`);
+    assert.equal(parsed.data.limit, 10);
+    assert.equal(parsed.data.range, undefined);
+  });
+});

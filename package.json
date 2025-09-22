@@ -8,7 +8,8 @@
     "inspect": "npx @modelcontextprotocol/inspector --config inspector.config.json",
     "prompts": "TS_NODE_ESM_EXPERIMENTAL_SPECIFIER_RESOLUTION=node node --loader ts-node/esm src/cli/main.ts",
     "start": "node dist/index.js",
-    "test": "npm run test:workflow && npm run test:safety && npm run test:prompts && npm run test:prompt-handler && npm run test:schemas && npm run test:resources && npm run test:tools && npm run test:state && npm run test:planner",
+    "test": "npm run test:workflow && npm run test:safety && npm run test:prompts && npm run test:prompt-handler && npm run test:schemas && npm run test:resources && npm run test:tools && npm run test:state && npm run test:planner && npm run test:jest",
+    "test:jest": "NODE_OPTIONS=--experimental-vm-modules jest --runInBand",
     "test:planner": "node --loader ts-node/esm test/planner/Planner.test.ts",
     "test:prompt-handler": "node --loader ts-node/esm src/tools/prompt-handler.test.ts",
     "test:prompts": "node --loader ts-node/esm src/prompts/loader.test.ts",
@@ -27,11 +28,14 @@
     "zod": "^3.25.76"
   },
   "devDependencies": {
+    "@types/jest": "^29.5.12",
     "@types/js-yaml": "^4.0.9",
     "@types/node": "^20.14.9",
     "glob": "^10.3.10",
     "gray-matter": "^4.0.3",
+    "jest": "^29.7.0",
     "ts-node": "^10.9.2",
+    "ts-jest": "^29.1.1",
     "typescript": "^5.4.0"
   },
   "bin": {

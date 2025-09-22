@@ -1657,7 +1657,7 @@
         "testStrategy": "Verify that `pnpm test` runs successfully and that a simple 'hello world' TypeScript file in `src/` can be compiled and executed.",
         "priority": "high",
         "dependencies": [],
-        "status": "pending",
+        "status": "done",
         "subtasks": [],
         "source_doc": "artifacts/delta-20250921-173948.md",
         "lineage": [
@@ -1693,7 +1693,7 @@
         "dependencies": [
           25
         ],
-        "status": "pending",
+        "status": "done",
         "subtasks": [],
         "source_doc": "artifacts/delta-20250921-173948.md",
         "lineage": [
@@ -1730,7 +1730,39 @@
           26
         ],
         "status": "pending",
-        "subtasks": [],
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Scaffold ingest adapter and shared task types",
+            "description": "Add the AJV runtime dependency (`pnpm add ajv`) and create `src/adapters/taskmaster/ingest.ts` plus `src/types/prompts-task.ts` exporting the superset `PromptsTask` interface shared across the state engine.",
+            "dependencies": [],
+            "details": "Install `ajv` in the root workspace. In `src/types/prompts-task.ts`, define the TypeScript interface mirroring `schemas/task.json`, including optional `labels`, `metadata`, `evidence`, and `artifacts`. Export a `StatusAliasMap` stub for later normalization. Stub the ingest module with a named async function signature `ingestTasks(filePath: string): Promise<PromptsTask[]>`.",
+            "status": "pending",
+            "testStrategy": "Run `pnpm exec tsc --noEmit` to confirm the new types compile and the ingest module exports the planned symbols."
+          },
+          {
+            "id": 2,
+            "title": "Implement ingest pipeline with AJV validation and status normalization",
+            "description": "Read a Task-Master `tasks.json`, validate it against `schemas/task.json` using AJV, and map entries into `PromptsTask[]` while normalizing status aliases and collecting a mapping report.",
+            "dependencies": [
+              "27.1"
+            ],
+            "details": "In `src/adapters/taskmaster/ingest.ts`, load and compile the schema via AJV, throw on validation failures with aggregated errors, and map tasks to the `PromptsTask` shape. Normalize statuses (e.g., `todo` -> `pending`) using the alias map and attach any non-canonical statuses to a side-channel report exported from the module.",
+            "status": "pending",
+            "testStrategy": "Create fixtures under `test/fixtures/taskmaster/` for valid and invalid inputs. Run targeted unit tests (next subtask) to assert validation failures and normalization outcomes."
+          },
+          {
+            "id": 3,
+            "title": "Write Jest coverage for ingest adapter",
+            "description": "Add `tests/adapters/ingest.test.ts` verifying success, validation failure, and status normalization scenarios using golden fixtures.",
+            "dependencies": [
+              "27.2"
+            ],
+            "details": "Configure Jest to load TypeScript via `ts-jest`. Mock filesystem reads with `fs.promises`. Assert that invalid payloads produce descriptive errors and that the normalization report lists each remapped status.",
+            "status": "pending",
+            "testStrategy": "Run `pnpm exec jest tests/adapters/ingest.test.ts --runInBand` and confirm all cases pass with deterministic snapshots where applicable."
+          }
+        ],
         "source_doc": "artifacts/delta-20250921-173948.md",
         "lineage": [
           9,
@@ -1766,7 +1798,39 @@
           27
         ],
         "status": "pending",
-        "subtasks": [],
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create state graph module scaffold",
+            "description": "Introduce `src/state/graph.ts` exporting placeholders for `computeReadiness` and `next`, along with helper types and priority mappings.",
+            "dependencies": [],
+            "details": "Define enums or lookup maps translating textual priorities to numeric weights. Add utility functions for dependency lookup (`buildStatusMap`, `countDependents`). Ensure the module exports the helpers for reuse in tests.",
+            "status": "pending",
+            "testStrategy": "Run `pnpm exec tsc --noEmit` to ensure the scaffold compiles and exports the expected signatures."
+          },
+          {
+            "id": 2,
+            "title": "Implement computeReadiness with unit tests",
+            "description": "Filter tasks to those whose dependencies are satisfied (done or deprecated) using a Map-based lookup for O(n) evaluation.",
+            "dependencies": [
+              "28.1"
+            ],
+            "details": "Implement `computeReadiness(tasks: PromptsTask[]): PromptsTask[]` and add tests in `test/state/graph/computeReadiness.test.ts` covering tasks with missing dependencies, blocked tasks, and alias statuses.",
+            "status": "pending",
+            "testStrategy": "Run `pnpm exec jest test/state/graph/computeReadiness.test.ts`. Ensure coverage includes edge cases such as self-dependencies and circular detection returning an empty set."
+          },
+          {
+            "id": 3,
+            "title": "Implement next() tie-break sorting with coverage",
+            "description": "Implement `next(tasks)` by sorting ready tasks by priority, dependent count, then ID, and add Jest tests for the multi-key ordering.",
+            "dependencies": [
+              "28.2"
+            ],
+            "details": "Leverage the helper utilities to compute dependent counts. Write tests in `test/state/graph/next.test.ts` verifying deterministic ordering across identical priorities and dependency fan-out, plus the null case when no tasks ready.",
+            "status": "pending",
+            "testStrategy": "Run `pnpm exec jest test/state/graph/next.test.ts --runInBand` to verify ordering logic."
+          }
+        ],
         "source_doc": "artifacts/delta-20250921-173948.md",
         "lineage": [
           9,
@@ -1838,7 +1902,53 @@
           29
         ],
         "status": "pending",
-        "subtasks": [],
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Bootstrap stdio MCP server runtime",
+            "description": "Create `src/mcp/server.ts` with a readline loop over stdin/stdout, structured logging hooks, and graceful shutdown handlers.",
+            "dependencies": [],
+            "details": "Set up the readline interface, ensure JSON parse errors are caught and reported, and wire SIGINT/SIGTERM to close the interface. Export a `startServer(options)` function for reuse in tests.",
+            "status": "pending",
+            "testStrategy": "Run the server manually with `node src/mcp/server.ts` piping a sample line to confirm it echoes a well-formed error on invalid JSON."
+          },
+          {
+            "id": 2,
+            "title": "Load tasks and manage in-memory state",
+            "description": "Integrate the ingest adapter to load tasks.json at startup, cache the array, and expose helpers to persist updated state when writes are enabled.",
+            "dependencies": [
+              "30.1",
+              "27.3"
+            ],
+            "details": "Introduce configuration for the tasks file path and write-mode flag. Ensure state persists via atomic write (temporary file rename) to avoid corruption.",
+            "status": "pending",
+            "testStrategy": "Add unit tests in `test/mcp/server/state.test.ts` mocking filesystem operations to verify load and flush behavior."
+          },
+          {
+            "id": 3,
+            "title": "Implement read-only MCP handlers",
+            "description": "Handle `next_task`, `get_task`, `list_tasks`, and `graph_export` requests by dispatching to state engine helpers and writing JSON-RPC responses.",
+            "dependencies": [
+              "30.2",
+              "28.3"
+            ],
+            "details": "Create a handler map keyed by method names. Ensure each response includes `jsonrpc`, `id`, and `result` fields and that errors return `error` objects with codes.",
+            "status": "pending",
+            "testStrategy": "Add integration tests in `test/mcp/server/handlers.test.ts` sending mock JSON lines and asserting the parsed responses."
+          },
+          {
+            "id": 4,
+            "title": "Support set_task_status with persistence and regression tests",
+            "description": "Implement the write-capable handler that applies `advance` updates, persists the task list when write mode is enabled, and returns confirmation payloads.",
+            "dependencies": [
+              "30.3",
+              "29"
+            ],
+            "details": "Reuse the state update utilities to mutate in-memory tasks. Guard writes when `options.writeEnabled` is false and return a warning message instead of persisting.",
+            "status": "pending",
+            "testStrategy": "Add a Jest integration test covering both write-enabled and read-only modes, asserting file writes and response structure."
+          }
+        ],
         "source_doc": "artifacts/delta-20250921-173948.md",
         "lineage": [
           9,
@@ -1874,7 +1984,53 @@
           29
         ],
         "status": "pending",
-        "subtasks": [],
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create CLI entry point with Commander",
+            "description": "Add `src/bin/cli.ts` with shebang, initialize `commander` program, and wire common options (verbose, task file path).",
+            "dependencies": [],
+            "details": "Ensure the entry compiles to `dist/bin/cli.js` and update `package.json` bin mapping. Export a `runCli(processArgs)` function for testability.",
+            "status": "pending",
+            "testStrategy": "Run `node src/bin/cli.ts --help` to verify command registration and help output."
+          },
+          {
+            "id": 2,
+            "title": "Implement read commands (next, status, list)",
+            "description": "Wire `next`, `status`, and `list` commands to call ingest/state helpers and pretty-print JSON results.",
+            "dependencies": [
+              "31.1",
+              "27.3",
+              "28.3"
+            ],
+            "details": "Ensure commands accept `--pretty` flag and handle empty results. Share option parsing logic across commands.",
+            "status": "pending",
+            "testStrategy": "Add CLI smoke tests using `execa` snapshots to assert command output for sample tasks fixture."
+          },
+          {
+            "id": 3,
+            "title": "Implement advance command with persistence",
+            "description": "Add `advance <id> <status>` command that updates tasks via `advance()` and writes results back to the source file atomically.",
+            "dependencies": [
+              "31.2",
+              "29"
+            ],
+            "details": "Validate status inputs, surface normalization warnings from the ingest adapter, and honor a `--dry-run` flag to skip writes during CI.",
+            "status": "pending",
+            "testStrategy": "Add tests in `test/cli/advance.test.ts` stubbing filesystem writes to confirm dry-run vs write behavior."
+          },
+          {
+            "id": 4,
+            "title": "Add graph export command with DOT support",
+            "description": "Implement `graph` command accepting `--format json|dot`, building DOT output for dependencies when requested.",
+            "dependencies": [
+              "31.2"
+            ],
+            "details": "Create a formatter utility that converts the task list into DOT syntax. Warn when Graphviz is unavailable but still emit DOT text.",
+            "status": "pending",
+            "testStrategy": "Add unit tests for the formatter ensuring deterministic node and edge ordering."
+          }
+        ],
         "source_doc": "artifacts/delta-20250921-173948.md",
         "lineage": [
           9,
@@ -1910,7 +2066,41 @@
           29
         ],
         "status": "pending",
-        "subtasks": [],
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Set up packages/prompts-tools workspace package",
+            "description": "Create `packages/prompts-tools` with package.json, tsconfig, and entry point scaffolding; update pnpm workspace configuration.",
+            "dependencies": [],
+            "details": "Define build script using `tsup` or `tsc`. Ensure package references shared state engine code without circular deps.",
+            "status": "pending",
+            "testStrategy": "Run `pnpm install` and `pnpm exec tsc --build packages/prompts-tools` to verify dependency graph."
+          },
+          {
+            "id": 2,
+            "title": "Implement Mastra tool definitions",
+            "description": "Expose `next_task`, `set_task_status`, and `graph_export` tool definitions using Vercel AI SDK helpers and Zod parameter schemas.",
+            "dependencies": [
+              "32.1",
+              "28.3",
+              "29"
+            ],
+            "details": "Define schema objects aligning with MCP handlers, ensuring responses serialize cleanly for the AI SDK.",
+            "status": "pending",
+            "testStrategy": "Add unit tests verifying schema validation and handler invocation using mocked state engine functions."
+          },
+          {
+            "id": 3,
+            "title": "Publish package build outputs and docs",
+            "description": "Add README and build artifacts ensuring package compiles to ESM/CJS targets required by Mastra, plus integration smoke test.",
+            "dependencies": [
+              "32.2"
+            ],
+            "details": "Configure build outputs under `dist/` and ensure `package.json` exports field is set. Document installation and usage.",
+            "status": "pending",
+            "testStrategy": "Run `pnpm test --filter prompts-tools` (once defined) and a sample script that loads the built package to ensure runtime compatibility."
+          }
+        ],
         "source_doc": "artifacts/delta-20250921-173948.md",
         "lineage": [
           9,
@@ -1946,7 +2136,51 @@
           32
         ],
         "status": "pending",
-        "subtasks": [],
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Define provider interface and shared types",
+            "description": "Create `src/providers/interface.ts` with the `LLMProvider` contract and shared error classes for availability checks.",
+            "dependencies": [],
+            "details": "Include methods for `ping()` and `generate(prompt)`. Export specific error types for missing dependencies and offline providers.",
+            "status": "pending",
+            "testStrategy": "Add unit tests ensuring custom errors serialize expected metadata and that interface typings compile."
+          },
+          {
+            "id": 2,
+            "title": "Implement Ollama provider with health probe",
+            "description": "Create `src/providers/ollama.ts` implementing the interface and verifying local Ollama availability via HTTP health endpoint.",
+            "dependencies": [
+              "33.1"
+            ],
+            "details": "Use `node-fetch` or native fetch to query `http://localhost:11434/api/tags`. Provide descriptive errors when not reachable.",
+            "status": "pending",
+            "testStrategy": "Add tests mocking fetch responses for success and failure, ensuring fallback errors bubble appropriately."
+          },
+          {
+            "id": 3,
+            "title": "Implement Gemini CLI and stub providers",
+            "description": "Add `src/providers/geminiCli.ts` detecting CLI availability via `which`/`spawn`, plus `src/providers/stub.ts` returning warning responses.",
+            "dependencies": [
+              "33.1"
+            ],
+            "details": "Ensure Gemini provider reads API key configuration where applicable and that stub provider logs actionable warnings.",
+            "status": "pending",
+            "testStrategy": "Write unit tests stubbing child_process results to cover present/absent CLI scenarios and verifying stub outputs."
+          },
+          {
+            "id": 4,
+            "title": "Build provider factory with fallback chain",
+            "description": "Implement `src/providers/factory.ts` selecting providers in priority order (Ollama -> Gemini -> stub) with robust error handling.",
+            "dependencies": [
+              "33.2",
+              "33.3"
+            ],
+            "details": "Expose async `getProvider()` returning the first healthy provider and capturing telemetry for diagnostics.",
+            "status": "pending",
+            "testStrategy": "Add integration tests simulating various availability combinations to ensure expected provider selection."
+          }
+        ],
         "source_doc": "artifacts/delta-20250921-173948.md",
         "lineage": [
           9,
@@ -2018,7 +2252,40 @@
           27
         ],
         "status": "pending",
-        "subtasks": [],
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create enrichment orchestrator",
+            "description": "Add `src/enrichment/index.ts` exporting `enrichTasks` that iterates tasks and applies pluggable enrichers without mutating the original array.",
+            "dependencies": [],
+            "details": "Implement a pipeline pattern with async hooks, ensuring failures are caught and logged without aborting the ingest flow.",
+            "status": "pending",
+            "testStrategy": "Add unit tests verifying tasks are cloned and unchanged when no enrichers run."
+          },
+          {
+            "id": 2,
+            "title": "Implement artifact readers",
+            "description": "Create modules under `src/enrichment/artifacts/` (e.g., `complexity.ts`) that read optional files from `artifacts/` and append derived metadata to tasks.",
+            "dependencies": [
+              "35.1"
+            ],
+            "details": "Ensure readers gracefully handle missing files or JSON parse errors, appending warnings into a debug log collection.",
+            "status": "pending",
+            "testStrategy": "Add tests with temporary directories verifying enrichment occurs when files exist and that failures are swallowed."
+          },
+          {
+            "id": 3,
+            "title": "Integrate enrichment into ingest pipeline with coverage",
+            "description": "Invoke `enrichTasks` from the ingest adapter and add Jest coverage confirming enrichers execute without blocking core parsing.",
+            "dependencies": [
+              "35.2",
+              "27.3"
+            ],
+            "details": "Ensure the ingest adapter returns the enriched array and exposes enrichment warnings for downstream logging.",
+            "status": "pending",
+            "testStrategy": "Extend ingest tests to include artifact scenarios using tmp directories."
+          }
+        ],
         "source_doc": "artifacts/delta-20250921-173948.md",
         "lineage": [
           9,
@@ -2054,7 +2321,53 @@
           31
         ],
         "status": "pending",
-        "subtasks": [],
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Introduce structured logging dependency and factory",
+            "description": "Install `pino` and create `src/logging.ts` exporting `createLogger` with base configuration and serializers.",
+            "dependencies": [],
+            "details": "Configure default level `info`, pretty-print toggle for development, and redact task-sensitive fields using pino's `redact` option.",
+            "status": "pending",
+            "testStrategy": "Add unit tests verifying redaction configuration removes sensitive keys and that logger instantiation succeeds."
+          },
+          {
+            "id": 2,
+            "title": "Implement secure logging defaults and CLI flags",
+            "description": "Add CLI-global `--verbose` and `--unsafe-logs` flags to control logger level and redaction, wiring them through `createLogger`.",
+            "dependencies": [
+              "36.1",
+              "31.1"
+            ],
+            "details": "Propagate the logger instance to command handlers via a shared context object and document flag usage.",
+            "status": "pending",
+            "testStrategy": "Add CLI tests verifying verbose mode emits debug entries while default mode redacts sensitive fields."
+          },
+          {
+            "id": 3,
+            "title": "Integrate logging into MCP server",
+            "description": "Inject the structured logger into the MCP server to log lifecycle events, handler calls, and errors with secure defaults.",
+            "dependencies": [
+              "36.1",
+              "30.1"
+            ],
+            "details": "Ensure error logs omit task payloads unless unsafe mode is explicitly enabled; include correlation IDs for requests.",
+            "status": "pending",
+            "testStrategy": "Add server integration tests verifying log outputs using pino transport mocks."
+          },
+          {
+            "id": 4,
+            "title": "Document observability configuration and runbook",
+            "description": "Update `docs/observability.md` (create if absent) describing logger usage, redaction defaults, and flag matrix for CLI/server.",
+            "dependencies": [
+              "36.2",
+              "36.3"
+            ],
+            "details": "Include instructions for piping logs to JSON collectors and highlight security considerations when disabling redaction.",
+            "status": "pending",
+            "testStrategy": "Peer review documentation for accuracy; no automated test required."
+          }
+        ],
         "source_doc": "artifacts/delta-20250921-173948.md",
         "lineage": [
           9,
@@ -2082,7 +2395,7 @@
     ],
     "metadata": {
       "created": "2025-09-18T19:25:07.429Z",
-      "updated": "2025-09-21T22:47:33.608Z",
+      "updated": "2025-09-21T23:56:15.888Z",
       "description": "Tasks for master context"
     }
   }

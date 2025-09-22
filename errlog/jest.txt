@@ -1,0 +1,167 @@
+
+> prompts@0.1.0 test:jest
+> NODE_OPTIONS=--experimental-vm-modules jest --runInBand
+
+ts-jest[ts-jest-transformer] (WARN) Define `ts-jest` config under `globals` is deprecated. Please do
+transform: {
+    <transform_regex>: ['ts-jest', { /* ts-jest config goes here in Jest */ }],
+},
+See more at https://kulshekhar.github.io/ts-jest/docs/getting-started/presets#advanced
+(node:214658) ExperimentalWarning: VM Modules is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+FAIL test/state/StateStore.test.ts
+  ● Test suite failed to run
+
+    Your test suite must contain at least one test.
+
+      at onResult (node_modules/@jest/core/build/TestScheduler.js:133:18)
+      at node_modules/@jest/core/build/TestScheduler.js:254:19
+      at node_modules/emittery/index.js:363:13
+          at Array.map (<anonymous>)
+      at Emittery.emit (node_modules/emittery/index.js:361:23)
+
+FAIL test/planner/Planner.test.ts
+  ● Test suite failed to run
+
+    Your test suite must contain at least one test.
+
+      at onResult (node_modules/@jest/core/build/TestScheduler.js:133:18)
+      at node_modules/@jest/core/build/TestScheduler.js:254:19
+      at node_modules/emittery/index.js:363:13
+          at Array.map (<anonymous>)
+      at Emittery.emit (node_modules/emittery/index.js:361:23)
+
+{"timestamp":"2025-09-21T23:47:17.358Z","level":"info","message":"prompt_resources_registered","metadata":{"count":6}}
+{"timestamp":"2025-09-21T23:47:17.359Z","level":"info","message":"prompt_tools_registered","metadata":{"count":6}}
+FAIL test/integration/tools.test.ts
+  ● Test suite failed to run
+
+    Your test suite must contain at least one test.
+
+      at onResult (node_modules/@jest/core/build/TestScheduler.js:133:18)
+      at node_modules/@jest/core/build/TestScheduler.js:254:19
+      at node_modules/emittery/index.js:363:13
+          at Array.map (<anonymous>)
+      at Emittery.emit (node_modules/emittery/index.js:361:23)
+
+{"timestamp":"2025-09-21T23:47:17.449Z","level":"info","message":"prompt_resources_registered","metadata":{"count":6}}
+FAIL test/integration/resources.test.ts
+  ● Test suite failed to run
+
+    Your test suite must contain at least one test.
+
+      at onResult (node_modules/@jest/core/build/TestScheduler.js:133:18)
+      at node_modules/@jest/core/build/TestScheduler.js:254:19
+      at node_modules/emittery/index.js:363:13
+          at Array.map (<anonymous>)
+      at Emittery.emit (node_modules/emittery/index.js:361:23)
+
+{"timestamp":"2025-09-21T23:47:17.515Z","level":"info","message":"prompt_resources_registered","metadata":{"count":6}}
+{"timestamp":"2025-09-21T23:47:17.515Z","level":"info","message":"prompt_tools_registered","metadata":{"count":6}}
+{"timestamp":"2025-09-21T23:47:17.516Z","level":"info","message":"workflow_tools_registered","metadata":{"count":3,"tools":["refresh_metadata","export_task_list","advance_state"]}}
+{"timestamp":"2025-09-21T23:47:17.516Z","level":"info","message":"server_started","metadata":{"transport":"stdio","server":"Proactive Workflow Assistant MCP","version":"0.1.0"}}
+FAIL src/utils/safety.test.ts
+  ● Test suite failed to run
+
+    Your test suite must contain at least one test.
+
+      at onResult (node_modules/@jest/core/build/TestScheduler.js:133:18)
+      at node_modules/@jest/core/build/TestScheduler.js:254:19
+      at node_modules/emittery/index.js:363:13
+          at Array.map (<anonymous>)
+      at Emittery.emit (node_modules/emittery/index.js:361:23)
+
+{"timestamp":"2025-09-21T23:47:17.565Z","level":"info","message":"workflow_tools_registered","metadata":{"count":3,"tools":["refresh_metadata","export_task_list","advance_state"]}}
+{"timestamp":"2025-09-21T23:47:17.581Z","level":"info","message":"prompt_resources_registered","metadata":{"count":6}}
+{"timestamp":"2025-09-21T23:47:17.582Z","level":"info","message":"prompt_tools_registered","metadata":{"count":6}}
+{"timestamp":"2025-09-21T23:47:17.582Z","level":"info","message":"workflow_tools_registered","metadata":{"count":3,"tools":["refresh_metadata","export_task_list","advance_state"]}}
+{"timestamp":"2025-09-21T23:47:17.582Z","level":"info","message":"server_started","metadata":{"transport":"stdio","server":"Proactive Workflow Assistant MCP","version":"0.1.0"}}
+FAIL src/tools/prompt-handler.test.ts
+  ● Test suite failed to run
+
+    Your test suite must contain at least one test.
+
+      at onResult (node_modules/@jest/core/build/TestScheduler.js:133:18)
+      at node_modules/@jest/core/build/TestScheduler.js:254:19
+      at node_modules/emittery/index.js:363:13
+          at Array.map (<anonymous>)
+      at Emittery.emit (node_modules/emittery/index.js:361:23)
+
+FAIL src/prompts/schema.test.ts
+  ● Test suite failed to run
+
+    Your test suite must contain at least one test.
+
+      at onResult (node_modules/@jest/core/build/TestScheduler.js:133:18)
+      at node_modules/@jest/core/build/TestScheduler.js:254:19
+      at node_modules/emittery/index.js:363:13
+          at Array.map (<anonymous>)
+      at Emittery.emit (node_modules/emittery/index.js:361:23)
+
+FAIL src/prompts/loader.test.ts
+  ● Test suite failed to run
+
+    Your test suite must contain at least one test.
+
+      at onResult (node_modules/@jest/core/build/TestScheduler.js:133:18)
+      at node_modules/@jest/core/build/TestScheduler.js:254:19
+      at node_modules/emittery/index.js:363:13
+          at Array.map (<anonymous>)
+      at Emittery.emit (node_modules/emittery/index.js:361:23)
+
+Test Suites: 8 failed, 8 total
+Tests:       0 total
+Snapshots:   0 total
+Time:        1.186 s
+Ran all test suites.
+
+  ●  Cannot log after tests are done. Did you forget to wait for something async in your test?
+    Attempted to log "prompt handler tests passed.".
+
+      36 |     assert.ok(Buffer.byteLength(text, "utf8") <= 64);
+      37 |   } finally {
+    > 38 |     rmSync(tempDir, { recursive: true, force: true });
+         |             ^
+      39 |   }
+      40 | };
+      41 |
+
+      at console.log (node_modules/@jest/console/build/BufferedConsole.js:156:10)
+      at src/tools/prompt-handler.test.ts:38:13
+
+{"timestamp":"2025-09-21T23:47:17.700Z","level":"info","message":"advance_state_recorded","metadata":{"id":"instruction-file","artifactCount":1}}
+{"timestamp":"2025-09-21T23:47:17.702Z","level":"info","message":"export_task_list_completed","metadata":{"count":6}}
+
+  ●  Cannot log after tests are done. Did you forget to wait for something async in your test?
+    Attempted to log "Planner tests passed.".
+
+       97 |               requiresArtifacts: [],
+       98 |             },
+    >  99 |           ],
+          |             ^
+      100 |         },
+      101 |         null,
+      102 |         2,
+
+      at console.log (node_modules/@jest/console/build/BufferedConsole.js:156:10)
+      at test/planner/Planner.test.ts:99:13
+
+{"timestamp":"2025-09-21T23:47:18.673Z","level":"info","message":"refresh_metadata_completed","metadata":{"updateWorkflow":false}}
+
+  ●  Cannot log after tests are done. Did you forget to wait for something async in your test?
+    Attempted to log "integration prompt tools tests passed.".
+
+       99 |     });
+      100 |     const refreshContent = Array.isArray(refreshResult.content) ? refreshResult.content[0] : undefined;
+    > 101 |     assert.ok(refreshContent && refreshContent.type === "text");
+          |             ^
+      102 |     assert.ok(refreshContent.text.includes("Metadata validated"));
+      103 |   } finally {
+      104 |     await client.close();
+
+      at console.log (node_modules/@jest/console/build/BufferedConsole.js:156:10)
+      at test/integration/tools.test.ts:101:13
+
+Jest did not exit one second after the test run has completed.
+
+'This usually means that there are asynchronous operations that weren't stopped in your tests. Consider running Jest with `--detectOpenHandles` to troubleshoot this issue.

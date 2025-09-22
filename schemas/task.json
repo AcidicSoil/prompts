@@ -1,0 +1,187 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://acidosoil.github.io/prompts/schemas/task.json",
+  "title": "Prompts Task",
+  "description": "Superset schema for Task-Master tasks with optional Prompts-specific metadata.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "title",
+    "description",
+    "status",
+    "dependencies",
+    "priority",
+    "details",
+    "testStrategy",
+    "subtasks"
+  ],
+  "properties": {
+    "id": {
+      "description": "Task identifier that must remain identical to Task-Master IDs.",
+      "type": "integer",
+      "minimum": 1
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1
+    },
+    "description": {
+      "type": "string"
+    },
+    "details": {
+      "type": "string"
+    },
+    "testStrategy": {
+      "type": "string"
+    },
+    "status": {
+      "description": "Current task status using Task-Master canonical values and supported aliases.",
+      "type": "string",
+      "enum": [
+        "pending",
+        "in_progress",
+        "in-progress",
+        "blocked",
+        "done",
+        "deprecated"
+      ]
+    },
+    "priority": {
+      "description": "Task execution priority.",
+      "type": "string",
+      "enum": ["high", "medium", "low"]
+    },
+    "dependencies": {
+      "description": "List of prerequisite task IDs.",
+      "type": "array",
+      "items": {
+        "type": "integer",
+        "minimum": 1
+      },
+      "default": []
+    },
+    "subtasks": {
+      "type": "array",
+      "items": {"$ref": "#/definitions/Subtask"},
+      "default": []
+    },
+    "labels": {
+      "description": "Optional tags preserved for Prompts-specific metadata.",
+      "type": "array",
+      "items": {"type": "string"},
+      "default": []
+    },
+    "metadata": {
+      "description": "Flexible key/value metadata captured during ingestion.",
+      "type": "object",
+      "additionalProperties": true
+    },
+    "evidence": {
+      "description": "Evidence entries supporting task decisions.",
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {"type": "string"},
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "source": {"type": "string"},
+              "summary": {"type": "string"},
+              "date": {"type": "string", "format": "date"},
+              "link": {"type": "string", "format": "uri"}
+            }
+          }
+        ]
+      }
+    },
+    "artifacts": {
+      "description": "Artifacts attached to the task (files, reports, etc.).",
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {"type": "string"},
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "name": {"type": "string"},
+              "path": {"type": "string"},
+              "type": {"type": "string"}
+            },
+            "required": ["name"]
+          }
+        ]
+      }
+    },
+    "source_doc": {
+      "description": "Document path that introduced or last updated the task.",
+      "type": "string"
+    },
+    "lineage": {
+      "description": "Origin task IDs that this task derives from.",
+      "type": "array",
+      "items": {"type": "integer", "minimum": 1},
+      "default": []
+    },
+    "supersedes": {
+      "description": "Tasks replaced by this item.",
+      "type": "array",
+      "items": {"type": "integer", "minimum": 1},
+      "default": []
+    },
+    "superseded_by": {
+      "description": "Tasks that supersede this one.",
+      "type": "array",
+      "items": {"type": "integer", "minimum": 1},
+      "default": []
+    },
+    "reason": {
+      "description": "Human-readable explanation for deprecated/blocked states.",
+      "type": "string"
+    }
+  },
+  "definitions": {
+    "Subtask": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "title"],
+      "properties": {
+        "id": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "description": {"type": "string"},
+        "details": {"type": "string"},
+        "testStrategy": {"type": "string"},
+        "status": {
+          "type": "string",
+          "enum": [
+            "pending",
+            "in_progress",
+            "in-progress",
+            "blocked",
+            "done",
+            "deprecated"
+          ]
+        },
+        "parentTaskId": {"type": "integer", "minimum": 1},
+        "dependencies": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              {"type": "integer", "minimum": 1},
+              {"type": "string", "pattern": "^\\d+(\\.\\d+)?$"}
+            ]
+          },
+          "default": []
+        }
+      }
+    }
+  }
+}
