@@ -1,8 +1,7 @@
+import { promises as fs } from 'fs';
 import path from 'path';
 
 import { glob } from 'glob';
-
-import { loadPhases as loadWorkflowPhases } from '../src/utils/markdown.ts';
 
 const DEFAULT_IGNORE = [
   '**/node_modules/**',
@@ -22,4 +21,13 @@ export async function collectMarkdownFiles(rootDir: string): Promise<string[]> {
   return matches.map((match) => path.resolve(match));
 }
 
-export { loadWorkflowPhases as loadPhases };
+export async function loadPhases(workflowPath: string): Promise<Set<string>> {
+  const content = await fs.readFile(workflowPath, 'utf8');
+  const headingRegex = /^(##|###)\s+(.+)$/gm;
+  const phases = new Set<string>();
+  let match: RegExpExecArray | null;
+  while ((match = headingRegex.exec(content)) !== null) {
+    phases.add(match[2].trim());
+  }
+  return phases;
+}
