@@ -1389,7 +1389,7 @@
         "dependencies": [
           18
         ],
-        "status": "deprecated",
+        "status": "deferred",
         "subtasks": [
           {
             "id": 1,
@@ -2455,7 +2455,7 @@
     ],
     "metadata": {
       "created": "2025-09-18T19:25:07.429Z",
-      "updated": "2025-09-23T15:11:17.510Z",
+      "updated": "2025-09-23T22:16:42.232Z",
       "description": "Tasks for master context"
     }
   }
