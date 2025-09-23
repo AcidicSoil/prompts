@@ -315,7 +315,7 @@ Allowed only for outages/ambiguous scope/timeboxed spikes. Must include:
 
 1. Re-run the **Dynamic Docs MCP Router** (§7) to discover and rank all `*-docs-mcp` servers relevant to the error topics (derive from stack traces, failing commands, and test names).
 2. Fetch **latest pertinent docs** via the ranked chain, then `contex7-mcp` → `gitmcp`.
-3. Rebuild `DocFetchReport` with `refresh_reason: "3_turns_persistent_errors"`, `since_turns: 3`, and `since_time_utc` from the last successful run.
+3. Rebuild `DocFetchReport` with `refresh_reason: "3_turns_persistent_errors",`since\_turns: 3`, and`since\_time\_utc\` from the last successful run.
 4. Set `ctx.docs_ready = false` until the refreshed report returns `status == "OK"`.
 5. Compute and record `doc_delta` vs the previous report (changed sources, new guidance, version bumps). Attach to `DocFetchReport.changed_guidance[]`.
 
@@ -1058,6 +1058,27 @@ To demonstrate prompts in practice, a full-stack app workflow includes:
 - Dedupe removes repeats with identical `dedupe_key`.
 - A Task Master status call follows every successful flush that changes progress or status intent.
 - Finalization performs read-back verification and writes `completion_summary_md`.
+
+---
+
+## Build Artifacts Policy — `dist/` (Do not edit build outputs)
+
+Short answer: yes—that’s the normal rule.
+
+`dist/` is build output (from tsc, Rollup, Webpack, Vite, etc.). It gets regenerated, so don’t hand-edit files in `dist/`; make changes in `src/` (and config) and rebuild.
+
+A few practical notes:
+
+- Put it in ignores:
+  `.gitignore` → `dist/`
+  `.eslintignore` / `.prettierignore` / test coverage excludes → `dist/`
+- Typical patterns all work; simplest is just `dist/`. (`dist/*` or `dist/**/*` are fine; they just mean “everything under dist recursively.”)
+- Exceptions where teams *do* keep built files:
+
+  - Publishing a library to npm: don’t commit `dist/` to Git, but **do** ship compiled files in the npm package. Use `"files"` in `package.json` (e.g., `"files": ["dist"]`) and a build in `prepublishOnly`/`prepare`.
+  - Repos that deploy straight from the repo (e.g., GitHub Pages from a `docs`/`dist` branch). In that case the generated folder is committed on purpose.
+
+If none of those special cases apply, ignore `dist/` and never edit it directly.
 
 ---
 
