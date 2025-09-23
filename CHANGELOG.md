@@ -6,6 +6,18 @@ The format is based on Keep a Changelog, and this project adheres to Semantic Ve
 
 ## [Unreleased]
 ### Added
+- Add local script execution tools (`workflow/run_script`, `workflow/run_task_action`, `workflow/run_tests`, `workflow/run_build`, `workflow/run_lint`)
+- Add abstraction layer for LLM providers
+- Add `--verbose` and `--unsafe-logs` flags to CLI and MCP server for improved observability
+- Add `docs/client_setup.md` and `docs/observability.md`
+
+### Changed
+- `workflow/run_task_action` now resolves actions from a new `actions.json` file
+
+### Fixed
+- Make schema path resolution more robust
+
+### Added
 
 - Add new `@prompts/tools` package to expose core task management logic
 - Implement a stateful workflow engine with a dedicated CLI and MCP server
