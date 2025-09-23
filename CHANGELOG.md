@@ -6,6 +6,7 @@ The format is based on Keep a Changelog, and this project adheres to Semantic Ve
 
 ## [Unreleased]
 ### Added
+- Introduce interactive `prompts scaffold <slug>` command for creating and managing prompt metadata
 - Add prompt scaffolding workflow and metadata guardrails
 - Add task enrichment pipeline to augment task data during ingestion
 - Add local script execution tools (`workflow_run_script`, `workflow_run_task_action`, `workflow_run_tests`, `workflow_run_build`, `workflow_run_lint`; originally published with `workflow/` prefixes)
@@ -57,8 +58,9 @@ The format is based on Keep a Changelog, and this project adheres to Semantic Ve
 - Add `GEMINI.md` and `AGENTS.md` for project context
 
 ### Changed
+- Update `package.json` for public publishing and modernize `tsconfig.json` to use `NodeNext` module resolution
+- Rename workflow execution tools to use underscores (e.g. `workflow_run_script`) for compatibility with OpenAI tool name validation.
 - `workflow_run_task_action` (formerly `workflow/run_task_action`) now resolves actions from a new `actions.json` file
-- Rename workflow workflow execution tools to use underscores (e.g. `workflow_run_script`) for compatibility with OpenAI tool name validation.
 - Centralize state management into a new `TaskService`
 - Implement batched memory updates for the agent, synchronized with Task Master status
 - Update README with usage examples and server launch instructions
@@ -80,12 +82,14 @@ The format is based on Keep a Changelog, and this project adheres to Semantic Ve
 - Deprecate previous prompt-authoring workstream as part of PRDv2 rebaseline
 
 ### Removed
+- Revert prompt scaffolding workflow and metadata guardrails
 - Remove the automated documentation maintenance flow in favor of a dynamic router
 - Remove obsolete workflow and PRD documentation
 - Remove duplicate `/pr-desc` prompt
 - Delete old `PRD-v2.txt` file
 
 ### Fixed
+- Correct the Zod schema for the `advance_state` tool's `outputs` field to prevent JSON schema generation errors
 - Make schema path resolution more robust
 - Consolidate and fix the test suite to run via Jest
 - Correct test limit for multi-byte character truncation
