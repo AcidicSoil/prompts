@@ -6,19 +6,12 @@ The format is based on Keep a Changelog, and this project adheres to Semantic Ve
 
 ## [Unreleased]
 ### Added
+- Add prompt scaffolding workflow and metadata guardrails
+- Add task enrichment pipeline to augment task data during ingestion
 - Add local script execution tools (`workflow/run_script`, `workflow/run_task_action`, `workflow/run_tests`, `workflow/run_build`, `workflow/run_lint`)
 - Add abstraction layer for LLM providers
 - Add `--verbose` and `--unsafe-logs` flags to CLI and MCP server for improved observability
 - Add `docs/client_setup.md` and `docs/observability.md`
-
-### Changed
-- `workflow/run_task_action` now resolves actions from a new `actions.json` file
-
-### Fixed
-- Make schema path resolution more robust
-
-### Added
-
 - Add new `@prompts/tools` package to expose core task management logic
 - Implement a stateful workflow engine with a dedicated CLI and MCP server
 - Introduce structured research and planning workflow with new prompt tools
@@ -64,7 +57,7 @@ The format is based on Keep a Changelog, and this project adheres to Semantic Ve
 - Add `GEMINI.md` and `AGENTS.md` for project context
 
 ### Changed
-
+- `workflow/run_task_action` now resolves actions from a new `actions.json` file
 - Centralize state management into a new `TaskService`
 - Implement batched memory updates for the agent, synchronized with Task Master status
 - Update README with usage examples and server launch instructions
@@ -83,25 +76,22 @@ The format is based on Keep a Changelog, and this project adheres to Semantic Ve
 - Overhaul and categorize the prompt catalog in the README
 
 ### Deprecated
-
 - Deprecate previous prompt-authoring workstream as part of PRDv2 rebaseline
 
 ### Removed
-
 - Remove the automated documentation maintenance flow in favor of a dynamic router
 - Remove obsolete workflow and PRD documentation
 - Remove duplicate `/pr-desc` prompt
 - Delete old `PRD-v2.txt` file
 
 ### Fixed
-
+- Make schema path resolution more robust
 - Consolidate and fix the test suite to run via Jest
 - Correct test limit for multi-byte character truncation
 - Improve payload capping logic for UTF-8 character boundaries and edge cases
 - Correct Mermaid syntax in workflow diagrams
 
 ### Security
-
 - Placeholder for upcoming changes.
 
 ## [0.1.0] - 2025-09-22
