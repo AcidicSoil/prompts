@@ -106,7 +106,9 @@ const buildCli = (): Command => {
     .option('--tasks <path>', 'Path to Task-Master tasks.json', '.taskmaster/tasks/tasks.json')
     .option('--tag <tag>', 'Task-Master tag to load', 'master')
     .option('--write-enabled', 'Persist task status changes to disk', false)
-    .option('--exec-enabled', 'Enable execution of allowlisted scripts via workflow tools', false);
+    .option('--exec-enabled', 'Enable execution of allowlisted scripts via workflow tools', false)
+    .option('--verbose', 'Emit verbose structured logs to stderr', false)
+    .option('--unsafe-logs', 'Disable metadata redaction (not recommended)', false);
 
   return program;
 };
@@ -114,7 +116,7 @@ const buildCli = (): Command => {
 const runCli = async (): Promise<void> => {
   const program = buildCli();
   const parsed = program.parse(process.argv);
-  const opts = parsed.opts<{ tasks: string; tag: string; writeEnabled: boolean }>();
+  const opts = parsed.opts<{ tasks: string; tag: string; writeEnabled: boolean; verbose?: boolean; unsafeLogs?: boolean }>();
 
   const tasksPath = resolve(process.cwd(), opts.tasks);
 
@@ -122,6 +124,9 @@ const runCli = async (): Promise<void> => {
     if (parsed.opts<{ execEnabled?: boolean }>().execEnabled) {
       process.env.PROMPTS_EXEC_ALLOW = '1';
       secureLogger.warn('exec_enabled', { via: '--exec-enabled' });
+    }
+    if (opts.verbose) {
+      secureLogger.info('verbose_mode_enabled');
     }
     await startServer({
       tasksPath,

@@ -1,0 +1,31 @@
+name: Pack contents check
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  pack:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install deps
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Verify package contents (schemas + server)
+        env:
+          npm_config_cache: ${{ runner.temp }}/npm-cache
+        run: npm run ci:pack-check
+

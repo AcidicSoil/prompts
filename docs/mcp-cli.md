@@ -61,6 +61,7 @@ The MCP server exposes the same domain logic over stdio so Codex, Gemini, Cursor
 | `workflow/run_task_action` | Resolves `{script,args}` by task id (metadata or actions.json) and executes via `run_script`. | Dry-run supported; gated for safety. |
 | `workflow/run_tests` | Runs project tests via allowlisted script. | Wrapper around `run_script`. |
 | `workflow/run_build` | Runs project build via allowlisted script. | Wrapper around `run_script`. |
+| `workflow/run_lint` | Runs project lint via allowlisted script. | Wrapper around `run_script`. |
 
 ### How this improves your workflow (use cases)
 
@@ -154,6 +155,37 @@ transport = "stdio"
   - Exec gate: either set environment `PROMPTS_EXEC_ALLOW=1` or launch the server with `--exec-enabled`.
 - Most execution tools support `dryRun: true` so you can preview the exact command before allowing live runs.
 - Actions by task id: `workflow/run_task_action` looks for `{ metadata.action: {script,args} }` on a task or in an `actions.json` mapping (keyed by task id) and dispatches through the same safe path.
+
+#### actions.json format (for run_task_action)
+
+`workflow/run_task_action` can resolve a task’s execution action from either the task’s own metadata or from a repo-level mapping file. The default mapping file name is `actions.json` (relative to the server’s working directory); you can override the path by passing the optional `actionsPath` input.
+
+Schema and example:
+
+```json
+{
+  "<taskId>": {
+    "script": "<npm-script-name>",
+    "args": ["optional", "args"]
+  }
+}
+```
+
+Example `examples/actions.json`:
+
+```json
+{
+  "37": { "script": "noop" },
+  "41": { "script": "build" },
+  "42": { "script": "test:jest", "args": ["-t", "agent-smoke"] }
+}
+```
+
+Notes:
+
+- Keys are task ids as strings; values provide the npm `script` to run and optional `args`.
+- Task-local override: if a task has `metadata.action = { script, args }`, that wins over `actions.json`.
+- Safety still applies: the referenced scripts must be listed under `package.json#mcpAllowScripts`, and execution requires the `--exec-enabled` flag (or `PROMPTS_EXEC_ALLOW=1`).
 
 ## Keeping docs in sync
 

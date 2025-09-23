@@ -32,6 +32,10 @@ The format is based on Keep a Changelog, and this project adheres to Semantic Ve
 - Add a script to build the prompt catalog
 - Add trigger and purpose metadata to prompts
 - Add a guide for converting prompt libraries into MCP servers
+- Document `actions.json` mapping format for `workflow/run_task_action` and add sample file under `examples/actions.json`. Clarifies default lookup, `actionsPath` override, and execution gating via `--exec-enabled` + allowlist.
+- CI: add pack contents check to ensure `schemas/` and `dist/mcp/server.js` are included in the npm package (GitHub Actions + verify-pack-contains.mjs).
+- Add `workflow/run_lint` tool paralleling test/build wrappers; register on server; document in docs/mcp-cli.md; add integration tests for dry-run and exec-gate behaviour.
+- Tests: add live execution test for `workflow/run_script` with `PROMPTS_EXEC_ALLOW=1` using allowlisted `noop` script.
 - Introduce the MCP workflow assistant concept
 - Add lifecycle metadata front matter to prompts and a validator script
 - Implement a dynamic router for documentation MCP servers

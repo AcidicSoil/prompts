@@ -36,7 +36,9 @@ program
   .option('--tasks <path>', 'Path to Task-Master tasks.json file', DEFAULT_TASKS_PATH)
   .option('--tag <tag>', 'Tagged task list to load', 'master')
   .option('--write', 'Enable write mode for commands that persist changes')
-  .option('--pretty', 'Pretty-print JSON output');
+  .option('--pretty', 'Pretty-print JSON output')
+  .option('--verbose', 'Emit structured logs to stderr')
+  .option('--unsafe-logs', 'Disable metadata redaction (not recommended)');
 
 const getGlobalOptions = (): GlobalCliOptions => program.optsWithGlobals<GlobalCliOptions>();
 
@@ -91,9 +93,14 @@ const printError = (error: unknown): void => {
   console.error(error instanceof Error ? error.message : String(error));
 };
 
+import { createSecureLogger, logger as baseLogger } from '../logger.js';
 const withCliErrors = async (runner: () => Promise<void>): Promise<void> => {
   try {
+    const opts = getGlobalOptions() as any;
+    const cliLogger = createSecureLogger(baseLogger, { unsafe: Boolean(opts.unsafeLogs) });
+    if (opts.verbose) cliLogger.info('cli_start');
     await runner();
+    if (opts.verbose) cliLogger.info('cli_end');
   } catch (error) {
     printError(error);
     process.exitCode = 1;

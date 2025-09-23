@@ -6,7 +6,7 @@ import type { StateStore } from '../state/StateStore.js';
 import { createAdvanceStateTool } from './definitions/advance-state.js';
 import { createRunScriptTool } from './definitions/run-script.js';
 import { createRunTaskActionTool } from './definitions/run-task-action.js';
-import { createRunTestsTool, createRunBuildTool } from './definitions/run-domain.js';
+import { createRunTestsTool, createRunBuildTool, createRunLintTool } from './definitions/run-domain.js';
 import { createExportTaskListTool } from './definitions/export-task-list.js';
 import { createRefreshMetadataTool } from './definitions/refresh-metadata.js';
 
@@ -32,6 +32,7 @@ export const registerWorkflowTools = (
   const runTaskAction = options.service ? createRunTaskActionTool(options.service) : null;
   const runTests = createRunTestsTool();
   const runBuild = createRunBuildTool();
+  const runLint = createRunLintTool();
 
   server.registerTool(
     exportTaskList.name,
@@ -118,7 +119,7 @@ export const registerWorkflowTools = (
   );
 
   // Domain runners
-  for (const tool of [runTests, runBuild]) {
+  for (const tool of [runTests, runBuild, runLint]) {
     server.registerTool(
       tool.name,
       {
@@ -247,7 +248,7 @@ export const registerWorkflowTools = (
     },
   );
 
-  const tools = [refreshMetadata.name, exportTaskList.name, advanceState.name, runScript.name, runTests.name, runBuild.name];
+  const tools = [refreshMetadata.name, exportTaskList.name, advanceState.name, runScript.name, runTests.name, runBuild.name, runLint.name];
   if (runTaskAction) tools.push(runTaskAction.name);
   logger.info('workflow_tools_registered', {
     count: tools.length,

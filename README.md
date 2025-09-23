@@ -204,7 +204,9 @@ Why this helps daily:
 
 ### MCP tools
 
-The server exposes three workflow helpers:
+The server exposes task tools, workflow helpers, and execution tools.
+
+Workflow helpers:
 
 - `refresh_metadata`: runs the same scripts we call manually:
 
@@ -215,6 +217,20 @@ Invoke this tool from Inspector or any MCP client to regenerate `catalog.json`, 
 
 - `export_task_list`: reads `resources/prompts.meta.yaml` and returns a normalized task list (`[{ id, title, dependsOn, status: 'pending' }]`) to feed external dashboards or automations.
 - `advance_state`: writes task/tool completion snapshots (with optional artifacts) to `.mcp/state.json`, providing durable history for MCP clients and the CLI.
+
+Execution tools (gated; see docs/mcp-cli.md for details):
+
+- `workflow/run_task_action`: resolve `{script,args}` from task `metadata.action` or `actions.json` and dispatch through the safe executor.
+- `workflow/run_script`: run an allowlisted npm script with optional args; supports `dryRun`; live runs require `--exec-enabled`.
+- `workflow/run_tests`: wrapper that calls `test:jest` via `run_script`.
+- `workflow/run_build`: wrapper that calls `build` via `run_script`.
+- `workflow/run_lint`: wrapper that calls `lint` via `run_script`.
+
+Notes:
+
+- Scripts must be allowlisted in `package.json#mcpAllowScripts`.
+- Live execution is disabled by default; enable by launching the server with `--exec-enabled` (or setting `PROMPTS_EXEC_ALLOW=1`).
+- Map task ids to actions via task `metadata.action` or `actions.json` (keyed by task id). See docs/mcp-cli.md for schema and examples.
 
 ## Using these prompts
 

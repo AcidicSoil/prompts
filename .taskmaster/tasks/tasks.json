@@ -2275,7 +2275,7 @@
         "dependencies": [
           30
         ],
-        "status": "pending",
+        "status": "done",
         "subtasks": [],
         "source_doc": "artifacts/delta-20250921-173948.md",
         "lineage": [
@@ -2311,7 +2311,7 @@
         "dependencies": [
           27
         ],
-        "status": "pending",
+        "status": "done",
         "subtasks": [
           {
             "id": 1,
@@ -2319,7 +2319,7 @@
             "description": "Add `src/enrichment/index.ts` exporting `enrichTasks` that iterates tasks and applies pluggable enrichers without mutating the original array.",
             "dependencies": [],
             "details": "Implement a pipeline pattern with async hooks, ensuring failures are caught and logged without aborting the ingest flow.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Add unit tests verifying tasks are cloned and unchanged when no enrichers run."
           },
           {
@@ -2330,7 +2330,7 @@
               "35.1"
             ],
             "details": "Ensure readers gracefully handle missing files or JSON parse errors, appending warnings into a debug log collection.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Add tests with temporary directories verifying enrichment occurs when files exist and that failures are swallowed."
           },
           {
@@ -2342,7 +2342,7 @@
               "27.3"
             ],
             "details": "Ensure the ingest adapter returns the enriched array and exposes enrichment warnings for downstream logging.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Extend ingest tests to include artifact scenarios using tmp directories."
           }
         ],
@@ -2380,7 +2380,7 @@
         "dependencies": [
           31
         ],
-        "status": "pending",
+        "status": "done",
         "subtasks": [
           {
             "id": 1,
@@ -2388,7 +2388,7 @@
             "description": "Install `pino` and create `src/logging.ts` exporting `createLogger` with base configuration and serializers.",
             "dependencies": [],
             "details": "Configure default level `info`, pretty-print toggle for development, and redact task-sensitive fields using pino's `redact` option.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Add unit tests verifying redaction configuration removes sensitive keys and that logger instantiation succeeds."
           },
           {
@@ -2400,7 +2400,7 @@
               "31.1"
             ],
             "details": "Propagate the logger instance to command handlers via a shared context object and document flag usage.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Add CLI tests verifying verbose mode emits debug entries while default mode redacts sensitive fields."
           },
           {
@@ -2412,7 +2412,7 @@
               "30.1"
             ],
             "details": "Ensure error logs omit task payloads unless unsafe mode is explicitly enabled; include correlation IDs for requests.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Add server integration tests verifying log outputs using pino transport mocks."
           },
           {

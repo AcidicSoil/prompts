@@ -17,6 +17,7 @@ import {
   type StatusNormalizationReport,
   type TaskPriority
 } from '../../types/prompts-task.js';
+import { enrichTasks } from '../../enrichment/index.js';
 
 export class TaskIngestError extends Error {
   constructor(message: string, readonly context?: Record<string, unknown>) {
@@ -389,8 +390,12 @@ export async function ingestTasks(
   const rawTasks = extractTasksFromDocument(parsed, tag);
   const { tasks, report } = canonicaliseTasks(rawTasks);
 
+  // Optional enrichment step; non-blocking by design
+  const enriched = await enrichTasks(tasks, process.cwd());
+  const finalTasks = enriched.tasks;
+
   const validator = await getValidator(schemaPath);
-  for (const task of tasks) {
+  for (const task of finalTasks) {
     const valid = validator(task);
     if (!valid) {
       throw new TaskValidationError('Task failed schema validation', {
@@ -400,5 +405,5 @@ export async function ingestTasks(
     }
   }
 
-  return { tasks, report } satisfies IngestResult;
+  return { tasks: finalTasks, report } satisfies IngestResult;
 }

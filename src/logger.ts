@@ -107,15 +107,15 @@ const redactMetadata = (metadata?: LogMetadata): LogMetadata | undefined => {
 
 export type SecureLogger = Pick<Logger, "info" | "warn" | "error">;
 
-export const createSecureLogger = (baseLogger: Logger): SecureLogger => ({
+export const createSecureLogger = (baseLogger: Logger, options: { unsafe?: boolean } = {}): SecureLogger => ({
   info(message, metadata) {
-    baseLogger.info(message, redactMetadata(metadata));
+    baseLogger.info(message, options.unsafe ? prepareMetadata(metadata) : redactMetadata(metadata));
   },
   warn(message, metadata) {
-    baseLogger.warn(message, redactMetadata(metadata));
+    baseLogger.warn(message, options.unsafe ? prepareMetadata(metadata) : redactMetadata(metadata));
   },
   error(message, metadata) {
-    baseLogger.error(message, redactMetadata(metadata));
+    baseLogger.error(message, options.unsafe ? prepareMetadata(metadata) : redactMetadata(metadata));
   },
 });
 

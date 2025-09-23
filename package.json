@@ -21,7 +21,8 @@
     "test:workflow": "node --loader ts-node/esm scripts/__tests__/workflow_sync.test.ts",
     "validate:metadata": "ts-node --esm scripts/validate_metadata.ts",
     "prepublishOnly": "npm run test && npm run build",
-    "noop": "node -e \"process.exit(0)\""
+    "noop": "node -e \"process.exit(0)\"",
+    "ci:pack-check": "node scripts/ci/verify-pack-contains.mjs"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.17.5",
@@ -46,7 +47,8 @@
     "build:catalog",
     "noop",
     "build",
-    "test:jest"
+    "test:jest",
+    "lint"
   ],
   "bin": {
     "prompts": "./bin/prompts"
