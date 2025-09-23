@@ -2,7 +2,7 @@ import { describe, expect, test } from '@jest/globals';
 
 import { createRunScriptTool } from '../../src/tools/definitions/run-script.ts';
 
-describe('workflow/run_script error handling', () => {
+describe('workflow_run_script error handling', () => {
   test('resolves on spawn error when npm is not found', async () => {
     // Enable execution path to reach spawn
     process.env.PROMPTS_EXEC_ALLOW = '1';
@@ -20,4 +20,3 @@ describe('workflow/run_script error handling', () => {
     }
   });
 });
-

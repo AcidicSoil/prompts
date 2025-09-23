@@ -10,14 +10,14 @@ const baseSchema = z
 export const createRunTestsTool = () => {
     const runScript = createRunScriptTool();
     return {
-        name: 'workflow/run_tests',
+        name: 'workflow_run_tests',
         title: 'Run project tests',
         description: 'Execute the test suite using an allowlisted package script.',
         inputSchema: baseSchema,
         async handler(raw) {
             const parsed = baseSchema.safeParse(raw ?? {});
             if (!parsed.success) {
-                return { isError: true, summary: 'workflow/run_tests input validation failed', issues: parsed.error.flatten() };
+                return { isError: true, summary: 'workflow_run_tests input validation failed', issues: parsed.error.flatten() };
             }
             const { args = [], dryRun, timeoutMs } = parsed.data;
             return runScript.handler({ script: 'test:jest', args, dryRun, timeoutMs });
@@ -27,14 +27,14 @@ export const createRunTestsTool = () => {
 export const createRunBuildTool = () => {
     const runScript = createRunScriptTool();
     return {
-        name: 'workflow/run_build',
+        name: 'workflow_run_build',
         title: 'Run project build',
         description: 'Execute the build using an allowlisted package script.',
         inputSchema: baseSchema,
         async handler(raw) {
             const parsed = baseSchema.safeParse(raw ?? {});
             if (!parsed.success) {
-                return { isError: true, summary: 'workflow/run_build input validation failed', issues: parsed.error.flatten() };
+                return { isError: true, summary: 'workflow_run_build input validation failed', issues: parsed.error.flatten() };
             }
             const { args = [], dryRun, timeoutMs } = parsed.data;
             return runScript.handler({ script: 'build', args, dryRun, timeoutMs });
@@ -44,14 +44,14 @@ export const createRunBuildTool = () => {
 export const createRunLintTool = () => {
     const runScript = createRunScriptTool();
     return {
-        name: 'workflow/run_lint',
+        name: 'workflow_run_lint',
         title: 'Run project lint',
         description: 'Execute the linter using an allowlisted package script.',
         inputSchema: baseSchema,
         async handler(raw) {
             const parsed = baseSchema.safeParse(raw ?? {});
             if (!parsed.success) {
-                return { isError: true, summary: 'workflow/run_lint input validation failed', issues: parsed.error.flatten() };
+                return { isError: true, summary: 'workflow_run_lint input validation failed', issues: parsed.error.flatten() };
             }
             const { args = [], dryRun, timeoutMs } = parsed.data;
             return runScript.handler({ script: 'lint', args, dryRun, timeoutMs });

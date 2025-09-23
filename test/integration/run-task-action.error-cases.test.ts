@@ -16,7 +16,7 @@ const createTempService = async (doc: unknown) => {
   return { dir, service } as const;
 };
 
-describe('workflow/run_task_action error cases', () => {
+describe('workflow_run_task_action error cases', () => {
   let tempDir = '';
 
   afterEach(async () => {

@@ -7,7 +7,7 @@ const require = createRequire(import.meta.url);
 const packageJson = require('../../../package.json') as { mcpAllowScripts?: string[] };
 
 export const createRunScriptTool = () => ({
-  name: 'workflow/run_script',
+  name: 'workflow_run_script',
   title: 'Run an allowed package script',
   description:
     'Execute an allowed script from package.json in a sandboxed way. Disabled unless PROMPTS_EXEC_ALLOW=1 and script is allowlisted under package.json#mcpAllowScripts.',
@@ -24,7 +24,7 @@ export const createRunScriptTool = () => ({
     if (!parsed.success) {
       return {
         isError: true,
-        summary: 'workflow/run_script input validation failed',
+        summary: 'workflow_run_script input validation failed',
         issues: parsed.error.flatten(),
       };
     }
@@ -51,7 +51,7 @@ export const createRunScriptTool = () => ({
       return {
         isError: true,
         summary:
-          'Execution disabled. Set PROMPTS_EXEC_ALLOW=1 and restart the server to enable workflow/run_script.',
+          'Execution disabled. Set PROMPTS_EXEC_ALLOW=1 and restart the server to enable workflow_run_script.',
       };
     }
 

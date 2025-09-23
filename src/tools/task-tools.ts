@@ -187,7 +187,6 @@ export const registerTaskTools = (server: McpServer, options: RegisterTaskToolsO
 
   for (const tool of tools) {
     const schema = tool.inputSchema as z.ZodObject<any> | undefined;
-
     server.registerTool(
       tool.name,
       {
@@ -209,4 +208,3 @@ export const registerTaskTools = (server: McpServer, options: RegisterTaskToolsO
     );
   }
 };
-

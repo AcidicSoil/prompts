@@ -57,11 +57,11 @@ The MCP server exposes the same domain logic over stdio so Codex, Gemini, Cursor
 | `workflow/refresh_metadata` | Rebuilds catalog artifacts. | Matches CLI tooling. |
 | `workflow/export_task_list` | Emits curated task list for clients. | Matches CLI tooling. |
 | `workflow/advance_state` | Records tool completions into `.mcp/state.json`. | Mutating. |
-| `workflow/run_script` | Executes an allowlisted npm script. | Dry-run supported; gated for safety. |
-| `workflow/run_task_action` | Resolves `{script,args}` by task id (metadata or actions.json) and executes via `run_script`. | Dry-run supported; gated for safety. |
-| `workflow/run_tests` | Runs project tests via allowlisted script. | Wrapper around `run_script`. |
-| `workflow/run_build` | Runs project build via allowlisted script. | Wrapper around `run_script`. |
-| `workflow/run_lint` | Runs project lint via allowlisted script. | Wrapper around `run_script`. |
+| `workflow_run_script` | Executes an allowlisted npm script. | Dry-run supported; gated for safety. |
+| `workflow_run_task_action` | Resolves `{script,args}` by task id (metadata or actions.json) and executes via `run_script`. | Dry-run supported; gated for safety. |
+| `workflow_run_tests` | Runs project tests via allowlisted script. | Wrapper around `run_script`. |
+| `workflow_run_build` | Runs project build via allowlisted script. | Wrapper around `run_script`. |
+| `workflow_run_lint` | Runs project lint via allowlisted script. | Wrapper around `run_script`. |
 
 ### How this improves your workflow (use cases)
 
@@ -154,11 +154,11 @@ transport = "stdio"
   - Allowlist: scripts must appear in `package.json#mcpAllowScripts`.
   - Exec gate: either set environment `PROMPTS_EXEC_ALLOW=1` or launch the server with `--exec-enabled`.
 - Most execution tools support `dryRun: true` so you can preview the exact command before allowing live runs.
-- Actions by task id: `workflow/run_task_action` looks for `{ metadata.action: {script,args} }` on a task or in an `actions.json` mapping (keyed by task id) and dispatches through the same safe path.
+- Actions by task id: `workflow_run_task_action` looks for `{ metadata.action: {script,args} }` on a task or in an `actions.json` mapping (keyed by task id) and dispatches through the same safe path.
 
 #### actions.json format (for run_task_action)
 
-`workflow/run_task_action` can resolve a task’s execution action from either the task’s own metadata or from a repo-level mapping file. The default mapping file name is `actions.json` (relative to the server’s working directory); you can override the path by passing the optional `actionsPath` input.
+`workflow_run_task_action` can resolve a task’s execution action from either the task’s own metadata or from a repo-level mapping file. The default mapping file name is `actions.json` (relative to the server’s working directory); you can override the path by passing the optional `actionsPath` input.
 
 Schema and example:
 

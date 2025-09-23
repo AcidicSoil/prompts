@@ -1,0 +1,25 @@
+
+> prompts@0.1.0 test:tools
+> npm run test:jest -- test/integration/tools.test.ts
+
+
+> prompts@0.1.0 test:jest
+> NODE_OPTIONS=--experimental-vm-modules jest --runInBand test/integration/tools.test.ts
+
+{"timestamp":"2025-09-23T16:31:42.526Z","level":"info","message":"prompt_resources_registered","metadata":{"count":6}}
+{"timestamp":"2025-09-23T16:31:42.528Z","level":"info","message":"prompt_tools_registered","metadata":{"count":6}}
+(node:53180) ExperimentalWarning: VM Modules is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+{"timestamp":"2025-09-23T16:31:42.531Z","level":"info","message":"workflow_tools_registered","metadata":{"count":7,"tools":["refresh_metadata","export_task_list","advance_state","workflow_run_script","workflow_run_tests","workflow_run_build","workflow_run_lint"]}}
+{"timestamp":"2025-09-23T16:31:42.567Z","level":"info","message":"advance_state_recorded","metadata":{"id":"instruction-file","artifactCount":1}}
+{"timestamp":"2025-09-23T16:31:42.569Z","level":"info","message":"export_task_list_completed","metadata":{"count":6}}
+{"timestamp":"2025-09-23T16:31:43.827Z","level":"info","message":"refresh_metadata_completed","metadata":{"updateWorkflow":false}}
+PASS test/integration/tools.test.ts
+  prompt and workflow tools
+    ✓ register tools and serve content over MCP (1309 ms)
+
+Test Suites: 1 passed, 1 total
+Tests:       1 passed, 1 total
+Snapshots:   0 total
+Time:        1.515 s, estimated 2 s
+Ran all test suites matching /test\/integration\/tools.test.ts/i.

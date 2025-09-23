@@ -2,7 +2,7 @@ import { describe, expect, test } from '@jest/globals';
 
 import { createRunScriptTool } from '../../src/tools/definitions/run-script.ts';
 
-describe('workflow/run_script live execution (gated)', () => {
+describe('workflow_run_script live execution (gated)', () => {
   test('executes allowlisted noop when PROMPTS_EXEC_ALLOW=1', async () => {
     const prev = process.env.PROMPTS_EXEC_ALLOW;
     process.env.PROMPTS_EXEC_ALLOW = '1';
@@ -18,4 +18,3 @@ describe('workflow/run_script live execution (gated)', () => {
     }
   });
 });
-

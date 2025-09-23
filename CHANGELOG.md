@@ -8,7 +8,7 @@ The format is based on Keep a Changelog, and this project adheres to Semantic Ve
 ### Added
 - Add prompt scaffolding workflow and metadata guardrails
 - Add task enrichment pipeline to augment task data during ingestion
-- Add local script execution tools (`workflow/run_script`, `workflow/run_task_action`, `workflow/run_tests`, `workflow/run_build`, `workflow/run_lint`)
+- Add local script execution tools (`workflow_run_script`, `workflow_run_task_action`, `workflow_run_tests`, `workflow_run_build`, `workflow_run_lint`; originally published with `workflow/` prefixes)
 - Add abstraction layer for LLM providers
 - Add `--verbose` and `--unsafe-logs` flags to CLI and MCP server for improved observability
 - Add `docs/client_setup.md` and `docs/observability.md`
@@ -37,10 +37,10 @@ The format is based on Keep a Changelog, and this project adheres to Semantic Ve
 - Add a script to build the prompt catalog
 - Add trigger and purpose metadata to prompts
 - Add a guide for converting prompt libraries into MCP servers
-- Document `actions.json` mapping format for `workflow/run_task_action` and add sample file under `examples/actions.json`. Clarifies default lookup, `actionsPath` override, and execution gating via `--exec-enabled` + allowlist.
+- Document `actions.json` mapping format for `workflow_run_task_action` (formerly `workflow/run_task_action`) and add sample file under `examples/actions.json`. Clarifies default lookup, `actionsPath` override, and execution gating via `--exec-enabled` + allowlist.
 - CI: add pack contents check to ensure `schemas/` and `dist/mcp/server.js` are included in the npm package (GitHub Actions + verify-pack-contains.mjs).
-- Add `workflow/run_lint` tool paralleling test/build wrappers; register on server; document in docs/mcp-cli.md; add integration tests for dry-run and exec-gate behaviour.
-- Tests: add live execution test for `workflow/run_script` with `PROMPTS_EXEC_ALLOW=1` using allowlisted `noop` script.
+- Add `workflow_run_lint` tool paralleling test/build wrappers (initially published as `workflow/run_lint`); register on server; document in docs/mcp-cli.md; add integration tests for dry-run and exec-gate behaviour.
+- Tests: add live execution test for `workflow_run_script` with `PROMPTS_EXEC_ALLOW=1` using allowlisted `noop` script.
 - Introduce the MCP workflow assistant concept
 - Add lifecycle metadata front matter to prompts and a validator script
 - Implement a dynamic router for documentation MCP servers
@@ -57,7 +57,8 @@ The format is based on Keep a Changelog, and this project adheres to Semantic Ve
 - Add `GEMINI.md` and `AGENTS.md` for project context
 
 ### Changed
-- `workflow/run_task_action` now resolves actions from a new `actions.json` file
+- `workflow_run_task_action` (formerly `workflow/run_task_action`) now resolves actions from a new `actions.json` file
+- Rename workflow workflow execution tools to use underscores (e.g. `workflow_run_script`) for compatibility with OpenAI tool name validation.
 - Centralize state management into a new `TaskService`
 - Implement batched memory updates for the agent, synchronized with Task Master status
 - Update README with usage examples and server launch instructions

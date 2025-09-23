@@ -2,7 +2,7 @@ import { describe, expect, test } from '@jest/globals';
 
 import { createRunScriptTool } from '../../src/tools/definitions/run-script.ts';
 
-describe('workflow/run_script tool', () => {
+describe('workflow_run_script tool', () => {
   test('rejects when execution is disabled', async () => {
     delete process.env.PROMPTS_EXEC_ALLOW;
     const tool = createRunScriptTool();
@@ -17,4 +17,3 @@ describe('workflow/run_script tool', () => {
     expect(String(result.summary)).toContain('npm run --silent validate:metadata');
   });
 });
-

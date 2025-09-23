@@ -68,5 +68,4 @@ You should receive a JSON result like `{ task, ready }`. If not, confirm the abs
 ## Safety and execution
 
 - The server is read‑only by default; `--write-enabled` must be set to persist status changes.
-- Script execution is disabled by default; add `--exec-enabled` to allow calling `workflow/run_script`, `workflow/run_task_action`, and domain wrappers. Scripts must also be listed in `package.json#mcpAllowScripts`.
-
+- Script execution is disabled by default; add `--exec-enabled` to allow calling `workflow_run_script`, `workflow_run_task_action`, and domain wrappers. Scripts must also be listed in `package.json#mcpAllowScripts`.

@@ -176,14 +176,14 @@ node dist/mcp/server.js --tasks .taskmaster/tasks/tasks.json --tag master --writ
 - Preview first:
 
 ```bash
-# From MCP: workflow/run_task_action { taskId, dryRun: true } → shows `npm run` command
+# From MCP: workflow_run_task_action { taskId, dryRun: true } → shows `npm run` command
 ```
 
 - Enable exec when ready (allowlisted scripts only):
 
 ```bash
 node dist/mcp/server.js --tasks .taskmaster/tasks/tasks.json --tag master --write=true --exec-enabled
-# From MCP: workflow/run_task_action { taskId, dryRun: false } → { ok, exitCode, output }
+# From MCP: workflow_run_task_action { taskId, dryRun: false } → { ok, exitCode, output }
 ```
 
 4) Re-plan quickly with visibility
@@ -220,11 +220,11 @@ Invoke this tool from Inspector or any MCP client to regenerate `catalog.json`, 
 
 Execution tools (gated; see docs/mcp-cli.md for details):
 
-- `workflow/run_task_action`: resolve `{script,args}` from task `metadata.action` or `actions.json` and dispatch through the safe executor.
-- `workflow/run_script`: run an allowlisted npm script with optional args; supports `dryRun`; live runs require `--exec-enabled`.
-- `workflow/run_tests`: wrapper that calls `test:jest` via `run_script`.
-- `workflow/run_build`: wrapper that calls `build` via `run_script`.
-- `workflow/run_lint`: wrapper that calls `lint` via `run_script`.
+- `workflow_run_task_action`: resolve `{script,args}` from task `metadata.action` or `actions.json` and dispatch through the safe executor.
+- `workflow_run_script`: run an allowlisted npm script with optional args; supports `dryRun`; live runs require `--exec-enabled`.
+- `workflow_run_tests`: wrapper that calls `test:jest` via `run_script`.
+- `workflow_run_build`: wrapper that calls `build` via `run_script`.
+- `workflow_run_lint`: wrapper that calls `lint` via `run_script`.
 
 Notes:
 

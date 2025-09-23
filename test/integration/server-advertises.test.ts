@@ -42,10 +42,10 @@ describe('server advertises unified toolset', () => {
         'export_task_list', // workflow tool
         'next_task', // task tool
         'list_tasks', // task tool
-        'workflow/run_task_action',
-        'workflow/run_tests',
-        'workflow/run_build',
-        'workflow/run_lint',
+        'workflow_run_task_action',
+        'workflow_run_tests',
+        'workflow_run_build',
+        'workflow_run_lint',
       ]) {
         assert.ok(names.includes(expected), `expected tool ${expected}`);
       }

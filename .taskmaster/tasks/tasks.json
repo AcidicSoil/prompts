@@ -605,7 +605,7 @@
         "id": 9,
         "title": "Implement Token Bucket Rate Limiter Utility",
         "description": "Provide a `TokenBucket` utility for rate limiting, intended for future use with external HTTP integrations.",
-        "status": "deprecated",
+        "status": "pending",
         "dependencies": [
           1
         ],
@@ -2455,7 +2455,7 @@
     ],
     "metadata": {
       "created": "2025-09-18T19:25:07.429Z",
-      "updated": "2025-09-22T02:54:18.798Z",
+      "updated": "2025-09-23T15:11:17.510Z",
       "description": "Tasks for master context"
     }
   }

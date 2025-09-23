@@ -8,7 +8,7 @@ import { createRunScriptTool } from './run-script.js';
 const ActionsSchema = z.record(z.string(), z.object({ script: z.string(), args: z.array(z.string()).optional() }));
 
 export const createRunTaskActionTool = (service: TaskService) => ({
-  name: 'workflow/run_task_action',
+  name: 'workflow_run_task_action',
   title: 'Run action mapped to a task id',
   description: 'Resolve an action (script + args) from task metadata or actions.json and execute via run_script.',
   inputSchema: z
@@ -24,7 +24,7 @@ export const createRunTaskActionTool = (service: TaskService) => ({
     if (!parsed.success) {
       return {
         isError: true,
-        summary: 'workflow/run_task_action input validation failed',
+        summary: 'workflow_run_task_action input validation failed',
         issues: parsed.error.flatten(),
       };
     }

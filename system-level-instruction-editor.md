@@ -1,18 +1,17 @@
----
-phase: "<P# Phase Name>"
-gate: "<Gate/Milestone Name>"
-status: "<One-line current status>"
-owner: "<Team or Person>"
-date: "<YYYY-MM-DD>"
+phase: "P0 Preflight Docs"
+gate: "Scope Gate"
+status: "draft"
+owner: "Prompt Ops"
+date: "2025-09-20"
 previous:
-  - "/<prev-artifact-or-doc>"
-  - "/<prev-artifact-or-doc>"
+  - "/instruction-file.md"
+  - "/planning-process.md"
 next:
-  - "/<next-artifact-or-doc>"
-  - "/<next-artifact-or-doc>"
+  - "/AGENTS.md"
+  - "/GEMINI.md"
 tags:
-  - "<tag1>"
-  - "<tag2>"
+  - "instructions"
+  - "editor"
 ---
 
 # System Instruction: Canonical Instruction File Editor

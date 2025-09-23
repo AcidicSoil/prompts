@@ -42,7 +42,7 @@ await tools.setTaskStatus.run(SetTaskStatusInput.parse({ id: task.id, status: 'd
 
 - Start server read-only for exploration: `node dist/mcp/server.js --write=false`.
 - Switch to `--write=true` when you’re ready to persist `set_task_status` or `workflow/advance_state` changes.
-- For executing local scripts safely, prefer `workflow/run_task_action`:
+- For executing local scripts safely, prefer `workflow_run_task_action`:
   - Map `{script,args}` via task metadata or `actions.json` keyed by task id.
   - Preview with `dryRun: true`.
   - Enable live runs by launching with `--exec-enabled` (or setting `PROMPTS_EXEC_ALLOW=1`).

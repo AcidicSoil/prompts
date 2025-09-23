@@ -1,7 +1,7 @@
 import { describe, expect, test } from '@jest/globals';
 import { createRunLintTool } from '../../src/tools/definitions/run-domain.ts';
 
-describe('workflow/run_lint', () => {
+describe('workflow_run_lint', () => {
   test('dry-run returns the expected command summary', async () => {
     const tool = createRunLintTool();
     const res: any = await tool.handler({ dryRun: true });
@@ -16,4 +16,3 @@ describe('workflow/run_lint', () => {
     expect(String(res.summary)).toMatch(/Execution disabled/);
   });
 });
-

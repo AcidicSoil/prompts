@@ -12,7 +12,10 @@ const artifactSchema = z.object({
 export const advanceStateInputSchema = z
   .object({
     id: z.string().min(1, 'Tool id is required'),
-    outputs: z.record(z.any()).default({}),
+    outputs: z
+      .object({})
+      .catchall(z.unknown())
+      .default({}),
     artifacts: z.array(artifactSchema).default([]),
   })
   .strict();
