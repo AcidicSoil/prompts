@@ -3,6 +3,7 @@ import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import Ajv from 'ajv';
 import { STATUS_ALIASES } from '../../types/prompts-task.js';
+import { enrichTasks } from '../../enrichment/index.js';
 export class TaskIngestError extends Error {
     context;
     constructor(message, context) {
@@ -311,8 +312,11 @@ export async function ingestTasks(filePath, options = {}) {
     }
     const rawTasks = extractTasksFromDocument(parsed, tag);
     const { tasks, report } = canonicaliseTasks(rawTasks);
+    // Optional enrichment step; non-blocking by design
+    const enriched = await enrichTasks(tasks, process.cwd());
+    const finalTasks = enriched.tasks;
     const validator = await getValidator(schemaPath);
-    for (const task of tasks) {
+    for (const task of finalTasks) {
         const valid = validator(task);
         if (!valid) {
             throw new TaskValidationError('Task failed schema validation', {
@@ -321,5 +325,5 @@ export async function ingestTasks(filePath, options = {}) {
             });
         }
     }
-    return { tasks, report };
+    return { tasks: finalTasks, report };
 }

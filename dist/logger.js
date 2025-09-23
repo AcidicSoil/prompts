@@ -72,15 +72,15 @@ const redactMetadata = (metadata) => {
     }
     return prepareMetadata(redactSecrets(metadata));
 };
-export const createSecureLogger = (baseLogger) => ({
+export const createSecureLogger = (baseLogger, options = {}) => ({
     info(message, metadata) {
-        baseLogger.info(message, redactMetadata(metadata));
+        baseLogger.info(message, options.unsafe ? prepareMetadata(metadata) : redactMetadata(metadata));
     },
     warn(message, metadata) {
-        baseLogger.warn(message, redactMetadata(metadata));
+        baseLogger.warn(message, options.unsafe ? prepareMetadata(metadata) : redactMetadata(metadata));
     },
     error(message, metadata) {
-        baseLogger.error(message, redactMetadata(metadata));
+        baseLogger.error(message, options.unsafe ? prepareMetadata(metadata) : redactMetadata(metadata));
     },
 });
 export const secureLogger = createSecureLogger(logger);

@@ -1,7 +1,7 @@
 import { createAdvanceStateTool } from './definitions/advance-state.js';
 import { createRunScriptTool } from './definitions/run-script.js';
 import { createRunTaskActionTool } from './definitions/run-task-action.js';
-import { createRunTestsTool, createRunBuildTool } from './definitions/run-domain.js';
+import { createRunTestsTool, createRunBuildTool, createRunLintTool } from './definitions/run-domain.js';
 import { createExportTaskListTool } from './definitions/export-task-list.js';
 import { createRefreshMetadataTool } from './definitions/refresh-metadata.js';
 const formatIssues = (issues) => issues
@@ -15,6 +15,7 @@ export const registerWorkflowTools = (server, logger, options) => {
     const runTaskAction = options.service ? createRunTaskActionTool(options.service) : null;
     const runTests = createRunTestsTool();
     const runBuild = createRunBuildTool();
+    const runLint = createRunLintTool();
     server.registerTool(exportTaskList.name, {
         title: exportTaskList.title,
         description: exportTaskList.description,
@@ -86,7 +87,7 @@ export const registerWorkflowTools = (server, logger, options) => {
         };
     });
     // Domain runners
-    for (const tool of [runTests, runBuild]) {
+    for (const tool of [runTests, runBuild, runLint]) {
         server.registerTool(tool.name, {
             title: tool.title,
             description: tool.description,
@@ -192,7 +193,7 @@ export const registerWorkflowTools = (server, logger, options) => {
             structuredResult: result,
         };
     });
-    const tools = [refreshMetadata.name, exportTaskList.name, advanceState.name, runScript.name, runTests.name, runBuild.name];
+    const tools = [refreshMetadata.name, exportTaskList.name, advanceState.name, runScript.name, runTests.name, runBuild.name, runLint.name];
     if (runTaskAction)
         tools.push(runTaskAction.name);
     logger.info('workflow_tools_registered', {
