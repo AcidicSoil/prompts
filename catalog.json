@@ -49,22 +49,6 @@
         "/scope-control"
       ],
       "path": "instruction-file.md"
-    },
-    {
-      "phase": "P0 Preflight Docs",
-      "command": "/system-instruction-editor",
-      "title": "System Instruction: Canonical Instruction File Editor",
-      "purpose": "Publish the canonical system instruction guardrail before work begins.",
-      "gate": "DocFetchReport",
-      "status": "Canonical instruction editor guardrail prepared for use.",
-      "previous": [
-        "/instruction-file"
-      ],
-      "next": [
-        "/planning-process",
-        "/scope-control"
-      ],
-      "path": "system-level-instruction-editor.md"
     }
   ],
   "p1-plan-scope": [

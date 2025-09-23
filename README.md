@@ -274,7 +274,6 @@ Commands are grouped by development phase. Stage headings link back to
 | --- | --- |
 | /docfetch-check | Enforce the documentation freshness gate before planning work begins. Run this guardrail to pull the latest references, update the DocFetchReport, and block further tasks until the report is OK. |
 | /instruction-file | Generate or update `cursor.rules`, `windsurf.rules`, or `claude.md` with project-specific instructions. |
-| /system-instruction-editor | Publish the canonical system instruction guardrail before work begins. |
 
 ### [P1 Plan & Scope](WORKFLOW.md#p1-plan--scope) — pass the [Scope Gate](WORKFLOW.md#scope-gate)
 
