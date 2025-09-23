@@ -32,7 +32,4 @@ codefetch/
 # Task files
 # tasks.json
 # tasks/
-.archive/
-
-
-
+.archive/**
