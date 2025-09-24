@@ -10,7 +10,50 @@
         "priority": "high",
         "dependencies": [],
         "status": "todo",
-        "subtasks": []
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create base directory skeleton",
+            "description": "Lay down the src, prompts, tests, and configuration folders described in the PRD.",
+            "dependencies": [],
+            "details": "Add empty README placeholders where needed and ensure git keeps required directories (e.g., via .gitkeep).",
+            "status": "todo",
+            "testStrategy": "Run `ls` at the project root and confirm src/, prompts/, tests/, and config files are present."
+          },
+          {
+            "id": 2,
+            "title": "Initialize package.json and npm scripts",
+            "description": "Bootstrap npm metadata and add scripts for build, lint, format, and test flows.",
+            "dependencies": [
+              "1.1"
+            ],
+            "details": "Run `npm init -y`, set the package name, add type=module, and define scripts for build, start, lint, format, and test.",
+            "status": "todo",
+            "testStrategy": "Run `npm pkg get scripts` to confirm all required scripts are registered."
+          },
+          {
+            "id": 3,
+            "title": "Install core runtime and tooling dependencies",
+            "description": "Install Mastra, Zod, TypeScript, ts-node, ESLint, Prettier, and type definitions required by the PRD.",
+            "dependencies": [
+              "1.2"
+            ],
+            "details": "Add mastra, zod, and supporting libraries as dependencies; add typescript, ts-node, @types/node, eslint, prettier, and related plugins as devDependencies.",
+            "status": "todo",
+            "testStrategy": "Run `npm ls mastra zod typescript` to verify dependency installation succeeds."
+          },
+          {
+            "id": 4,
+            "title": "Configure TypeScript, lint, and format baselines",
+            "description": "Author tsconfig.json, ESLint config, and Prettier settings aligned with project conventions.",
+            "dependencies": [
+              "1.3"
+            ],
+            "details": "Set compilerOptions (outDir, rootDir, moduleResolution) in tsconfig, extend recommended ESLint configs with TypeScript support, and add a Prettier config matching house style.",
+            "status": "todo",
+            "testStrategy": "Run `npm run lint -- --help` and `npm run build -- --version` to ensure tooling commands execute."
+          }
+        ]
       },
       {
         "id": 2,
@@ -23,7 +66,50 @@
           1
         ],
         "status": "todo",
-        "subtasks": []
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Draft TypeScript types for core models",
+            "description": "Capture Prompt, ToolRegistration, RunRecord, SandboxConfig, and ProviderConfig as TypeScript interfaces.",
+            "dependencies": [],
+            "details": "Create src/models/index.ts (or similar) exporting strongly typed interfaces mirroring PRD field definitions.",
+            "status": "todo",
+            "testStrategy": "Run `tsc --noEmit` to ensure the interfaces compile without errors."
+          },
+          {
+            "id": 2,
+            "title": "Implement Zod schemas for each model",
+            "description": "Translate interfaces into Zod schemas with validation, defaults, and refinements where required.",
+            "dependencies": [
+              "2.1"
+            ],
+            "details": "Create individual schema builders for Prompt, ToolRegistration, RunRecord, SandboxConfig, and ProviderConfig, keeping schema definitions colocated with the interfaces.",
+            "status": "todo",
+            "testStrategy": "Write quick Zod `safeParse` checks in a scratch file to confirm schemas accept expected shapes."
+          },
+          {
+            "id": 3,
+            "title": "Export inference helpers and TypeScript types",
+            "description": "Ensure callers can import both Zod schemas and inferred types from a single module.",
+            "dependencies": [
+              "2.2"
+            ],
+            "details": "Use `z.infer` helpers and package exports to surface each schema and its derived type, maintaining tree-shakeable structure.",
+            "status": "todo",
+            "testStrategy": "In a unit test, import the inferred types and ensure they can be used in typed fixtures without compiler complaints."
+          },
+          {
+            "id": 4,
+            "title": "Author validation unit tests",
+            "description": "Create tests that cover happy-path and failure scenarios for every schema.",
+            "dependencies": [
+              "2.2"
+            ],
+            "details": "Add tests validating optional defaults, nested arrays, and rejection of malformed payloads for each model.",
+            "status": "todo",
+            "testStrategy": "Run `npm test -- schema` (or equivalent) to confirm Zod validations behave as expected."
+          }
+        ]
       },
       {
         "id": 3,
@@ -36,7 +122,61 @@
           2
         ],
         "status": "todo",
-        "subtasks": []
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Implement prompt directory scanner",
+            "description": "Walk the prompts/ directory and enumerate Markdown prompt files with frontmatter.",
+            "dependencies": [],
+            "details": "Support nested folders, ignore non-.md files, and return file metadata for downstream parsing.",
+            "status": "todo",
+            "testStrategy": "Run the scanner against fixtures containing .md and irrelevant files, verifying only valid prompts are returned."
+          },
+          {
+            "id": 2,
+            "title": "Parse YAML frontmatter into Prompt metadata",
+            "description": "Extract title, description, variables, and tooling metadata from each prompt file.",
+            "dependencies": [
+              "3.1"
+            ],
+            "details": "Reuse the Prompt schema to validate parsed metadata, reporting descriptive errors for malformed frontmatter.",
+            "status": "todo",
+            "testStrategy": "Use fixtures with missing required fields to ensure parse errors surface with actionable messages."
+          },
+          {
+            "id": 3,
+            "title": "Generate JSON schemas from prompt variables",
+            "description": "Transform the variables array into a JSON Schema definition for tool invocation inputs.",
+            "dependencies": [
+              "3.2"
+            ],
+            "details": "Support required vs optional flags, default values, enums, and nested object variables defined in metadata.",
+            "status": "todo",
+            "testStrategy": "Validate generated schemas with Ajv (or equivalent) against sample payloads covering required and optional fields."
+          },
+          {
+            "id": 4,
+            "title": "Implement error aggregation and reporting",
+            "description": "Collect parse/validation issues per prompt and expose them in loader results.",
+            "dependencies": [
+              "3.3"
+            ],
+            "details": "Return structured errors with file path, line context when available, and remediation hints for authors.",
+            "status": "todo",
+            "testStrategy": "Feed prompts with deliberate mistakes and confirm the loader surfaces grouped diagnostics."
+          },
+          {
+            "id": 5,
+            "title": "Write prompt loader unit tests",
+            "description": "Cover success, failure, and mixed-directory scenarios for the loader pipeline.",
+            "dependencies": [
+              "3.3"
+            ],
+            "details": "Author tests that stub filesystem access and assert on parsed metadata, generated schemas, and error outputs.",
+            "status": "todo",
+            "testStrategy": "Execute the prompt loader test suite to ensure all cases pass."
+          }
+        ]
       },
       {
         "id": 4,
@@ -49,7 +189,51 @@
           2
         ],
         "status": "todo",
-        "subtasks": []
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Design redaction helper utilities",
+            "description": "Create reusable functions that scrub sensitive keys and values from RunRecord payloads.",
+            "dependencies": [],
+            "details": "Implement configurable redaction patterns (key-based and value-based) and ensure helpers are pure.",
+            "status": "todo",
+            "testStrategy": "Add focused unit tests that prove secrets, tokens, and API keys are replaced with `[redacted]`."
+          },
+          {
+            "id": 2,
+            "title": "Implement structured audit logger",
+            "description": "Build a logger that persists RunRecord entries in structured JSON with timestamps and context.",
+            "dependencies": [
+              "4.1"
+            ],
+            "details": "Emit NDJSON lines including run identifiers, tool metadata, latency, and sanitized inputs/outputs.",
+            "status": "todo",
+            "testStrategy": "Run the logger in a smoke script and confirm emitted JSON matches the expected contract."
+          },
+          {
+            "id": 3,
+            "title": "Wire logger to RunRecord schema",
+            "description": "Ensure RunRecord validation occurs before persistence and failed validations are rejected.",
+            "dependencies": [
+              "4.2",
+              "2.2"
+            ],
+            "details": "Validate incoming data with the RunRecord schema, enrich with timestamps, and surface detailed errors for invalid records.",
+            "status": "todo",
+            "testStrategy": "Use tests that attempt to log malformed records and expect descriptive validation failures."
+          },
+          {
+            "id": 4,
+            "title": "Add audit logging test coverage",
+            "description": "Create unit tests verifying redaction, formatting, and successful persistence of RunRecords.",
+            "dependencies": [
+              "4.3"
+            ],
+            "details": "Cover both happy-path logging and scenarios where sensitive fields must be sanitized before output.",
+            "status": "todo",
+            "testStrategy": "Run the audit logger test suite and ensure NDJSON output snapshots match expectations."
+          }
+        ]
       },
       {
         "id": 5,
@@ -62,7 +246,50 @@
           1
         ],
         "status": "todo",
-        "subtasks": []
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Define policy evaluation contracts",
+            "description": "Sketch the TypeScript types and interfaces for policy checks, results, and context.",
+            "dependencies": [],
+            "details": "Include request metadata, tool characteristics, and policy verdict enums to support future expansion.",
+            "status": "todo",
+            "testStrategy": "Run `tsc --noEmit` to verify the new interfaces compile cleanly."
+          },
+          {
+            "id": 2,
+            "title": "Implement baseline policy engine",
+            "description": "Create an initial policy pipeline that approves requests while emitting audit-friendly traces.",
+            "dependencies": [
+              "5.1"
+            ],
+            "details": "Provide hooks for synchronous and asynchronous checks, returning structured allow/deny responses with reasons.",
+            "status": "todo",
+            "testStrategy": "Author unit tests that pass mocked requests through the engine and assert the approval response structure."
+          },
+          {
+            "id": 3,
+            "title": "Integrate policy engine entry point",
+            "description": "Expose a function used by the MCP server and orchestrator to vet tool invocations.",
+            "dependencies": [
+              "5.2"
+            ],
+            "details": "Add adapters that wrap tool execution paths, ensuring policy evaluation occurs before the tool runs.",
+            "status": "todo",
+            "testStrategy": "Use integration-style tests with stubbed tools to confirm policy checks execute before invocation."
+          },
+          {
+            "id": 4,
+            "title": "Create policy engine smoke tests",
+            "description": "Write tests covering approve and deny flows, even if deny returns a placeholder reason for now.",
+            "dependencies": [
+              "5.2"
+            ],
+            "details": "Include scenarios capturing request metadata in traces for observability and future debugging.",
+            "status": "todo",
+            "testStrategy": "Run the policy engine test suite and verify both allow and simulated deny paths behave."
+          }
+        ]
       },
       {
         "id": 6,
@@ -75,7 +302,50 @@
           1
         ],
         "status": "todo",
-        "subtasks": []
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create Mastra MCP server bootstrap",
+            "description": "Author the server entrypoint that instantiates Mastra and prepares configuration.",
+            "dependencies": [],
+            "details": "Load environment variables, configure logging, and establish the Mastra app foundation.",
+            "status": "todo",
+            "testStrategy": "Run the server in dev mode to confirm it boots without throwing."
+          },
+          {
+            "id": 2,
+            "title": "Wire stdio transport and lifecycle",
+            "description": "Connect the server to stdin/stdout using the Mastra stdio transport implementation.",
+            "dependencies": [
+              "6.1"
+            ],
+            "details": "Handle initialization sequencing, handshake events, and ensure backpressure handling is configured.",
+            "status": "todo",
+            "testStrategy": "Use a local script to send a ping request over stdio and confirm a valid response is returned."
+          },
+          {
+            "id": 3,
+            "title": "Implement graceful shutdown handlers",
+            "description": "Capture SIGINT/SIGTERM and drain in-flight requests before exiting.",
+            "dependencies": [
+              "6.2"
+            ],
+            "details": "Register signal handlers, flush audit logs, and close transports cleanly before process exit.",
+            "status": "todo",
+            "testStrategy": "Start the server, send a request, then Ctrl+C and verify exit logs indicate an orderly shutdown."
+          },
+          {
+            "id": 4,
+            "title": "Document server runbook",
+            "description": "Provide README notes for starting, stopping, and troubleshooting the server locally.",
+            "dependencies": [
+              "6.3"
+            ],
+            "details": "Include npm scripts, expected logs, environment variables, and links to relevant diagnostics.",
+            "status": "todo",
+            "testStrategy": "Have a teammate follow the runbook to boot and stop the server successfully."
+          }
+        ]
       },
       {
         "id": 7,
@@ -89,7 +359,53 @@
           6
         ],
         "status": "todo",
-        "subtasks": []
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Load prompts at server startup",
+            "description": "Invoke the prompt loader during server initialization to gather prompt metadata.",
+            "dependencies": [
+              "3.3",
+              "6.2"
+            ],
+            "details": "Ensure loader errors fail fast with actionable logs so missing prompts do not silently pass.",
+            "status": "todo",
+            "testStrategy": "Boot the server with a known prompt and confirm startup logs include the prompt slug."
+          },
+          {
+            "id": 2,
+            "title": "Construct MCP tool definitions",
+            "description": "Map prompt metadata to MCP tool descriptors including schemas and descriptions.",
+            "dependencies": [
+              "7.1"
+            ],
+            "details": "Generate tool IDs of the form prompts/<slug>, attach JSON schema payloads, and provide rich descriptions.",
+            "status": "todo",
+            "testStrategy": "List tools via the MCP inspector and confirm prompts/<slug> entries include expected metadata."
+          },
+          {
+            "id": 3,
+            "title": "Implement prompt rendering handler",
+            "description": "Render markdown templates with provided input variables and return structured output.",
+            "dependencies": [
+              "7.2"
+            ],
+            "details": "Support default values, markdown rendering, and error messages for missing required variables.",
+            "status": "todo",
+            "testStrategy": "Invoke the tool with sample inputs and verify the rendered text matches the template expectations."
+          },
+          {
+            "id": 4,
+            "title": "Add prompt tool registration tests",
+            "description": "Create integration tests that start the server, register prompts, and execute them end-to-end.",
+            "dependencies": [
+              "7.3"
+            ],
+            "details": "Use temporary prompt fixtures to assert tool availability and execution output.",
+            "status": "todo",
+            "testStrategy": "Run the integration test to confirm the prompt tool appears and renders as expected."
+          }
+        ]
       },
       {
         "id": 8,
@@ -102,7 +418,51 @@
           6
         ],
         "status": "todo",
-        "subtasks": []
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Define internal agent registry contract",
+            "description": "Specify the metadata and handler signature required to expose internal agents as tools.",
+            "dependencies": [],
+            "details": "Create types describing agent keys, descriptions, input schema, and response format.",
+            "status": "todo",
+            "testStrategy": "Run `tsc --noEmit` to ensure the registry contract compiles."
+          },
+          {
+            "id": 2,
+            "title": "Register agent-backed MCP tools",
+            "description": "Map internal agents to ask_<agentKey> tool definitions during server startup.",
+            "dependencies": [
+              "8.1",
+              "6.2"
+            ],
+            "details": "Iterate over registered agents, build MCP descriptors, and register them alongside prompt tools.",
+            "status": "todo",
+            "testStrategy": "List MCP tools and confirm ask_<agentKey> entries exist with correct descriptions."
+          },
+          {
+            "id": 3,
+            "title": "Implement agent invocation handler",
+            "description": "Bridge MCP tool invocations to the underlying agent execution pipeline.",
+            "dependencies": [
+              "8.2"
+            ],
+            "details": "Resolve the requested agent, execute it with structured input, and return a normalized response payload.",
+            "status": "todo",
+            "testStrategy": "Call the tool with sample input and assert the agent output is propagated back to the client."
+          },
+          {
+            "id": 4,
+            "title": "Create sample agent and tests",
+            "description": "Add a lightweight planner or analyzer agent and cover registration plus execution paths in tests.",
+            "dependencies": [
+              "8.3"
+            ],
+            "details": "Provide fixtures demonstrating both successful runs and graceful error propagation.",
+            "status": "todo",
+            "testStrategy": "Run integration tests ensuring the sample agent responds and logs appropriately."
+          }
+        ]
       },
       {
         "id": 9,
@@ -115,7 +475,52 @@
           1
         ],
         "status": "todo",
-        "subtasks": []
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Set up orchestrator class skeleton",
+            "description": "Create the orchestrator module with constructor, configuration, and lifecycle stubs.",
+            "dependencies": [],
+            "details": "Define properties for MCP client handles, tool caches, and configuration state.",
+            "status": "todo",
+            "testStrategy": "Instantiate the orchestrator in a unit test to ensure defaults are wired correctly."
+          },
+          {
+            "id": 2,
+            "title": "Implement MCP client connection management",
+            "description": "Handle connecting to the Mastra MCP server, including retries and cleanup.",
+            "dependencies": [
+              "9.1",
+              "6.2"
+            ],
+            "details": "Provide async init/shutdown methods that open transports, authenticate if needed, and dispose reliably.",
+            "status": "todo",
+            "testStrategy": "Use a mocked server endpoint to confirm connect/disconnect flows execute as expected."
+          },
+          {
+            "id": 3,
+            "title": "Establish tool registry data structures",
+            "description": "Lay out internal maps for static tools and dynamic toolsets with metadata.",
+            "dependencies": [
+              "9.1"
+            ],
+            "details": "Store tool descriptors, schemas, and provenance details to support later lookups and gating.",
+            "status": "todo",
+            "testStrategy": "Verify registry mutations work by adding/removing sample tool descriptors in unit tests."
+          },
+          {
+            "id": 4,
+            "title": "Write orchestrator initialization tests",
+            "description": "Test constructor, connect, and teardown flows with mocked dependencies.",
+            "dependencies": [
+              "9.2",
+              "9.3"
+            ],
+            "details": "Assert that tool caches initialize empty, connections open once, and cleanup closes transports.",
+            "status": "todo",
+            "testStrategy": "Run orchestrator unit tests to ensure lifecycle flows behave predictably."
+          }
+        ]
       },
       {
         "id": 10,
@@ -130,7 +535,54 @@
           9
         ],
         "status": "todo",
-        "subtasks": []
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Connect orchestrator to MCP server",
+            "description": "Invoke orchestrator.connect and await server readiness before loading tools.",
+            "dependencies": [
+              "9.2"
+            ],
+            "details": "Ensure connection errors bubble with actionable messages and retries respect configured limits.",
+            "status": "todo",
+            "testStrategy": "Use a mocked transport to simulate connection success and failure cases."
+          },
+          {
+            "id": 2,
+            "title": "Fetch static tool list from server",
+            "description": "Call the MCP listTools API and normalize tool metadata for local caching.",
+            "dependencies": [
+              "10.1",
+              "7.2"
+            ],
+            "details": "Handle pagination or batching, convert JSON schemas to internal structures, and log discovery counts.",
+            "status": "todo",
+            "testStrategy": "Stub listTools responses and assert the orchestrator captures all tool entries."
+          },
+          {
+            "id": 3,
+            "title": "Cache tools and expose accessor APIs",
+            "description": "Persist tool descriptors in the orchestrator and provide getters for downstream planners.",
+            "dependencies": [
+              "10.2"
+            ],
+            "details": "Implement memoization, invalidation hooks, and ensure schemas remain immutable once cached.",
+            "status": "todo",
+            "testStrategy": "Call the accessor methods in tests to verify they return cached tools with full metadata."
+          },
+          {
+            "id": 4,
+            "title": "Integration test static tool loading",
+            "description": "Start a real or mocked server, load tools, and ensure orchestrator state reflects remote data.",
+            "dependencies": [
+              "10.3",
+              "7.3"
+            ],
+            "details": "Assert that prompt and agent tools appear with valid schemas after initialization.",
+            "status": "todo",
+            "testStrategy": "Run an integration test that boots the server fixture and confirms tool parity."
+          }
+        ]
       },
       {
         "id": 11,
@@ -144,7 +596,55 @@
           9
         ],
         "status": "todo",
-        "subtasks": []
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Select filesystem MCP integration",
+            "description": "Choose the filesystem MCP server package and configure connection parameters.",
+            "dependencies": [
+              "9.1"
+            ],
+            "details": "Document required environment variables and add install steps for the selected integration.",
+            "status": "todo",
+            "testStrategy": "Smoke test the filesystem server separately to ensure it responds to list-directory calls."
+          },
+          {
+            "id": 2,
+            "title": "Implement sandbox path resolver",
+            "description": "Enforce SandboxConfig root constraints before issuing filesystem requests.",
+            "dependencies": [
+              "11.1",
+              "2.2"
+            ],
+            "details": "Normalize requested paths, reject traversal attempts, and map logical roots to absolute filesystem paths.",
+            "status": "todo",
+            "testStrategy": "Unit test resolver helpers with in-bounds and out-of-bounds paths."
+          },
+          {
+            "id": 3,
+            "title": "Wire filesystem toolset attachment",
+            "description": "Attach the filesystem MCP server as a dynamic toolset within the orchestrator.",
+            "dependencies": [
+              "11.2",
+              "9.2"
+            ],
+            "details": "Handle authentication, register available tools, and expose detachment hooks for cleanup.",
+            "status": "todo",
+            "testStrategy": "Attach the toolset in tests and verify allowed read operations succeed while blocked paths throw."
+          },
+          {
+            "id": 4,
+            "title": "Test sandbox enforcement end-to-end",
+            "description": "Create integration tests validating that sandbox rules block traversal attempts and log audits.",
+            "dependencies": [
+              "11.3",
+              "4.2"
+            ],
+            "details": "Simulate both allowed and denied operations, ensuring audit logs capture outcomes.",
+            "status": "todo",
+            "testStrategy": "Run integration tests invoking filesystem tools against fixture directories."
+          }
+        ]
       },
       {
         "id": 12,
@@ -158,7 +658,55 @@
           9
         ],
         "status": "todo",
-        "subtasks": []
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Configure GitHub MCP client",
+            "description": "Set up authentication, endpoints, and scopes for read-only GitHub access.",
+            "dependencies": [
+              "9.2"
+            ],
+            "details": "Document required environment variables, instantiate the MCP client, and ensure secrets are stored securely.",
+            "status": "todo",
+            "testStrategy": "Use a dry-run call to fetch repository metadata and confirm the client responds."
+          },
+          {
+            "id": 2,
+            "title": "Wrap GitHub tools with read-only policies",
+            "description": "Ensure write-capable GitHub operations are disabled or transformed into informative errors.",
+            "dependencies": [
+              "12.1",
+              "5.2"
+            ],
+            "details": "Inspect tool manifests, flag mutating endpoints, and attach policy checks that deny unauthorized use with guidance.",
+            "status": "todo",
+            "testStrategy": "Attempt to invoke a write endpoint in tests and assert the policy layer blocks it with a 403-style response."
+          },
+          {
+            "id": 3,
+            "title": "Expose GitHub toolset through orchestrator",
+            "description": "Register the read-only GitHub toolset as a dynamic attachment with metadata and schemas.",
+            "dependencies": [
+              "12.1",
+              "9.3"
+            ],
+            "details": "Populate tool descriptors, caching, and detachment hooks similar to the filesystem integration.",
+            "status": "todo",
+            "testStrategy": "Attach the GitHub toolset and ensure list/repo read calls work while write attempts remain blocked."
+          },
+          {
+            "id": 4,
+            "title": "Test read-only enforcement",
+            "description": "Author tests covering successful reads and rejected mutation attempts with clear messaging.",
+            "dependencies": [
+              "12.2",
+              "12.3"
+            ],
+            "details": "Use mocked GitHub responses to simulate both allowed GET operations and denied POST/PUT operations.",
+            "status": "todo",
+            "testStrategy": "Run the GitHub toolset tests to confirm enforcement and logging are correct."
+          }
+        ]
       },
       {
         "id": 13,
@@ -173,7 +721,56 @@
           12
         ],
         "status": "todo",
-        "subtasks": []
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Catalogue mutating tool operations",
+            "description": "Identify filesystem and GitHub endpoints that require explicit write intent.",
+            "dependencies": [
+              "11.2",
+              "12.2"
+            ],
+            "details": "Create metadata describing each mutating action, required scopes, and recommended remediation guidance.",
+            "status": "todo",
+            "testStrategy": "Review the generated catalog in tests to confirm it lists all known mutating endpoints."
+          },
+          {
+            "id": 2,
+            "title": "Enforce intent flag in policy engine",
+            "description": "Extend the policy engine to deny mutating calls lacking intent='write'.",
+            "dependencies": [
+              "13.1",
+              "5.2"
+            ],
+            "details": "Add checks that inspect request context for declared intent and emit actionable error messages when missing.",
+            "status": "todo",
+            "testStrategy": "Unit test policy decisions for requests with and without the write intent flag."
+          },
+          {
+            "id": 3,
+            "title": "Update tool adapters to declare required intent",
+            "description": "Ensure filesystem and GitHub tool wrappers annotate mutating operations with write requirements.",
+            "dependencies": [
+              "13.2",
+              "11.3",
+              "12.3"
+            ],
+            "details": "Propagate metadata so orchestrator callers know which invocations must supply intent='write'.",
+            "status": "todo",
+            "testStrategy": "Invoke mutating operations in tests and verify missing intent fails before execution."
+          },
+          {
+            "id": 4,
+            "title": "Validate write intent enforcement",
+            "description": "Run integration tests confirming allowed and denied scenarios behave as expected.",
+            "dependencies": [
+              "13.3"
+            ],
+            "details": "Test sequences where intent is omitted, then supplied, ensuring policy responses and audit logs align.",
+            "status": "todo",
+            "testStrategy": "Run policy integration tests focused on write intent gating."
+          }
+        ]
       },
       {
         "id": 14,
@@ -189,7 +786,56 @@
           12
         ],
         "status": "todo",
-        "subtasks": []
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Hook server tool dispatch into audit logger",
+            "description": "Emit RunRecord entries whenever the MCP server executes a tool.",
+            "dependencies": [
+              "7.3",
+              "4.2"
+            ],
+            "details": "Wrap the tool execution pipeline to capture inputs, outputs, duration, and policy context for logging.",
+            "status": "todo",
+            "testStrategy": "Execute a sample tool and verify a RunRecord is produced with sanitized fields."
+          },
+          {
+            "id": 2,
+            "title": "Log client orchestrator dynamic tool usage",
+            "description": "Capture RunRecords for operations executed via attached dynamic toolsets.",
+            "dependencies": [
+              "10.3",
+              "4.2"
+            ],
+            "details": "Instrument orchestrator invocation paths so both static and dynamic tools share the same logging pipeline.",
+            "status": "todo",
+            "testStrategy": "Attach filesystem and GitHub toolsets in tests and confirm invocations produce audit entries."
+          },
+          {
+            "id": 3,
+            "title": "Apply redaction pipeline to audit events",
+            "description": "Ensure audit logs pass through redaction helpers before persistence.",
+            "dependencies": [
+              "14.1",
+              "14.2",
+              "4.1"
+            ],
+            "details": "Verify sensitive inputs/outputs are removed or masked consistently regardless of tool origin.",
+            "status": "todo",
+            "testStrategy": "Invoke tools with secrets in payloads and confirm the stored RunRecord masks them."
+          },
+          {
+            "id": 4,
+            "title": "End-to-end audit logging tests",
+            "description": "Create integration tests covering prompt, agent, filesystem, and GitHub tools with audit verification.",
+            "dependencies": [
+              "14.3"
+            ],
+            "details": "Assert each tool invocation yields a RunRecord with correct metadata and redactions.",
+            "status": "todo",
+            "testStrategy": "Run the audit integration suite and ensure all records are captured."
+          }
+        ]
       },
       {
         "id": 15,
@@ -204,7 +850,55 @@
           12
         ],
         "status": "todo",
-        "subtasks": []
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Design toolset lifecycle API",
+            "description": "Specify orchestrator methods for requesting, attaching, and detaching toolsets.",
+            "dependencies": [
+              "9.1"
+            ],
+            "details": "Define lifecycle states, credential handling strategies, and error surfaces for callers.",
+            "status": "todo",
+            "testStrategy": "Compile the new API definitions and run unit tests ensuring method stubs exist."
+          },
+          {
+            "id": 2,
+            "title": "Implement attach workflow",
+            "description": "Attach filesystem and GitHub toolsets with secure credential injection and policy checks.",
+            "dependencies": [
+              "15.1",
+              "11.3",
+              "12.3"
+            ],
+            "details": "Ensure credentials are loaded just-in-time, tool descriptors cached, and policy requirements enforced.",
+            "status": "todo",
+            "testStrategy": "Write tests that attach both toolsets and confirm tools become available with expected metadata."
+          },
+          {
+            "id": 3,
+            "title": "Implement detach and cleanup flow",
+            "description": "Remove dynamic toolsets, revoke credentials, and clear cached state when tasks complete.",
+            "dependencies": [
+              "15.2"
+            ],
+            "details": "Guarantee sensitive configuration is wiped from memory and subsequent calls fail fast until reattached.",
+            "status": "todo",
+            "testStrategy": "Detach toolsets in tests and assert that calling their tools raises informative errors."
+          },
+          {
+            "id": 4,
+            "title": "Test lifecycle edge cases",
+            "description": "Cover repeated attach/detach cycles, failure handling, and cleanup guarantees in tests.",
+            "dependencies": [
+              "15.2",
+              "15.3"
+            ],
+            "details": "Simulate attach failures, double-detach scenarios, and ensure cleanup still executes.",
+            "status": "todo",
+            "testStrategy": "Run lifecycle tests ensuring resource leaks are prevented."
+          }
+        ]
       },
       {
         "id": 16,
@@ -217,7 +911,53 @@
           9
         ],
         "status": "todo",
-        "subtasks": []
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Configure search provider credentials",
+            "description": "Set up environment handling for Tavily (or chosen provider) and document required keys.",
+            "dependencies": [
+              "9.1"
+            ],
+            "details": "Store secrets securely, add configuration validation, and expose defaults in config docs.",
+            "status": "todo",
+            "testStrategy": "Run a configuration validation script to ensure missing credentials surface informative errors."
+          },
+          {
+            "id": 2,
+            "title": "Implement search tool wrapper",
+            "description": "Wrap the provider API to return normalized search results with ranking metadata.",
+            "dependencies": [
+              "16.1"
+            ],
+            "details": "Map API responses to a consistent schema including title, url, snippet, and confidence scores.",
+            "status": "todo",
+            "testStrategy": "Stub provider responses in tests and assert normalized output matches expectations."
+          },
+          {
+            "id": 3,
+            "title": "Implement web fetch tool",
+            "description": "Fetch URLs, extract readable content, and capture provenance metadata.",
+            "dependencies": [
+              "16.1"
+            ],
+            "details": "Handle HTML parsing, text extraction, and fallback to simple fetch when parsing fails.",
+            "status": "todo",
+            "testStrategy": "Use fixture HTML pages in tests to confirm content extraction captures title and body text."
+          },
+          {
+            "id": 4,
+            "title": "Test search and fetch toolset",
+            "description": "Write tests exercising search queries, URL fetch success, and error paths.",
+            "dependencies": [
+              "16.2",
+              "16.3"
+            ],
+            "details": "Include network failure simulations to ensure graceful degradation with logged notices.",
+            "status": "todo",
+            "testStrategy": "Run the search toolset tests to verify normalized outputs and error handling."
+          }
+        ]
       },
       {
         "id": 17,
@@ -230,7 +970,51 @@
           1
         ],
         "status": "todo",
-        "subtasks": []
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Define provider abstraction interfaces",
+            "description": "Establish TypeScript interfaces covering chat, embeddings, and rerank capabilities.",
+            "dependencies": [],
+            "details": "Specify input/output types, streaming hooks, and error semantics aligning with OpenAI-style APIs.",
+            "status": "todo",
+            "testStrategy": "Run `tsc --noEmit` to confirm the interface definitions compile."
+          },
+          {
+            "id": 2,
+            "title": "Implement default OpenAI-compatible provider",
+            "description": "Create a reference provider implementation that forwards to a remote OpenAI-compatible endpoint.",
+            "dependencies": [
+              "17.1"
+            ],
+            "details": "Support streaming chat completions, embeddings, and rerank calls with configurable endpoints and headers.",
+            "status": "todo",
+            "testStrategy": "Mock HTTP responses in tests to ensure each method returns the normalized provider result."
+          },
+          {
+            "id": 3,
+            "title": "Build provider registry and selection logic",
+            "description": "Provide a factory or registry that instantiates providers based on configuration.",
+            "dependencies": [
+              "17.2"
+            ],
+            "details": "Support remote/local provider selection, default fallbacks, and feature flag checks.",
+            "status": "todo",
+            "testStrategy": "Write tests that request providers by key and receive instances with expected capabilities."
+          },
+          {
+            "id": 4,
+            "title": "Author mock provider and contract tests",
+            "description": "Implement a mock provider for unit tests and validate interface adherence.",
+            "dependencies": [
+              "17.1",
+              "17.3"
+            ],
+            "details": "Use the mock in tests to ensure callers can swap providers without code changes.",
+            "status": "todo",
+            "testStrategy": "Run provider contract tests verifying chat and embedding flows operate using the mock."
+          }
+        ]
       },
       {
         "id": 18,
@@ -243,7 +1027,54 @@
           17
         ],
         "status": "todo",
-        "subtasks": []
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Document Nexa SDK capabilities",
+            "description": "Research Nexa SDK endpoints, authentication, and model format support.",
+            "dependencies": [
+              "17.1"
+            ],
+            "details": "Summarize supported routes, streaming behavior, and feature gating requirements for embeddings and rerank.",
+            "status": "todo",
+            "testStrategy": "Share the documentation summary with the team for validation before coding the adapter."
+          },
+          {
+            "id": 2,
+            "title": "Implement Nexa provider adapter",
+            "description": "Create a Provider implementation that talks to the Nexa SDK endpoints.",
+            "dependencies": [
+              "18.1",
+              "17.3"
+            ],
+            "details": "Handle base URL configuration, API keys, error translation, and streaming token emission.",
+            "status": "todo",
+            "testStrategy": "Use mocked Nexa responses to ensure chat, embeddings, and rerank methods return normalized results."
+          },
+          {
+            "id": 3,
+            "title": "Add feature flag checks for optional endpoints",
+            "description": "Enable embeddings and rerank only when the Nexa deployment supports them.",
+            "dependencies": [
+              "18.2"
+            ],
+            "details": "Inspect server capability metadata, toggle features accordingly, and log when features are disabled.",
+            "status": "todo",
+            "testStrategy": "Simulate servers with and without support to confirm capabilities are toggled appropriately."
+          },
+          {
+            "id": 4,
+            "title": "Write Nexa provider tests",
+            "description": "Cover success, failure, and fallback paths for the Nexa provider implementation.",
+            "dependencies": [
+              "18.2",
+              "18.3"
+            ],
+            "details": "Include tests for streaming responses, disabled feature behavior, and error propagation.",
+            "status": "todo",
+            "testStrategy": "Run Nexa provider tests against mocked SDK responses to ensure resilience."
+          }
+        ]
       },
       {
         "id": 19,
@@ -257,7 +1088,56 @@
           16
         ],
         "status": "todo",
-        "subtasks": []
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Integrate browser automation MCP server",
+            "description": "Install and configure the Playwright (or chosen) browser MCP service.",
+            "dependencies": [
+              "9.2"
+            ],
+            "details": "Handle dependency installation, headless browser configuration, and health checks.",
+            "status": "todo",
+            "testStrategy": "Run a simple navigation script via the MCP server to confirm DOM access works."
+          },
+          {
+            "id": 2,
+            "title": "Implement availability detection and fallback",
+            "description": "Detect when the browser toolset is unavailable and trigger search/fetch fallback logic.",
+            "dependencies": [
+              "19.1",
+              "16.2",
+              "16.3"
+            ],
+            "details": "Probe server readiness on attach, and on failure, gracefully fall back to search/fetch tools with notices.",
+            "status": "todo",
+            "testStrategy": "Simulate unavailable browser services in tests and confirm fallback flows engage."
+          },
+          {
+            "id": 3,
+            "title": "Emit fallback notices to audit log",
+            "description": "Log when the system substitutes browser automation with the research toolset.",
+            "dependencies": [
+              "19.2",
+              "4.2"
+            ],
+            "details": "Include context on the triggering request, fallback reason, and substituted toolset in RunRecords.",
+            "status": "todo",
+            "testStrategy": "Invoke a browser-required task while forcing fallback and assert the audit log entry documents the substitution."
+          },
+          {
+            "id": 4,
+            "title": "Acceptance test fallback scenarios",
+            "description": "Cover flows where browser automation succeeds vs. degrades to search/fetch.",
+            "dependencies": [
+              "19.1",
+              "19.3"
+            ],
+            "details": "Run orchestrated scenarios verifying DOM actions when available and meaningful responses with fallback.",
+            "status": "todo",
+            "testStrategy": "Execute acceptance tests toggling the browser service availability flag."
+          }
+        ]
       },
       {
         "id": 20,
@@ -270,7 +1150,56 @@
           13
         ],
         "status": "todo",
-        "subtasks": []
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Design rate limit configuration",
+            "description": "Add configuration structures specifying per-tool and global rate limits.",
+            "dependencies": [
+              "5.1",
+              "13.2"
+            ],
+            "details": "Support defaults, overrides, and environment-based configuration for burst vs. sustained limits.",
+            "status": "todo",
+            "testStrategy": "Write configuration unit tests ensuring parsed limits match expected defaults."
+          },
+          {
+            "id": 2,
+            "title": "Implement rate limiting middleware",
+            "description": "Add token bucket or sliding window enforcement within the policy engine.",
+            "dependencies": [
+              "20.1",
+              "5.2"
+            ],
+            "details": "Track per-tool counters, compute retry-after hints, and surface throttling errors with actionable guidance.",
+            "status": "todo",
+            "testStrategy": "Unit test the limiter with sequences that stay under and exceed thresholds to verify behavior."
+          },
+          {
+            "id": 3,
+            "title": "Integrate metrics and audit logging",
+            "description": "Record rate limit decisions for observability and auditing.",
+            "dependencies": [
+              "20.2",
+              "4.2"
+            ],
+            "details": "Emit structured RunRecords or metrics events whenever throttling occurs, including retry metadata.",
+            "status": "todo",
+            "testStrategy": "Simulate throttled requests and confirm logs capture limit keys and retry-after values."
+          },
+          {
+            "id": 4,
+            "title": "Test rate limit enforcement",
+            "description": "Write integration tests verifying allowed, throttled, and reset scenarios.",
+            "dependencies": [
+              "20.2",
+              "20.3"
+            ],
+            "details": "Cover cases where limits reset after cooldown and where separate tool buckets remain independent.",
+            "status": "todo",
+            "testStrategy": "Run the rate limiter test suite to ensure enforcement behaves deterministically."
+          }
+        ]
       }
     ],
     "metadata": {
