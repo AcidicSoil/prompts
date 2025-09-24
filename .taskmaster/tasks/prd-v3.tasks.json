@@ -1,0 +1,282 @@
+{
+  "master": {
+    "tasks": [
+      {
+        "id": 1,
+        "title": "Initialize Project Structure and Core Dependencies",
+        "description": "Set up the basic project scaffolding, including directory structure, package management, and initial dependencies for the MMPO application.",
+        "details": "Create the root directory structure (`src/`, `prompts/`, `tests/`). Initialize a `package.json` file and install foundational libraries like Mastra, and a data validation library (e.g., Zod) for data models. Configure TypeScript (`tsconfig.json`), a linter (ESLint), and a code formatter (Prettier) to ensure code quality and consistency.",
+        "testStrategy": "Verify that the project can be installed (`npm install`) and that linting/build scripts run without errors. The directory structure should match the defined standard.",
+        "priority": "high",
+        "dependencies": [],
+        "status": "todo",
+        "subtasks": []
+      },
+      {
+        "id": 2,
+        "title": "Define Core Data Models and Schemas",
+        "description": "Implement the primary data structures as defined in the PRD's 'Data Models' section to ensure type safety and consistent data handling throughout the application.",
+        "details": "Using a data validation library, define and export schemas for: `Prompt`, `ToolRegistration`, `RunRecord`, `SandboxConfig`, and `ProviderConfig`. These models will serve as the single source of truth for data shapes.",
+        "testStrategy": "Unit test each schema to ensure it correctly validates compliant data and rejects non-compliant data. Check that default values are applied correctly.",
+        "priority": "high",
+        "dependencies": [
+          1
+        ],
+        "status": "todo",
+        "subtasks": []
+      },
+      {
+        "id": 3,
+        "title": "Implement Prompt Loader and Schema Builder",
+        "description": "Create a service that scans the `prompts/` directory, parses Markdown prompt files for metadata, and generates JSON-schemas for their inputs.",
+        "details": "The loader should read `.md` files from the `prompts/` directory. It will parse YAML frontmatter to extract metadata according to the `Prompt` data model (Task 2). From the `variables[]` array in the metadata, it must generate a valid JSON-schema for the tool's input. This component is key to the 'Prompt Registry & Auto-Tooling' feature.",
+        "testStrategy": "Given a directory with valid and invalid prompt markdown files, verify that the loader correctly parses the valid ones, generates accurate JSON-schemas, and reports errors for the invalid ones. Test handling of optional variables and default values.",
+        "priority": "high",
+        "dependencies": [
+          2
+        ],
+        "status": "todo",
+        "subtasks": []
+      },
+      {
+        "id": 4,
+        "title": "Establish Foundational Audit Logging Service",
+        "description": "Create a core service for audit logging that records tool execution details in a structured, PII-safe format.",
+        "details": "Implement a logger that accepts a `RunRecord` object and outputs it as structured JSON (e.g., to the console initially). The service must include a redaction mechanism to strip sensitive data from inputs and outputs before logging. This is the foundation for the 'Safety, Policy, and Side-Effect Guardrails' feature.",
+        "testStrategy": "Unit test the logger to confirm that it correctly formats `RunRecord` data. Verify that the redaction logic successfully removes fields marked as sensitive and does not corrupt the overall log structure.",
+        "priority": "high",
+        "dependencies": [
+          2
+        ],
+        "status": "todo",
+        "subtasks": []
+      },
+      {
+        "id": 5,
+        "title": "Build Foundational Policy Engine",
+        "description": "Create the initial structure for the policy engine that will mediate all tool calls.",
+        "details": "Develop a module that exposes a function to check tool call requests against a set of policies. The initial implementation will be a simple pass-through but will establish the integration point for future policy enforcement, such as intent gating and rate limiting.",
+        "testStrategy": "Create a test that shows a tool call request being passed to the policy engine and successfully being approved. The engine's interface should be stable enough for other components to build against.",
+        "priority": "high",
+        "dependencies": [
+          1
+        ],
+        "status": "todo",
+        "subtasks": []
+      },
+      {
+        "id": 6,
+        "title": "Set Up Mastra MCP Server with Stdio Transport",
+        "description": "Initialize a Mastra-backed MCP server that communicates over standard I/O, serving as the main tool host.",
+        "details": "Configure and run a basic MCP server using the Mastra framework. The server should start, listen for requests on stdin, and send responses to stdout. This fulfills the initial requirement for the 'MCP Server & Agent-as-Tool Exposure' feature.",
+        "testStrategy": "Write a simple client script that can send a 'ping' or 'listTools' request to the server process via stdio and receive a valid response. Confirm the server starts and shuts down cleanly.",
+        "priority": "high",
+        "dependencies": [
+          1
+        ],
+        "status": "todo",
+        "subtasks": []
+      },
+      {
+        "id": 7,
+        "title": "Register Auto-Generated Prompt Tools on MCP Server",
+        "description": "Integrate the Prompt Loader with the MCP Server to automatically register a tool for each discovered prompt.",
+        "details": "On server startup, use the Prompt Loader (Task 3) to get the list of prompts and their generated schemas. For each prompt, register a corresponding MCP tool on the server (Task 6) at the path `prompts/<slug>`. The tool's invocation logic should render the prompt template with the provided inputs.",
+        "testStrategy": "Given a `prompts/` directory with a sample prompt, when the server starts, then a client can list tools and see `prompts/<slug>`. When the tool is invoked with valid arguments, then it returns the rendered prompt content.",
+        "priority": "high",
+        "dependencies": [
+          3,
+          6
+        ],
+        "status": "todo",
+        "subtasks": []
+      },
+      {
+        "id": 8,
+        "title": "Expose Internal Agents as `ask_<agentKey>` MCP Tools",
+        "description": "Register internal agents as callable tools on the MCP server, enabling agent composition.",
+        "details": "Define a simple placeholder agent (e.g., a 'planner' agent). Register this agent on the MCP server (Task 6) with a tool name like `ask_planner` and a human-readable description. The tool, when called, should execute the agent and return its structured output.",
+        "testStrategy": "Given an agent with a description, when the server starts, then the `ask_<agentKey>` tool appears in the tool list. When a client calls the tool with a question, then it receives a structured artifact in response.",
+        "priority": "high",
+        "dependencies": [
+          6
+        ],
+        "status": "todo",
+        "subtasks": []
+      },
+      {
+        "id": 9,
+        "title": "Implement MCP Client Orchestrator for Tool Management",
+        "description": "Create the client-side orchestrator responsible for managing static and dynamic toolsets for an agent's session.",
+        "details": "Develop a class or module that will initialize an MCP client. This orchestrator will hold the logic for `getTools()` (static set) and `getToolsets()` (dynamic attachments), forming the core of the 'Mastra MCP Client Orchestration' feature.",
+        "testStrategy": "Unit test the orchestrator's initialization. It should be able to instantiate an MCP client and prepare for tool registration.",
+        "priority": "medium",
+        "dependencies": [
+          1
+        ],
+        "status": "todo",
+        "subtasks": []
+      },
+      {
+        "id": 10,
+        "title": "Implement Static Tool Loading in Client Orchestrator",
+        "description": "Enable the client orchestrator to connect to the MCP server and load the default set of static tools.",
+        "details": "Implement the `getTools()` method in the orchestrator (Task 9). This method should connect to the running MCP server (Task 6) and fetch the list of available static tools, such as the prompt and agent tools.",
+        "testStrategy": "Given a running MCP server with registered tools, when the client orchestrator initializes, then its list of static tools matches the list exposed by the server.",
+        "priority": "high",
+        "dependencies": [
+          7,
+          8,
+          9
+        ],
+        "status": "todo",
+        "subtasks": []
+      },
+      {
+        "id": 11,
+        "title": "Integrate Sandboxed Filesystem (FS) Toolset",
+        "description": "Provide a production-ready, sandboxed filesystem connector as a dynamic toolset.",
+        "details": "Integrate a Filesystem MCP server. The toolset must be configured with sandbox root paths from a `SandboxConfig`. All file access attempts must be validated to prevent directory traversal and access outside the defined roots. This is a 'Curated MCP Integrations' MVP item.",
+        "testStrategy": "Given FS sandbox roots are configured, when a tool tries to read a file within a root, the call succeeds. When a tool tries to read a file outside the roots (e.g., `../../etc/passwd`), then access is denied and the event is audited.",
+        "priority": "high",
+        "dependencies": [
+          5,
+          9
+        ],
+        "status": "todo",
+        "subtasks": []
+      },
+      {
+        "id": 12,
+        "title": "Integrate Read-Only GitHub Toolset",
+        "description": "Provide a read-only GitHub connector as a dynamic toolset to give agents codebase context safely.",
+        "details": "Integrate a GitHub MCP server, configured by default for read-only operations. Any attempt to perform a write operation (e.g., create a commit, open a PR) must be blocked by the toolset's policy. This is a 'Curated MCP Integrations' MVP item.",
+        "testStrategy": "Given the GitHub toolset is in read-only mode, when a tool tries to read a file or list issues, the call succeeds. When a tool attempts to write a file or create a branch, the call is blocked and a helpful error message is returned.",
+        "priority": "high",
+        "dependencies": [
+          5,
+          9
+        ],
+        "status": "todo",
+        "subtasks": []
+      },
+      {
+        "id": 13,
+        "title": "Enforce Write Intent Policy for Mutating Operations",
+        "description": "Enhance the Policy Engine to reject mutating tool calls that lack an explicit `intent=write` flag.",
+        "details": "Modify the Policy Engine (Task 5) to inspect incoming tool calls. If a tool is marked as having 'write' side-effects, the engine must reject the call unless the invocation includes `intent: 'write'`. Apply this gate to the FS (Task 11) and GitHub (Task 12) toolsets for any write-capable functions.",
+        "testStrategy": "Given a mutating operation (e.g., `fs.writeFile`), when it is invoked without `intent='write'`, then the call is rejected with an informative error. When invoked with the flag, the call proceeds (but may be blocked by other policies like read-only mode).",
+        "priority": "high",
+        "dependencies": [
+          5,
+          11,
+          12
+        ],
+        "status": "todo",
+        "subtasks": []
+      },
+      {
+        "id": 14,
+        "title": "Integrate Audit Logging with All Tool Calls",
+        "description": "Ensure every tool invocation is recorded by the Audit Logging service with redacted data.",
+        "details": "Hook into the MCP server's tool dispatch mechanism and the client orchestrator's dynamic tool call process. For every executed tool, create a `RunRecord` and pass it to the Audit Logger (Task 4). Ensure inputs/outputs are redacted according to policy.",
+        "testStrategy": "After invoking any tool (prompt, agent, FS, GitHub), verify that a corresponding, correctly redacted audit log entry is generated.",
+        "priority": "high",
+        "dependencies": [
+          4,
+          10,
+          11,
+          12
+        ],
+        "status": "todo",
+        "subtasks": []
+      },
+      {
+        "id": 15,
+        "title": "Implement Dynamic Toolset Attachment and Detachment",
+        "description": "Implement the logic for attaching and detaching dynamic toolsets like FS and GitHub for a specific task window.",
+        "details": "Implement the `getToolsets()` method in the client orchestrator (Task 9). This should allow a planner to request one or more toolsets (e.g., FS, GitHub) for a session. The orchestrator must securely handle their credentials and ensure they are cleared from memory when the toolset is detached upon task completion.",
+        "testStrategy": "Given a task that requires GitHub access, when the orchestrator attaches the GitHub toolset, then its tools are available. When the task completes, then the toolset is detached and subsequent calls to its tools fail.",
+        "priority": "medium",
+        "dependencies": [
+          10,
+          11,
+          12
+        ],
+        "status": "todo",
+        "subtasks": []
+      },
+      {
+        "id": 16,
+        "title": "Integrate Search and Web Fetch Toolset",
+        "description": "Provide a connector for web search and page fetching to enable agent research capabilities.",
+        "details": "Integrate a search provider (e.g., Tavily) and a simple web page fetcher as a dynamic toolset. The tool should expose functions for searching the web and for fetching the content of a URL. The fetch function should return cleanly parsed text content along with source metadata (URL, title, etc.).",
+        "testStrategy": "Given a search query, when the search tool is called, then it returns a list of structured results. Given a URL, when the fetch tool is called, then it returns the page's text content and source metadata.",
+        "priority": "medium",
+        "dependencies": [
+          9
+        ],
+        "status": "todo",
+        "subtasks": []
+      },
+      {
+        "id": 17,
+        "title": "Create Pluggable Provider Abstraction for LLMs",
+        "description": "Design and build an abstraction layer for language model providers to support switching between remote and local models.",
+        "details": "Create an interface or abstract class that defines an OpenAI-compatible API for chat completions, embeddings, and reranking. This layer will allow the system to treat different LLM providers (e.g., OpenAI, Nexa) interchangeably.",
+        "testStrategy": "Define the interface and create a mock implementation. Write tests to show that a client can interact with the mock provider through the defined interface for chat and embeddings without knowing the underlying implementation.",
+        "priority": "medium",
+        "dependencies": [
+          1
+        ],
+        "status": "todo",
+        "subtasks": []
+      },
+      {
+        "id": 18,
+        "title": "Integrate Nexa SDK as a Local Provider",
+        "description": "Implement the local provider integration using the Nexa SDK for privacy, cost, and offline resilience.",
+        "details": "Create a concrete implementation of the Provider Abstraction (Task 17) for the Nexa SDK. The implementation should be configurable with a base URL and model name. It should use feature flags to enable `/embeddings` and `/reranking` endpoints only if the connected Nexa server supports them. It should also be aware of model formats (MLX vs GGUF) for platform-specific capabilities.",
+        "testStrategy": "Given a running local Nexa provider, when it is selected, then chat requests should stream tokens successfully. If embeddings are enabled, vectorization requests should produce vectors with correct metadata. Test fallback behavior if a feature is unavailable.",
+        "priority": "medium",
+        "dependencies": [
+          17
+        ],
+        "status": "todo",
+        "subtasks": []
+      },
+      {
+        "id": 19,
+        "title": "Implement Browser Automation Toolset with Fallbacks",
+        "description": "Provide a browser automation toolset for complex web interactions and ensure graceful degradation when it's unavailable.",
+        "details": "Integrate a browser automation MCP server (e.g., based on Playwright). Implement the fallback mechanism: if the browser toolset is requested but unavailable on the host, the system should automatically fall back to using the Search/Fetch toolset (Task 16) and log a notice.",
+        "testStrategy": "Given browser tools are available, when a task is run, then DOM actions succeed. Given browser tools are unavailable, when the same task is run, then the system uses Search/Fetch and annotates the output with a fallback notice.",
+        "priority": "low",
+        "dependencies": [
+          9,
+          16
+        ],
+        "status": "todo",
+        "subtasks": []
+      },
+      {
+        "id": 20,
+        "title": "Implement Rate Limiting in Policy Engine",
+        "description": "Add rate limiting to the policy engine to prevent abuse and ensure system stability.",
+        "details": "Extend the Policy Engine (Task 13) with configurable rate limits (e.g., requests per minute). When a caller exceeds a threshold, the engine should reject the request and return a 429-style error with backoff guidance and a `Retry-After` hint.",
+        "testStrategy": "Configure a low rate limit (e.g., 5 calls/min). Write a test that makes calls in a loop. Verify that calls succeed up to the limit, and subsequent calls are rejected with the correct error and headers.",
+        "priority": "low",
+        "dependencies": [
+          13
+        ],
+        "status": "todo",
+        "subtasks": []
+      }
+    ],
+    "metadata": {
+      "created": "2025-09-24T17:34:29.703Z",
+      "updated": "2025-09-24T17:34:29.703Z",
+      "description": "Tasks for master context"
+    }
+  }
+}
