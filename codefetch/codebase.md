@@ -47,7 +47,7 @@ AGENTS.md
 6 | 
 7 |   1. **Behavior extensions**. Plain instruction files.
 8 | 
-9 |      - Locations: `instructions/**/*.md`, `instructions/**/*.txt`
+9 |      - Locations: `instructions/**/*.md`, `instructions/**/*.txt`, `.cursor/rules/**/*.mdc`
 10 |      - Ignored: paths starting with `_`, or names containing `.archive.`
 11 |   2. **Rule-packs**. Files with YAML front matter:
 12 | 
@@ -149,941 +149,398 @@ AGENTS.md
 108 | 
 109 | ---
 110 | 
-111 | ## Validation
+111 | ## Failure handling
 112 | 
-113 | - Behavior extension: must be readable text.
-114 | - Rule-pack: must have front matter with `description` (string), `globs` (string), `alwaysApply` (bool).
-115 | - Invalid items are skipped and logged in `DocFetchReport.validation_errors[]`.
-116 | 
-117 | ---
-118 | 
-119 | ## Execution flow (docs integration)
-120 | 
-121 | - **Preflight must list:**
-122 | 
-123 |   - `DocFetchReport.context_files[]` from `@{...}`
-124 |   - `DocFetchReport.approved_instructions[]`
-125 |   - `DocFetchReport.approved_rule_packs[]`
-126 | - Compose in this order:
-127 | 
-128 |   1. Baseline
-129 |   2. Behavior extensions
-130 |   3. Rule-packs
-131 | - Proceed only when `DocFetchReport.status == "OK"`.
-132 | 
-133 | ---
-134 | 
-135 | ## Failure handling
-136 | 
-137 | - If any approved item cannot be loaded:
-138 | 
-139 |   - Do not finalize. Return a “Docs Missing” plan with missing paths and a fix.
-140 | - If any context file fails:
-141 | 
-142 |   - Continue. Add to `DocFetchReport.gaps.context_missing[]`. Suggest a fix in the plan.
-143 | 
-144 | ---
-145 | 
-146 | ## DocFetchReport Addendum
-147 | 
-148 | When discovery/confirmation is used, add:
-149 | 
-150 | ```json
-151 | {
-152 |   "DocFetchReport": {
-153 |     "approved_instructions": [
-154 |       {"path": "instructions/prd_generator.md", "loaded": true, "order": 1},
-155 |       {"path": "instructions/security/guardrails.md", "loaded": true, "order": 2}
-156 |     ],
-157 |     "context_files": [
-158 |       {"path": "docs/changelog.md", "loaded": true}
-159 |     ],
-160 |     "memory_ops": [
-161 |       {"tool": "memory", "op": "create_entities|create_relations|add_observations|read_graph|search_nodes", "time_utc": "<ISO8601>", "scope": "project:${PROJECT_TAG}"}
-162 |     ],
-163 |     "proposed_mcp_servers": [
-164 |       {"name": "<lib> Docs", "url": "https://gitmcp.io/{OWNER}/{REPO}", "source": "techstack-bootstrap", "status": "proposed"}
-165 |     ],
-166 |     "owner_repo_resolution": [
-167 |       {"library": "<lib>", "candidates": ["owner1/repo1", "owner2/repo2"], "selected": "owner/repo", "confidence": 0.92, "method": "registry|package_index|docs_link|search"}
-168 |     ],
-169 |     "server_inventory": [
-170 |       {"name": "fastapi_docs", "url": "https://gitmcp.io/tiangolo/fastapi", "source": "project-local|user|generated", "writable": true}
-171 |     ],
-172 |     "server_diff": {
-173 |       "missing": ["fastapi_docs", "httpx_docs"],
-174 |       "extra": ["legacy_docs_server"]
-175 |     },
-176 |     "server_actions": [
-177 |       {"action": "add", "name": "httpx_docs", "target": "project-local", "accepted": true}
-178 |     ]
-179 |   }
-180 | }
-181 | ```
-182 | 
-183 | > Note: Omit any fields related to generating or writing `config/mcp_servers.generated.toml`. Use a separate instruction file such as `instructions/mcp_servers_generated_concise.md` if present.
+113 | - If any approved item cannot be loaded:
+114 | 
+115 |   - Do not finalize. Return a “Docs Missing” plan with missing paths and a fix.
+116 | - If any context file fails:
+117 | 
+118 |   - Continue. Add to `DocFetchReport.gaps.context_missing[]`. Suggest a fix in the plan.
+119 | 
+120 | ---
+121 | 
+122 | ## DocFetchReport Addendum
+123 | 
+124 | When discovery/confirmation is used, add:
+125 | 
+126 | ```json
+127 | {
+128 |   "DocFetchReport": {
+129 |     "approved_instructions": [
+130 |       {"path": "instructions/prd_generator.md", "loaded": true, "order": 1},
+131 |       {"path": "instructions/security/guardrails.md", "loaded": true, "order": 2}
+132 |     ],
+133 |     "context_files": [
+134 |       {"path": "docs/changelog.md", "loaded": true}
+135 |     ],
+136 |     "memory_ops": [
+137 |       {"tool": "memory", "op": "create_entities|create_relations|add_observations|read_graph|search_nodes", "time_utc": "<ISO8601>", "scope": "project:${PROJECT_TAG}"}
+138 |     ],
+139 |     "proposed_mcp_servers": [
+140 |       {"name": "<lib> Docs", "url": "https://gitmcp.io/{OWNER}/{REPO}", "source": "techstack-bootstrap", "status": "proposed"}
+141 |     ],
+142 |     "owner_repo_resolution": [
+143 |       {"library": "<lib>", "candidates": ["owner1/repo1", "owner2/repo2"], "selected": "owner/repo", "confidence": 0.92, "method": "registry|package_index|docs_link|search"}
+144 |     ],
+145 |     "server_inventory": [
+146 |       {"name": "fastapi_docs", "url": "https://gitmcp.io/tiangolo/fastapi", "source": "project-local|user|generated", "writable": true}
+147 |     ],
+148 |     "server_diff": {
+149 |       "missing": ["fastapi_docs", "httpx_docs"],
+150 |       "extra": ["legacy_docs_server"]
+151 |     },
+152 |     "server_actions": [
+153 |       {"action": "add", "name": "httpx_docs", "target": "project-local", "accepted": true}
+154 |     ]
+155 |   }
+156 | }
+157 | ```
+158 | 
+159 | > Note: Omit any fields related to generating or writing `config/mcp_servers.generated.toml`. Use a separate instruction file such as `instructions/mcp_servers_generated_concise.md` if present.
+160 | 
+161 | Also log memory batching and status coupling events when applicable:
+162 | 
+163 | - Each memory flush: append `{tool:"memory", op:"upsert_batch", time_utc, scope, batch_id, count}` to `memory_ops[]`.
+164 | - Each Task Master status call: append `{action:"status", name:"task-master", value, status}` to `server_actions[]`.
+165 | 
+166 | ---
+167 | 
+168 | ## A) Preflight: Latest Docs Requirement (**MUST**, Blocking)
+169 | 
+170 | **Goal:** Ensure the assistant retrieves and considers the *latest relevant docs* before planning, acting, or finalizing.
+171 | 
+172 | **Primary/Fallback Order (consolidated):**
+173 | 
+174 | 1. **contex7-mcp** (primary)
+175 | 2. **gitmcp** (fallback)
+176 | 
+177 | **What to do:**
+178 | 
+179 | - For every task that could touch code, configuration, APIs, tooling, or libraries:
+180 | 
+181 |   - Call **contex7-mcp** to fetch the latest documentation or guides.
+182 |   - If the **primary** call **fails**, retry with **gitmcp**.
+183 | - Each successful call **MUST** capture:
 184 | 
-185 | Also log memory batching and status coupling events when applicable:
-186 | 
-187 | - Each memory flush: append `{tool:"memory", op:"upsert_batch", time_utc, scope, batch_id, count}` to `memory_ops[]`.
-188 | - Each Task Master status call: append `{action:"status", name:"task-master", value, status}` to `server_actions[]`.
-189 | 
-190 | ---
-191 | 
-192 | ## Task Master Integration — Correct Usage (per README)
-193 | 
-194 | - **Package vs CLI:** The npm package is `task-master-ai`. The CLI binary is `task-master`.
-195 | - **MCP server (Cursor) setup:** Use a Command server with `npx -y task-master-ai` as the command. Name “Task Master”. This exposes Task Master tools inside Cursor.
-196 | - **Configuration source of truth:** Use the `.taskmasterconfig` file created/managed by `task-master models --setup` or the `models` MCP tool. Do **not** set model choice, max tokens, temperature, or log level via environment variables.
-197 | - **Environment variables:** Only for API keys and specific endpoints (e.g., `ANTHROPIC_API_KEY`, `PERPLEXITY_API_KEY`, `OLLAMA_BASE_URL`). For CLI, store in a project `.env`. For MCP, store under the server’s `env` block.
-198 | - **CLI commands used by this system:** `task-master parse-prd`, `task-master list`, `task-master next`, `task-master generate`, `task-master show`, `task-master set-status`, `task-master update`, `task-master expand`, `task-master clear-subtasks`, dependency validators, and complexity analysis commands. Use exactly these spellings.
-199 | - **Status vocabulary:** Prefer `pending`, `in-progress`, `done`, and `deferred` for Task Master. Keep any extra internal states (e.g., `verify`, `needs-local-tests`) inside this system and map them to Task Master per §3.
+185 |   - Tool name, query/topic, retrieval timestamp (UTC), and source refs/URLs (or repo refs/commits).
+186 | - Scope:
+187 | 
+188 |   - Fetch docs for each **area to be touched** (framework, library, CLI, infra, etc.).
+189 |   - Prefer focused topics (e.g., "exception handlers", "lifespan", "retry policy", "schema").
+190 | 
+191 | **Failure handling:**
+192 | 
+193 | - If **all** providers fail for a required area, **do not finalize**. Return a minimal plan that includes:
+194 | 
+195 |   - The attempted providers and errors
+196 |   - The specific topics/areas still uncovered
+197 |   - A safe, read-only analysis and suggested next checks (or user confirmation).
+198 | 
+199 | **Proof-of-Work Artifact (required):**
 200 | 
-201 | **Logging note:** When logging to `DocFetchReport.server_actions[]`, keep `{action:"status", name:"task-master", value:"<status>", status:"ok|error"}`. This aligns with the CLI/MCP usage.
+201 | - Produce and attach a `DocFetchReport` (JSON) with `status`, `tools_called[]`, `sources[]`, `coverage`, `key_guidance[]`, `gaps`, and `informed_changes[]`.
 202 | 
-203 | **ESM note:** Task Master is ESM. If invoking scripts directly, ensure Node ESM compatibility.
+203 | ---
 204 | 
-205 | ## A) Preflight: Latest Docs Requirement (**MUST**, Blocking)
+205 | ## A.1) Tech & Language Identification (Pre-Requirement)
 206 | 
-207 | **Goal:** Ensure the assistant retrieves and considers the *latest relevant docs* before planning, acting, or finalizing.
+207 | - Before running Preflight (§A), the assistant must determine both:
 208 | 
-209 | **Primary/Fallback Order (consolidated):**
-210 | 
-211 | 1. **contex7-mcp** (primary)
-212 | 2. **gitmcp** (fallback)
+209 |   1. The **primary language(s)** used in the project (e.g., TypeScript, Python, Go, Rust, Java, Bash).
+210 |   2. The **current project’s tech stack** (frameworks, libraries, infra, tools).
+211 | 
+212 | - Sources to infer language/stack:
 213 | 
-214 | **What to do:**
-215 | 
-216 | - For every task that could touch code, configuration, APIs, tooling, or libraries:
-217 | 
-218 |   - Call **contex7-mcp** to fetch the latest documentation or guides.
-219 |   - If the **primary** call **fails**, retry with **gitmcp**.
-220 | - Each successful call **MUST** capture:
-221 | 
-222 |   - Tool name, query/topic, retrieval timestamp (UTC), and source refs/URLs (or repo refs/commits).
-223 | - Scope:
-224 | 
-225 |   - Fetch docs for each **area to be touched** (framework, library, CLI, infra, etc.).
-226 |   - Prefer focused topics (e.g., "exception handlers", "lifespan", "retry policy", "schema").
-227 | 
-228 | **Failure handling:**
+214 |   - Project tags (`${PROJECT_TAG}`), memory checkpoints, prior completion records.
+215 |   - Files present in repo (e.g., manifests like `package.json`, `pyproject.toml`, `go.mod`, `Cargo.toml`, `pom.xml`, CI configs).
+216 |   - File extensions in repo (`.ts`, `.js`, `.py`, `.go`, `.rs`, `.java`, `.sh`, `.sql`, etc.).
+217 |   - User/task context (explicit mentions of frameworks, CLIs, infra).
+218 | 
+219 | - **Repo mapping requirement:** Resolve the **canonical GitHub OWNER/REPO** for each detected library/tool whenever feasible.
+220 | 
+221 |   - **Resolution order:**
+222 | 
+223 |     1. **Registry mapping** (maintained lookup table for common libs).
+224 |     2. **Package index metadata** (e.g., npm `repository.url`, PyPI `project_urls` → `Source`/`Homepage`).
+225 |     3. **Official docs → GitHub link** discovery.
+226 |     4. **Targeted search** (as a last resort) with guardrails below.
+227 |   - **Guardrails:** Prefer official orgs; require name similarity and recent activity; avoid forks and mirrors unless explicitly chosen.
+228 |   - Record outcomes in `DocFetchReport.owner_repo_resolution[]` with candidates, selected repo, method, and confidence score.
 229 | 
-230 | - If **all** providers fail for a required area, **do not finalize**. Return a minimal plan that includes:
+230 | - Doc retrieval (§A) **must cover each identified language and stack element** that will be touched by the task.
 231 | 
-232 |   - The attempted providers and errors
-233 |   - The specific topics/areas still uncovered
-234 |   - A safe, read-only analysis and suggested next checks (or user confirmation).
-235 | 
-236 | **Proof-of-Work Artifact (required):**
-237 | 
-238 | - Produce and attach a `DocFetchReport` (JSON) with `status`, `tools_called[]`, `sources[]`, `coverage`, `key_guidance[]`, `gaps`, and `informed_changes[]`.
-239 | 
-240 | **Override Path (explicit, logged):**
-241 | 
-242 | Allowed only for outages/ambiguous scope/timeboxed spikes. Must include:
-243 | 
-244 | ```json
-245 | {
-246 |   "Override": {
-247 |     "reason": "server_down|ambiguous_scope|timeboxed_spike",
-248 |     "risk_mitigation": ["read-only analysis", "scoped PoC", "user confirmation required"],
-249 |     "expires_after": "1 action or 30m",
-250 |     "requested_by": "system|user"
-251 |   }
-252 | }
-253 | ```
-254 | 
-255 | ---
+232 | - Record both in the `DocFetchReport`:
+233 | 
+234 | ```json
+235 | "tech_stack": ["<stack1>", "<stack2>"],
+236 | "languages": ["<lang1>", "<lang2>"]
+237 | ```
+238 | 
+239 | ---
+240 | 
+241 | ## B) Decision Gate: No Finalize Without Proof (**MUST**)
+242 | 
+243 | - The assistant **MUST NOT**: finalize, apply diffs, modify files, or deliver a definitive answer **unless** `DocFetchReport.status == "OK"`.
+244 | - The planner/executor must verify `ctx.docs_ready == true` (set when at least one successful docs call exists **per required area**).
+245 | - If `status != OK` or `ctx.docs_ready != true`:
+246 | 
+247 |   - Stop. Return a **Docs Missing** message that lists the exact MCP calls and topics to run.
+248 | 
+249 | ---
+250 | 
+251 | ## 0) Debugging (Revised turn handling)
+252 | 
+253 | - **Use consolidated docs-first flow** before touching any files or finalizing: try **contex7-mcp** → **gitmcp**. Record results in `DocFetchReport`.
+254 | - **Turn (canonical):** exactly one *attempt cycle* consisting of (1) applying a non-empty code/config patch to address the current error class, then (2) running the allowed tests/checks per §8 (Safety Gate). The turn completes when the checks finish with pass/fail. Planning-only or analysis-only replies are **not** turns.
+255 | - **Non-turn events (excluded):** safety deferrals (no tests executed), docs-refresh cycles, cache rebuilds, or re-running identical tests without a new patch. These do **not** increment the turn counter.
 256 | 
-257 | ## A.1) Tech & Language Identification (Pre-Requirement)
+257 | ### 0.0) Error class
 258 | 
-259 | - Before running Preflight (§A), the assistant must determine both:
+259 | - **Definition:** hash the tuple `{top 5 stack frames (symbolized), failing test ids/names, normalized primary error code/message, top 3 file paths}`. A change in this fingerprint defines a **new error class**.
 260 | 
-261 |   1. The **primary language(s)** used in the project (e.g., TypeScript, Python, Go, Rust, Java, Bash).
-262 |   2. The **current project’s tech stack** (frameworks, libraries, infra, tools).
-263 | 
-264 | - Sources to infer language/stack:
-265 | 
-266 |   - Project tags (`${PROJECT_TAG}`), memory checkpoints, prior completion records.
-267 |   - Files present in repo (e.g., manifests like `package.json`, `pyproject.toml`, `go.mod`, `Cargo.toml`, `pom.xml`, CI configs).
-268 |   - File extensions in repo (`.ts`, `.js`, `.py`, `.go`, `.rs`, `.java`, `.sh`, `.sql`, etc.).
-269 |   - User/task context (explicit mentions of frameworks, CLIs, infra).
-270 | 
-271 | - **Repo mapping requirement:** Resolve the **canonical GitHub OWNER/REPO** for each detected library/tool whenever feasible.
+261 | ### 0.1) Docs Staleness Re-check Policy (**3-fail refresh gate**)
+262 | 
+263 | **Trigger:** If **three consecutive turns** (as defined above) on the **same error class** fail, the **fourth cycle MUST start with a docs context refresh**.
+264 | 
+265 | **Action:**
+266 | 
+267 | 1. Re-run the **Dynamic Docs MCP Router** (§7) to discover and rank all `*-docs-mcp` servers relevant to the error topics (derive from stack traces, failing commands, and test names).
+268 | 2. Fetch **latest pertinent docs**, then run `contex7-mcp` → `gitmcp`.
+269 | 3. Rebuild `DocFetchReport` with `refresh_reason: "3_fail_cycles",`since\_turns: 3`, and`since\_time\_utc\` from the last successful run.
+270 | 4. Set `ctx.docs_ready = false` until the refreshed report returns `status == "OK"`.
+271 | 5. Compute and record `doc_delta` vs the previous report (changed sources, new guidance, version bumps). Attach to `DocFetchReport.changed_guidance[]`.
 272 | 
-273 |   - **Resolution order:**
+273 | **Post-refresh reset:** On a successful docs refresh, set `turns_failed_in_row = 0` and `ctx.docs_ready = true`. Proceed to plan the next patch using the new guidance.
 274 | 
-275 |     1. **Registry mapping** (maintained lookup table for common libs).
-276 |     2. **Package index metadata** (e.g., npm `repository.url`, PyPI `project_urls` → `Source`/`Homepage`).
-277 |     3. **Official docs → GitHub link** discovery.
-278 |     4. **Targeted search** (as a last resort) with guardrails below.
-279 |   - **Guardrails:** Prefer official orgs; require name similarity and recent activity; avoid forks and mirrors unless explicitly chosen.
-280 |   - Record outcomes in `DocFetchReport.owner_repo_resolution[]` with candidates, selected repo, method, and confidence score.
-281 | 
-282 | - Doc retrieval (§A) **must cover each identified language and stack element** that will be touched by the task.
-283 | 
-284 | - Record both in the `DocFetchReport`:
-285 | 
-286 | ```json
-287 | "tech_stack": ["<stack1>", "<stack2>"],
-288 | "languages": ["<lang1>", "<lang2>"]
-289 | ```
-290 | 
-291 | ---
-292 | 
-293 | ## B) Decision Gate: No Finalize Without Proof (**MUST**)
+275 | **Notes:**
+276 | 
+277 | - Count a **turn** only after a full Patch+Test cycle completes. Do **not** count planning-only messages, safety deferrals, or identical test re-runs without a new patch.
+278 | - Reset the failure counter on a green run (all checks pass), on a **new error class** (fingerprint change), or after a successful docs refresh.
+279 | - Persist telemetry in `DocFetchReport.turns`:
+280 | 
+281 | ```json
+282 | {
+283 |    "turns_total": <int>,
+284 |    "turns_failed_in_row": <int>,
+285 |    "last_error_class": "<hash>",
+286 |    "last_turn": {
+287 |       "patch_id": "<hash of diff>",
+288 |       "tests_run": ["<id>"],
+289 |       "result": "pass|fail|deferred",
+290 |       "time_utc": "<ISO8601>"
+291 |    }
+292 | }
+293 | ```
 294 | 
-295 | - The assistant **MUST NOT**: finalize, apply diffs, modify files, or deliver a definitive answer **unless** `DocFetchReport.status == "OK"`.
-296 | - The planner/executor must verify `ctx.docs_ready == true` (set when at least one successful docs call exists **per required area**).
-297 | - If `status != OK` or `ctx.docs_ready != true`:
+295 | ---
+296 | 
+297 | ## 1) Memory: Boot, Plan, Log
 298 | 
-299 |   - Stop. Return a **Docs Missing** message that lists the exact MCP calls and topics to run.
+299 | ### 1.a Bootstrap (idempotent)
 300 | 
-301 | ---
-302 | 
-303 | ## 0) Debugging
-304 | 
-305 | - **Use consolidated docs-first flow** before touching any files or finalizing:
-306 | 
-307 |   - Try **contex7-mcp** → **gitmcp**.
-308 |   - Record results in `DocFetchReport`.
-309 | 
-310 | ### 0.1) Docs Staleness Re-check Policy (**3-turn trigger**)
-311 | 
-312 | **Trigger:** If **three assistant responses** have occurred since the first unresolved error report **and** errors persist **after** applying suggested changes and attempting to run allowed checks, **force a docs refresh**.
-313 | 
-314 | **Action:**
+301 | - On chat/session start, initialize **memory** (graph namespace for this project) and hydrate prior context.
+302 | - **Server alias:** `memory` (e.g., Smithery Memory MCP `@modelcontextprotocol/server-memory`).
+303 | - **Required tools:** `create_entities`, `create_relations`, `add_observations`, `delete_entities`, `delete_observations`, `delete_relations`, `read_graph`, `search_nodes`, `open_nodes`.
+304 | - **Ops (treat all creates as upserts):**
+305 | 
+306 |   - Upsert base entity: `project:${PROJECT_TAG}`.
+307 |   - Link existing tasks/files if present.
+308 |   - `read_graph` / `search_nodes` to hydrate working context.
+309 | - **Concepts:**
+310 | 
+311 |   - **Entities** → `{name, entityType, observations[]}` (names unique; observations are atomic facts).
+312 |   - **Relations** → directed, **active voice**: `{from, to, relationType}`.
+313 |   - **Observations** → strings attached to entities; add/remove independently.
+314 | - If memory is unavailable, set `memory_unavailable: true` in the session preamble and proceed read‑only.
 315 | 
-316 | 1. Re-run the **Dynamic Docs MCP Router** (§7) to discover and rank all `*-docs-mcp` servers relevant to the error topics (derive from stack traces, failing commands, and test names).
-317 | 2. Fetch **latest pertinent docs** via the ranked chain, then `contex7-mcp` → `gitmcp`.
-318 | 3. Rebuild `DocFetchReport` with `refresh_reason: "3_turns_persistent_errors"`, `since_turns: 3`, and `since_time_utc` from the last successful run.
-319 | 4. Set `ctx.docs_ready = false` until the refreshed report returns `status == "OK"`.
-320 | 5. Compute and record `doc_delta` vs the previous report (changed sources, new guidance, version bumps). Attach to `DocFetchReport.changed_guidance[]`.
-321 | 
-322 | **Notes:**
-323 | 
-324 | - Count a **turn** as one assistant message replying to the same error class. Reset the counter on a green run or a new error class.
-325 | - If no new guidance is found, record `no_update: true` and continue debugging; otherwise update the plan per new guidance.
-326 | - Log the refresh in memory: `task:${task_id}.observations.staleness_refresh` with UTC timestamp and topics.
-327 | 
-328 | ---
-329 | 
-330 | ## 1) Startup memory bootstrap (memory)
-331 | 
-332 | - On chat/session start: initialize **memory**.
-333 | 
-334 | - Retrieve (project-scoped):
+316 | ### 1.b Subtask plan & finish-in-one-go
+317 | 
+318 | - **Before execution**, derive a **subtask plan** with clear **Definition of Done (DoD)** per subtask.
+319 | - **Finish-in-one-go policy:** Work the list to completion within the session unless blocked by §A/§B gates or external dependencies. If blocked, record the block and propose an unblock plan. Persist the plan under `task:${task_id}.observations.plan` with timestamps.
+320 | 
+321 | ### 1.c Logging & batching policy
+322 | 
+323 | - Maintain an in-memory buffer of observations and relation updates.
+324 | - **Flush triggers (any):**
+325 | 
+326 |   1. Subtask boundary (from **§1.b**),
+327 |   2. Status transition intent (`in-progress|verify|done|blocked|needs-local-tests`),
+328 |   3. 10 buffered observations,
+329 |   4. 60s since last flush.
+330 | - **Batched upsert** on flush with `{batch_id, dedupe_keys[], context:{task_id, files_touched, guidance_refs}}`.
+331 | - **Observation item schema:**
+332 |   `{subtask_id, action, ts_utc, files_touched[], summary, details_md, metrics:{time_ms?, tokens?, pass?}, guidance_refs[], dedupe_key}` with `dedupe_key = hash(task_id, subtask_id, action, summary)`.
+333 | - **Merge & summarize:** Coalesce multiple items targeting the same entity within a window into a concise summary. Avoid trivial micro-events.
+334 | - **Mirror links while working:** `task:${task_id}` —\[touches]→ `file:<path>` as you proceed.
 335 | 
-336 |   - **memory** → latest `memory_checkpoints` and recent task completions.
-337 |   - **memory** → ensure a graph namespace exists for this project and load prior nodes/edges.
-338 | 
-339 |     - **Server alias**: `memory` (e.g., Smithery "Memory Server" such as `@modelcontextprotocol/server-memory`).
-340 |     - **Bootstrap ops** (idempotent):
-341 | 
-342 |       - `create_entities` (or `upsert_entities`) for: `project:${PROJECT_TAG}`.
-343 |       - `create_relations` to link existing tasks/files if present.
-344 |       - `read_graph` / `search_nodes` to hydrate working context.
-345 | 
-346 | - Read/write rules:
-347 | 
-348 |   - Prefer **memory** for free-form notes and checkpoints.
-349 |   - Prefer **memory** for **structured** facts/relations (entities, edges, observations).
-350 |   - If memory is unavailable, record `memory_unavailable: true` in the session preamble.
+336 | ### 1.d Consistency, errors, backoff
+337 | 
+338 | - On finalization flush, `open_nodes` to verify write result. If mismatch, retry once with 250–500 ms backoff and record the outcome.
+339 | - Network errors: exponential backoff starting at 250 ms, max 3 attempts per flush. On persistent failure, mark `memory_unavailable:true` and proceed read-only.
+340 | 
+341 | ### 1.e Task Master coupling (post‑save)
+342 | 
+343 | - After any successful flush that changes `percent_complete` or carries a `status_intent`, update **Task Master** (CLI/MCP):
+344 | 
+345 |   - Start of execution → **`in-progress`**.
+346 |   - Internal **verify** phase (see §2.1) → keep Task Master **`in-progress`**; note verification in memory.
+347 |   - Outcomes: success → **`done`**; failure/deferral → **`deferred`** with reason (e.g., `blocked`, `needs-local-tests`).
+348 | - Log hook result in memory: `{hook:"task-master", result:"ok|error", ts_utc}` and reflect any `percent_complete` changes only at flush time.
+349 | 
+350 | ---
 351 | 
-352 | ### 1.0) Memory MCP Server Usage Contract (**NEW**)
+352 | ## 2) On task completion (status → done)
 353 | 
-354 | - **Alias:** `memory`.
-355 | - **Required tools:** `create_entities`, `create_relations`, `add_observations`, `delete_entities`, `delete_observations`, `delete_relations`, `read_graph`, `search_nodes`, `open_nodes`.
-356 | - **Concept rules:**
-357 | 
-358 |   - **Entities** carry `name`, `entityType`, `observations[]`. Names are unique. Observations are atomic facts.
-359 |   - **Relations** are directed and written in **active voice**: `{from, to, relationType}`.
-360 |   - **Observations** are strings attached to entities; add/remove independently.
-361 | - **Operational guarantees:**
-362 | 
-363 |   - Treat `create_*` as **idempotent upserts**. Skip duplicates silently.
-364 |   - `delete_*` calls are **tolerant** to missing targets. No errors on non-existent items.
-365 |   - `open_nodes` returns only requested entities and their inter-relations; silently skips misses.
-366 | - **Usage patterns (batched, quality-first):**
+354 | - **Before finalizing:**
+355 | 
+356 |   - Force a final buffer flush with `final:true`.
+357 |   - Attach a consolidated `completion_summary_md` and `evidence_refs[]` to `project:${PROJECT_TAG}.task:${task_id}`.
+358 | 
+359 | - Write a concise completion to memory including:
+360 | 
+361 |   - `project`, `task_id`, `title`, `status`, `next step`
+362 |   - Files touched
+363 |   - Commit/PR link (if applicable)
+364 |   - Test results (if applicable)
+365 | 
+366 | - **Completion criteria (explicit):**
 367 | 
-368 |   - Maintain an in-memory buffer of observations and relation updates during execution.
-369 |   - Flush to `memory` only on any of:
-370 | 
-371 |     1. Subtask boundary reached (from §1.1),
-372 |     2. Status transition intent (`in-progress|verify|done|blocked|needs-local-tests`),
-373 |     3. 10 observations accumulated, or
-374 |     4. 60s since last flush.
-375 |   - On flush, send a single upsert with a `batch_id`, `dedupe_keys[]`, and `context` (task\_id, files\_touched, guidance\_refs).
-376 |   - Prefer merging observations into concise summaries when multiple micro-events target the same entity within a flush window.
-377 | - **Setup pointers (non-blocking):**
-378 | 
-379 |   - Storage file via `MEMORY_FILE_PATH` env; default `memory.json`.
-380 |   - Configure server in **user** MCP config or workspace `.vscode/mcp.json`. Do not embed install steps here.
-381 | - **Prompting note:**
-382 | 
-383 |   - If a separate chat-personalization prompt is used, it must not override gates (§A, §B) nor status flow (§3). Treat it as guidance for memory creation frequency and categories.
-384 | 
-385 | ### 1.1) Subtask plan and finish-in-one-go contract (**NEW**)
-386 | 
-387 | - **Before starting execution**, derive a **subtask plan** with clear **Definition of Done (DoD)** per subtask.
-388 | - **Finish-in-one-go policy:** Once execution starts, work the subtask list to completion within the session unless a blocking gate occurs (§A, §B, or external dependency). If blocked, record the block and propose an unblock plan; do not leave partial work without a recorded reason.
-389 | - **Recording:** Persist the subtask plan to **memory** under `task:${task_id}` as `observations.plan` with timestamps.
-390 | 
-391 | ### 1.2) Execution logging to memory (**NEW**)
-392 | 
-393 | - For each subtask: on **start** and **finish**, append an observation including `subtask_id`, `action`, `files_touched[]`, and short result.
-394 | - Keep a running `percent_complete` on the task node. Update after each subtask.
-395 | - Mirror links: `task:${task_id}` —\[touches]→ `file:<path>` as work proceeds, not only at the end.
+368 |   - All subtasks from **§1.b** are marked **done** and their DoD satisfied.
+369 |   - Required gates passed (§A, §B).
+370 |   - Post-completion checks executed or proposed (§2.1).
+371 | 
+372 | - **Update the Knowledge Graph (memory)**:
+373 | 
+374 |   - Ensure base entity `project:${PROJECT_TAG}` exists.
+375 |   - Upsert `task:${task_id}` and any `file:<path>` entities touched.
+376 |   - Create/refresh relations:
+377 | 
+378 |     - `project:${PROJECT_TAG}` —\[owns]→ `task:${task_id}`
+379 |     - `task:${task_id}` —\[touches]→ `file:<path>`
+380 |     - `task:${task_id}` —\[status]→ `<status>`
+381 |     - Optional: `task:${task_id}` —\[depends\_on]→ `<entity>`
+382 |   - Attach `observations` capturing key outcomes (e.g., perf metrics, regressions, decisions).
+383 | 
+384 | - Seed/Update the knowledge graph **before** exiting the task so subsequent sessions can leverage it.
+385 | 
+386 | - Do **NOT** write to `AGENTS.md` beyond these standing instructions.
+387 | 
+388 | ### 2.1) Post-completion checks and tests
+389 | 
+390 | - **Order of operations:**
+391 |   a) Append subtask completion logs to **memory** (**§1.c**).
+392 |   b) Set task status to **`verify`** (new intermediate state).
+393 |   c) Evaluate the **Safety Gate** per **§8 Environment & Testing Policy**.
+394 |   d) If **safe**, run **stateless checks automatically** (see §8 Allowed Automatic Checks).
+395 |   e) If **unsafe**, **defer** execution and emit a **Local Test Instructions** block for the user.
 396 | 
-397 | #### Observation schema (batched)
+397 | - **Recording:** Write outcomes to `project:${PROJECT_TAG}.task:${task_id}.observations.test_results` and also set:
 398 | 
-399 | ```
-400 | {
-401 |   subtask_id, action, ts_utc, files_touched[],
-402 |   summary, details_md, metrics:{time_ms?, tokens?, pass?},
-403 |   guidance_refs[], dedupe_key
-404 | }
-405 | ```
-406 | 
-407 | - Compute `dedupe_key` as a stable hash of `{task_id, subtask_id, action, summary}`.
-408 | - Replace per-event writes with buffered batches per §1.0.
-409 | 
-410 | ## Memory MCP Usage — Quality-over-Quantity Mode
-411 | 
-412 | ### Write policy
-413 | 
-414 | - Maintain an in-memory buffer for observations and relation updates.
-415 | - Flush triggers (any):
-416 | 
-417 |   1. Subtask boundary per §1.1,
-418 |   2. Status transition intent,
-419 |   3. 10 buffered observations,
-420 |   4. 60s since last flush.
-421 | - Single-call upsert per flush with `batch_id`, `dedupe_keys[]`, and `context`.
-422 | 
-423 | ### Observation schema
-424 | 
-425 | - Item: `{subtask_id, action, ts_utc, files_touched[], summary, details_md, metrics:{time_ms?, tokens?, pass?}, guidance_refs[], dedupe_key}`.
-426 | - `dedupe_key` = hash(task\_id, subtask\_id, action, summary). Treat creates as idempotent upserts. Skips on duplicate.
-427 | 
-428 | ### Merge & summarization
-429 | 
-430 | - If multiple items target the same entity within a window, coalesce into one summary with bullet details.
-431 | - Keep observations atomic but summarized; avoid trivial micro-events.
-432 | 
-433 | ### Read-after-write consistency
-434 | 
-435 | - On finalization: force `final:true` flush, then `open_nodes` to verify write result.
-436 | - Retry once with 250–500 ms backoff on mismatch; record outcome as observation.
-437 | 
-438 | ### Error and backoff
-439 | 
-440 | - Network errors: exponential backoff starting at 250 ms, max 3 attempts per flush.
-441 | - On persistent failure: mark `memory_unavailable:true` in session preamble and proceed read-only.
+399 |   - `tests_deferred: true|false`
+400 |   - `tests_deferred_reason: <string|null>`
+401 |   - `test_log_path: artifacts/test/<UTC-timestamp>.log` when any checks are executed.
+402 | 
+403 | - **Status transitions:**
+404 | 
+405 |   - On all checks passing → set status **`done`**.
+406 |   - On failures → set status **`deferred`** and record an unblock plan.
+407 |   - On deferral → set status **`todo`** and include the instructions block.
+408 | 
+409 | - **Post-save hook:**
+410 | 
+411 |   - After any successful memory flush that changes `percent_complete` or `status_intent`, call Task Master MCP to set status:
+412 | 
+413 |     - first execution flush → `in-progress`,
+414 |     - post-completion pre-checks → `done`,
+415 |     - after §2.1 outcomes → `done|deferred|`.
+416 |   - Record hook outcome in memory as an observation: `{hook:"task-master", result:"ok|error", ts_utc}`.
+417 | 
+418 | - **Local Test Instructions (example, Proposed — not executed):**
+419 | 
+420 | ```bash
+421 | # Proposed Local Test Instructions — copy/paste locally
+422 | # Reason: Safety Gate triggered deferral (e.g., venv detected, risk of global mutation, or OS mismatch)
+423 | 
+424 | # TypeScript/Node (stateless checks)
+425 | npm run typecheck --silent || exit 1
+426 | npm run lint --silent || exit 1
+427 | npm run -s build --dry-run || exit 1
+428 | 
+429 | # Python (use uv; do NOT activate any existing venv)
+430 | # Pure unit tests only; no network, no DB, no writes outside ./artifacts
+431 | uv run -q python -c "import sys; sys.exit(0)" || exit 1
+432 | uv run -q ruff check . || exit 1
+433 | uv run -q pyright || exit 1
+434 | uv run -q pytest -q tests/unit -k "not integration" || exit 1
+435 | 
+436 | # Expected: exit code 0 on success; non-zero indicates failures to review.
+437 | ```
+438 | 
+439 | ---
+440 | 
+441 | ## 3) Status management
 442 | 
-443 | ### Post-save Task Master coupling
+443 | - Use Task Master **only** for external status sync with Task Master’s documented vocabulary.
 444 | 
-445 | - After any successful flush that changes `percent_complete` or has `status_intent`:
-446 | 
-447 |   - Update **Task Master** using either the CLI (`task-master set-status`) or the MCP server.
-448 | 
-449 |     - **Start of execution** → set Task Master status to **`in-progress`**.
-450 |     - **Internal `verify` phase** → **do not** set a nonstandard Task Master status. Keep **`in-progress`** and attach a note in memory (and, if supported, task details) that verification is running.
-451 |     - **Outcomes**
-452 | 
-453 |       - Success → set **`done`**.
-454 |       - Failure or deferral → set **`deferred`** and include a reason note (e.g., `blocked` or `needs-local-tests`).
-455 | 
-456 | - Record hook: `{hook:"task-master", result:"ok|error", ts_utc}` in memory.
-457 | 
-458 | ### Completion
+445 |   - **`in-progress`** on start of execution after §A and **§1.b** planning.
+446 |   - Keep **`in-progress`** during the internal **verify** phase (§2.1). Do not write `verify` to Task Master.
+447 |   - Set **`done`** when all subtasks are done, gates passed, and §2.1 checks succeed.
+448 |   - On failures or deferral via the Safety Gate (§2.1), set **`deferred`** and include a reason in the note (e.g., `blocked` or `needs-local-tests`).
+449 | 
+450 | - **Transition rules (internal → Task Master mapping):**
+451 | 
+452 |   - Internal: `in-progress → verify → done` ⇒ Task Master: `in-progress → done`.
+453 |   - Internal: `verify → blocked` or `verify → needs-local-tests` ⇒ Task Master: `deferred` (with reason note).
+454 | 
+455 | - **Transition gating:**
+456 | 
+457 |   - Emit Task Master status changes only immediately after a successful memory flush.
+458 |   - If the Task Master call fails, mark `status_pending` in memory; retry on next flush or at T+2m with capped backoff.
 459 | 
-460 | - Replace per-event writes with batch buffer per the policy above.
-461 | - Update `percent_complete` only at flush time.
-462 | 
-463 | ### Completion
-464 | 
-465 | - Write concise `completion_summary_md` + `evidence_refs[]`.
-466 | - Ensure graph links and observations are updated before exit.
-467 | 
-468 | ## 2) On task completion (status → done)
-469 | 
-470 | - **Before finalizing:**
-471 | 
-472 |   - Force a final buffer flush with `final:true`.
-473 |   - Re-read (`open_nodes`) the affected entities to confirm merge result; if mismatch, retry once with backoff (250–500 ms).
-474 |   - Attach a consolidated `completion_summary_md` and `evidence_refs[]` to `task:${task_id}`.
+460 | ---
+461 | 
+462 | ## 4) Tagging for retrieval
+463 | 
+464 | - Use tags: `${PROJECT_TAG}`, `project:${PROJECT_TAG}`, `memory_checkpoint`, `completion`, `agents`, `routine`, `instructions`, plus task-specific tags.
+465 | - For memory entities/relations, mirror tags on observations (e.g., `graph`, `entity:task:${task_id}`, `file:<path>`), to ease cross-referencing with memory.
+466 | 
+467 | ---
+468 | 
+469 | ## 5) Handling user requests for code or docs
+470 | 
+471 | - When a task or a user requires **code**, **setup/config**, or **library/API documentation**:
+472 | 
+473 |   - **MUST** run the **Preflight** (§A) using the consolidated order (**contex7-mcp → gitmcp**).
+474 |   - Only proceed to produce diffs or create files after `DocFetchReport.status == "OK"`.
 475 | 
-476 | - Write a concise completion to memory including:
+476 | ---
 477 | 
-478 |   - `task_id`, `title`, `status`, `next step`
-479 |   - Files touched
-480 |   - Commit/PR link (if applicable)
-481 |   - Test results (if applicable)
-482 | 
-483 | - **Completion criteria (explicit):**
-484 | 
-485 |   - All subtasks from §1.1 are marked **done** and their DoD satisfied.
-486 |   - Required gates passed (§A, §B).
-487 |   - Post-completion checks executed or proposed (§2.1).
-488 | 
-489 | - **Update the Knowledge Graph (memory)**:
-490 | 
-491 |   - Ensure base entity `project:${PROJECT_TAG}` exists.
-492 |   - Upsert `task:${task_id}` and any `file:<path>` entities touched.
-493 |   - Create/refresh relations:
-494 | 
-495 |     - `project:${PROJECT_TAG}` —\[owns]→ `task:${task_id}`
-496 |     - `task:${task_id}` —\[touches]→ `file:<path>`
-497 |     - `task:${task_id}` —\[status]→ `<status>`
-498 |     - Optional: `task:${task_id}` —\[depends\_on]→ `<entity>`
-499 |   - Attach `observations` capturing key outcomes (e.g., perf metrics, regressions, decisions).
-500 | 
-501 | - Seed/Update the knowledge graph **before** exiting the task so subsequent sessions can leverage it.
+478 | ## 6) Project tech stack specifics
+479 | 
+480 | - Apply §A Preflight for the **current** stack and language(s).
+481 | - Prefer official documentation and repositories resolved in §A.1.
+482 | - If coverage is weak after **contex7-mcp → gitmcp**, fall back to targeted web search and record gaps.
+483 | 
+484 | ---
+485 | 
+486 | ## 6.1) Layered Execution Guides
+487 | 
+488 | Each layer defines role, task, context, reasoning, output format, and stop conditions. Use these blocks when planning and reviewing work in that layer.
+489 | 
+490 | ### Client/UI Layer — Frontend Engineer, UI Engineer, UX Designer
+491 | 
+492 | 1. **Role**
+493 | 
+494 |    - Own user-facing components and flows.
+495 | 2. **Task**
+496 | 
+497 |    - Draft routes and components. Specify Tailwind classes and responsive breakpoints. Define accessibility and keyboard flows. List loading, empty, and error states. Map data needs to hooks. Set performance budgets.
+498 | 3. **Context**
+499 | 
+500 |    - Next.js app router. Tailwind. shadcn/ui allowed. Target Core Web Vitals good. WCAG 2.2 AA.
+501 | 4. **Reasoning**
 502 | 
-503 | - Do **NOT** write to `AGENTS.md` beyond these standing instructions.
-504 | 
-505 | ### 2.1) Post-completion checks and tests (**REVISED — Run-then-verify**)
-506 | 
-507 | - **Order of operations:**
-508 |   a) Append subtask completion logs to **memory** (§1.2).
-509 |   b) Set task status to **`verify`** (new intermediate state).
-510 |   c) Evaluate the **Safety Gate** per **§8 Environment & Testing Policy**.
-511 |   d) If **safe**, run **stateless checks automatically** (see §8 Allowed Automatic Checks).
-512 |   e) If **unsafe**, **defer** execution and emit a **Local Test Instructions** block for the user.
-513 | 
-514 | - **Recording:** Write outcomes to `task:${task_id}.observations.test_results` and also set:
-515 | 
-516 |   - `tests_deferred: true|false`
-517 |   - `tests_deferred_reason: <string|null>`
-518 |   - `test_log_path: artifacts/test/<UTC-timestamp>.log` when any checks are executed.
-519 | 
-520 | - **Status transitions:**
-[TRUNCATED]
-```
-
-GEMINI.md
-```
-1 | ## Instruction Loading Model (Extended)
-2 | 
-3 | - **Baseline:** This file (AGENTS.md) is the canonical baseline.
-4 | 
-5 | - **Two extension types:**
-6 | 
-7 |   1. **Behavior extensions**. Plain instruction files.
-8 | 
-9 |      - Locations: `instructions/**/*.md`, `instructions/**/*.txt`
-10 |      - Ignored: paths starting with `_`, or names containing `.archive.`
-11 |   2. **Rule-packs**. Files with YAML front matter:
-12 | 
-13 |      ```markdown
-14 |      ---
-15 |      description: <one-line purpose>
-16 |      globs: <glob or comma-list, e.g., **/* or src/**/*.ts,apps/**>
-17 |      alwaysApply: true|false
-18 |      ---
-19 |      <optional body>
-20 |      ```
-21 | 
-22 |      - Locations: `instructions/**/*.md`, `instructions/**/*.mdc`, `.cursor/rules/**/*.mdc`
-23 |      - Detection: file starts with `---` and declares `description`, `globs`, `alwaysApply`
-24 | 
-25 | - **Scope semantics:**
-26 | 
-27 |   - `globs` limits where the pack claims relevance. If empty or missing, scope is repo-wide.
-28 |   - A pack can be listed even if no current files match, but it is marked “out of scope”.
-29 | 
-30 | - **Order and precedence:**
-31 | 
-32 |   - Default load order: lexicographic by path.
-33 |   - User can reorder before apply. Later wins on conflict.
-34 |   - If `alwaysApply: true`, default selection is **on** and pinned to the **end** of the order unless the user moves it.
-35 | 
-36 | ---
-37 | 
-38 | ## Startup confirmation flow
-39 | 
-40 | 1. **Discover**
-41 | 
-42 |    - Collect behavior extensions and rule-packs from the locations above.
-43 |    - Exclude `_` prefixed paths and `.archive.` files.
-44 | 2. **Summarize**
-45 | 
-46 |    - Title = first `# H1` if present, else filename.
-47 |    - For rule-packs show `alwaysApply` and `globs`.
-48 | 3. **Confirm**
-49 | 
-50 |    - Options: **Apply all**, **Apply none**, **Select subset and order**.
-51 |    - Default = **Apply none** for behavior extensions. **Apply** for rule-packs with `alwaysApply: true`.
-52 | 4. **Record**
-53 | 
-54 |    - Write final order to `DocFetchReport.approved_instructions[]`.
-55 |    - Write approved rule-packs to `DocFetchReport.approved_rule_packs[]` with `{path, alwaysApply, globs}`.
-56 | 
-57 | ---
-58 | 
-59 | ## Validation
-60 | 
-61 | - Behavior extension: must be readable text.
-62 | - Rule-pack: must have front matter with `description` (string), `globs` (string), `alwaysApply` (bool).
-63 | - Invalid items are skipped and logged in `DocFetchReport.validation_errors[]`.
-64 | 
-65 | ---
-66 | 
-67 | ## Execution flow (docs integration)
-68 | 
-69 | - **Preflight must list:**
-70 | 
-71 |   - `DocFetchReport.context_files[]` from `@{...}`
-72 |   - `DocFetchReport.approved_instructions[]`
-73 |   - `DocFetchReport.approved_rule_packs[]`
-74 | - Compose in this order:
-75 | 
-76 |   1. Baseline
-77 |   2. Behavior extensions
-78 |   3. Rule-packs
-79 | - Proceed only when `DocFetchReport.status == "OK"`.
-80 | 
-81 | ---
-82 | 
-83 | ## Conflict resolution
-84 | 
-85 | - **Specificity rule:** If both target the same scope, the later item in the final order wins.
-86 | - **Pack vs. extension:** No special case. Order controls outcome.
-87 | - **Out-of-scope packs:** Do not affect behavior. They remain listed as informational.
-88 | 
-89 | ---
-90 | 
-91 | ## Tagging Syntax (context only)
-92 | 
-93 | **Context tag — `@{file}` (no behavior change)**
-94 | 
-95 | - Purpose: include files for retrieval only.
-96 | - Syntax: `@{path/to/file.md}`. Globs allowed.
-97 | - Report under `DocFetchReport.context_files[]`.
-98 | 
-99 | ---
-100 | 
-101 | ## Resolution and loading
-102 | 
-103 | 1. Baseline = AGENTS.md.
-104 | 2. Load **approved behavior extensions** in final order.
-105 | 3. Load **approved rule-packs** in final order. Packs with `alwaysApply: true` default to the end.
-106 | 4. Apply later-wins on conflicts.
-107 | 5. Record `DocFetchReport.status`.
-108 | 
-109 | ---
-110 | 
-111 | ## Validation
-112 | 
-113 | - Behavior extension: must be readable text.
-114 | - Rule-pack: must have front matter with `description` (string), `globs` (string), `alwaysApply` (bool).
-115 | - Invalid items are skipped and logged in `DocFetchReport.validation_errors[]`.
-116 | 
-117 | ---
-118 | 
-119 | ## Execution flow (docs integration)
-120 | 
-121 | - **Preflight must list:**
-122 | 
-123 |   - `DocFetchReport.context_files[]` from `@{...}`
-124 |   - `DocFetchReport.approved_instructions[]`
-125 |   - `DocFetchReport.approved_rule_packs[]`
-126 | - Compose in this order:
-127 | 
-128 |   1. Baseline
-129 |   2. Behavior extensions
-130 |   3. Rule-packs
-131 | - Proceed only when `DocFetchReport.status == "OK"`.
-132 | 
-133 | ---
-134 | 
-135 | ## Failure handling
-136 | 
-137 | - If any approved item cannot be loaded:
-138 | 
-139 |   - Do not finalize. Return a “Docs Missing” plan with missing paths and a fix.
-140 | - If any context file fails:
-141 | 
-142 |   - Continue. Add to `DocFetchReport.gaps.context_missing[]`. Suggest a fix in the plan.
-143 | 
-144 | ---
-145 | 
-146 | ## DocFetchReport Addendum
-147 | 
-148 | When discovery/confirmation is used, add:
-149 | 
-150 | ```json
-151 | {
-152 |   "DocFetchReport": {
-153 |     "approved_instructions": [
-154 |       {"path": "instructions/prd_generator.md", "loaded": true, "order": 1},
-155 |       {"path": "instructions/security/guardrails.md", "loaded": true, "order": 2}
-156 |     ],
-157 |     "context_files": [
-158 |       {"path": "docs/changelog.md", "loaded": true}
-159 |     ],
-160 |     "memory_ops": [
-161 |       {"tool": "memory", "op": "create_entities|create_relations|add_observations|read_graph|search_nodes", "time_utc": "<ISO8601>", "scope": "project:${PROJECT_TAG}"}
-162 |     ],
-163 |     "proposed_mcp_servers": [
-164 |       {"name": "<lib> Docs", "url": "https://gitmcp.io/{OWNER}/{REPO}", "source": "techstack-bootstrap", "status": "proposed"}
-165 |     ],
-166 |     "owner_repo_resolution": [
-167 |       {"library": "<lib>", "candidates": ["owner1/repo1", "owner2/repo2"], "selected": "owner/repo", "confidence": 0.92, "method": "registry|package_index|docs_link|search"}
-168 |     ],
-169 |     "server_inventory": [
-170 |       {"name": "fastapi_docs", "url": "https://gitmcp.io/tiangolo/fastapi", "source": "project-local|user|generated", "writable": true}
-171 |     ],
-172 |     "server_diff": {
-173 |       "missing": ["fastapi_docs", "httpx_docs"],
-174 |       "extra": ["legacy_docs_server"]
-175 |     },
-176 |     "server_actions": [
-177 |       {"action": "add", "name": "httpx_docs", "target": "project-local", "accepted": true}
-178 |     ]
-179 |   }
-180 | }
-181 | ```
-182 | 
-183 | > Note: Omit any fields related to generating or writing `config/mcp_servers.generated.toml`. Use a separate instruction file such as `instructions/mcp_servers_generated_concise.md` if present.
-184 | 
-185 | Also log memory batching and status coupling events when applicable:
-186 | 
-187 | - Each memory flush: append `{tool:"memory", op:"upsert_batch", time_utc, scope, batch_id, count}` to `memory_ops[]`.
-188 | - Each Task Master status call: append `{action:"status", name:"task-master", value, status}` to `server_actions[]`.
-189 | 
-190 | ---
-191 | 
-192 | ## Task Master Integration — Correct Usage (per README)
-193 | 
-194 | - **Package vs CLI:** The npm package is `task-master-ai`. The CLI binary is `task-master`.
-195 | - **MCP server (Cursor) setup:** Use a Command server with `npx -y task-master-ai` as the command. Name “Task Master”. This exposes Task Master tools inside Cursor.
-196 | - **Configuration source of truth:** Use the `.taskmasterconfig` file created/managed by `task-master models --setup` or the `models` MCP tool. Do **not** set model choice, max tokens, temperature, or log level via environment variables.
-197 | - **Environment variables:** Only for API keys and specific endpoints (e.g., `ANTHROPIC_API_KEY`, `PERPLEXITY_API_KEY`, `OLLAMA_BASE_URL`). For CLI, store in a project `.env`. For MCP, store under the server’s `env` block.
-198 | - **CLI commands used by this system:** `task-master parse-prd`, `task-master list`, `task-master next`, `task-master generate`, `task-master show`, `task-master set-status`, `task-master update`, `task-master expand`, `task-master clear-subtasks`, dependency validators, and complexity analysis commands. Use exactly these spellings.
-199 | - **Status vocabulary:** Prefer `pending`, `in-progress`, `done`, and `deferred` for Task Master. Keep any extra internal states (e.g., `verify`, `needs-local-tests`) inside this system and map them to Task Master per §3.
-200 | 
-201 | **Logging note:** When logging to `DocFetchReport.server_actions[]`, keep `{action:"status", name:"task-master", value:"<status>", status:"ok|error"}`. This aligns with the CLI/MCP usage.
-202 | 
-203 | **ESM note:** Task Master is ESM. If invoking scripts directly, ensure Node ESM compatibility.
-204 | 
-205 | ## A) Preflight: Latest Docs Requirement (**MUST**, Blocking)
-206 | 
-207 | **Goal:** Ensure the assistant retrieves and considers the *latest relevant docs* before planning, acting, or finalizing.
-208 | 
-209 | **Primary/Fallback Order (consolidated):**
-210 | 
-211 | 1. **contex7-mcp** (primary)
-212 | 2. **gitmcp** (fallback)
-213 | 
-214 | **What to do:**
-215 | 
-216 | - For every task that could touch code, configuration, APIs, tooling, or libraries:
-217 | 
-218 |   - Call **contex7-mcp** to fetch the latest documentation or guides.
-219 |   - If the **primary** call **fails**, retry with **gitmcp**.
-220 | - Each successful call **MUST** capture:
-221 | 
-222 |   - Tool name, query/topic, retrieval timestamp (UTC), and source refs/URLs (or repo refs/commits).
-223 | - Scope:
-224 | 
-225 |   - Fetch docs for each **area to be touched** (framework, library, CLI, infra, etc.).
-226 |   - Prefer focused topics (e.g., "exception handlers", "lifespan", "retry policy", "schema").
-227 | 
-228 | **Failure handling:**
-229 | 
-230 | - If **all** providers fail for a required area, **do not finalize**. Return a minimal plan that includes:
-231 | 
-232 |   - The attempted providers and errors
-233 |   - The specific topics/areas still uncovered
-234 |   - A safe, read-only analysis and suggested next checks (or user confirmation).
-235 | 
-236 | **Proof-of-Work Artifact (required):**
-237 | 
-238 | - Produce and attach a `DocFetchReport` (JSON) with `status`, `tools_called[]`, `sources[]`, `coverage`, `key_guidance[]`, `gaps`, and `informed_changes[]`.
-239 | 
-240 | **Override Path (explicit, logged):**
-241 | 
-242 | Allowed only for outages/ambiguous scope/timeboxed spikes. Must include:
-243 | 
-244 | ```json
-245 | {
-246 |   "Override": {
-247 |     "reason": "server_down|ambiguous_scope|timeboxed_spike",
-248 |     "risk_mitigation": ["read-only analysis", "scoped PoC", "user confirmation required"],
-249 |     "expires_after": "1 action or 30m",
-250 |     "requested_by": "system|user"
-251 |   }
-252 | }
-253 | ```
-254 | 
-255 | ---
-256 | 
-257 | ## A.1) Tech & Language Identification (Pre-Requirement)
-258 | 
-259 | - Before running Preflight (§A), the assistant must determine both:
-260 | 
-261 |   1. The **primary language(s)** used in the project (e.g., TypeScript, Python, Go, Rust, Java, Bash).
-262 |   2. The **current project’s tech stack** (frameworks, libraries, infra, tools).
-263 | 
-264 | - Sources to infer language/stack:
-265 | 
-266 |   - Project tags (`${PROJECT_TAG}`), memory checkpoints, prior completion records.
-267 |   - Files present in repo (e.g., manifests like `package.json`, `pyproject.toml`, `go.mod`, `Cargo.toml`, `pom.xml`, CI configs).
-268 |   - File extensions in repo (`.ts`, `.js`, `.py`, `.go`, `.rs`, `.java`, `.sh`, `.sql`, etc.).
-269 |   - User/task context (explicit mentions of frameworks, CLIs, infra).
-270 | 
-271 | - **Repo mapping requirement:** Resolve the **canonical GitHub OWNER/REPO** for each detected library/tool whenever feasible.
-272 | 
-273 |   - **Resolution order:**
-274 | 
-275 |     1. **Registry mapping** (maintained lookup table for common libs).
-276 |     2. **Package index metadata** (e.g., npm `repository.url`, PyPI `project_urls` → `Source`/`Homepage`).
-277 |     3. **Official docs → GitHub link** discovery.
-278 |     4. **Targeted search** (as a last resort) with guardrails below.
-279 |   - **Guardrails:** Prefer official orgs; require name similarity and recent activity; avoid forks and mirrors unless explicitly chosen.
-280 |   - Record outcomes in `DocFetchReport.owner_repo_resolution[]` with candidates, selected repo, method, and confidence score.
-281 | 
-282 | - Doc retrieval (§A) **must cover each identified language and stack element** that will be touched by the task.
-283 | 
-284 | - Record both in the `DocFetchReport`:
-285 | 
-286 | ```json
-287 | "tech_stack": ["<stack1>", "<stack2>"],
-288 | "languages": ["<lang1>", "<lang2>"]
-289 | ```
-290 | 
-291 | ---
-292 | 
-293 | ## B) Decision Gate: No Finalize Without Proof (**MUST**)
-294 | 
-295 | - The assistant **MUST NOT**: finalize, apply diffs, modify files, or deliver a definitive answer **unless** `DocFetchReport.status == "OK"`.
-296 | - The planner/executor must verify `ctx.docs_ready == true` (set when at least one successful docs call exists **per required area**).
-297 | - If `status != OK` or `ctx.docs_ready != true`:
-298 | 
-299 |   - Stop. Return a **Docs Missing** message that lists the exact MCP calls and topics to run.
-300 | 
-301 | ---
-302 | 
-303 | ## 0) Debugging
-304 | 
-305 | - **Use consolidated docs-first flow** before touching any files or finalizing:
-306 | 
-307 |   - Try **contex7-mcp** → **gitmcp**.
-308 |   - Record results in `DocFetchReport`.
-309 | 
-310 | ### 0.1) Docs Staleness Re-check Policy (**3-turn trigger**)
-311 | 
-312 | **Trigger:** If **three assistant responses** have occurred since the first unresolved error report **and** errors persist **after** applying suggested changes and attempting to run allowed checks, **force a docs refresh**.
-313 | 
-314 | **Action:**
-315 | 
-316 | 1. Re-run the **Dynamic Docs MCP Router** (§7) to discover and rank all `*-docs-mcp` servers relevant to the error topics (derive from stack traces, failing commands, and test names).
-317 | 2. Fetch **latest pertinent docs** via the ranked chain, then `contex7-mcp` → `gitmcp`.
-318 | 3. Rebuild `DocFetchReport` with `refresh_reason: "3_turns_persistent_errors"`, `since_turns: 3`, and `since_time_utc` from the last successful run.
-319 | 4. Set `ctx.docs_ready = false` until the refreshed report returns `status == "OK"`.
-320 | 5. Compute and record `doc_delta` vs the previous report (changed sources, new guidance, version bumps). Attach to `DocFetchReport.changed_guidance[]`.
-321 | 
-322 | **Notes:**
-323 | 
-324 | - Count a **turn** as one assistant message replying to the same error class. Reset the counter on a green run or a new error class.
-325 | - If no new guidance is found, record `no_update: true` and continue debugging; otherwise update the plan per new guidance.
-326 | - Log the refresh in memory: `task:${task_id}.observations.staleness_refresh` with UTC timestamp and topics.
-327 | 
-328 | ---
-329 | 
-330 | ## 1) Startup memory bootstrap (memory)
-331 | 
-332 | - On chat/session start: initialize **memory**.
-333 | 
-334 | - Retrieve (project-scoped):
-335 | 
-336 |   - **memory** → latest `memory_checkpoints` and recent task completions.
-337 |   - **memory** → ensure a graph namespace exists for this project and load prior nodes/edges.
-338 | 
-339 |     - **Server alias**: `memory` (e.g., Smithery "Memory Server" such as `@modelcontextprotocol/server-memory`).
-340 |     - **Bootstrap ops** (idempotent):
-341 | 
-342 |       - `create_entities` (or `upsert_entities`) for: `project:${PROJECT_TAG}`.
-343 |       - `create_relations` to link existing tasks/files if present.
-344 |       - `read_graph` / `search_nodes` to hydrate working context.
-345 | 
-346 | - Read/write rules:
-347 | 
-348 |   - Prefer **memory** for free-form notes and checkpoints.
-349 |   - Prefer **memory** for **structured** facts/relations (entities, edges, observations).
-350 |   - If memory is unavailable, record `memory_unavailable: true` in the session preamble.
-351 | 
-352 | ### 1.0) Memory MCP Server Usage Contract (**NEW**)
-353 | 
-354 | - **Alias:** `memory`.
-355 | - **Required tools:** `create_entities`, `create_relations`, `add_observations`, `delete_entities`, `delete_observations`, `delete_relations`, `read_graph`, `search_nodes`, `open_nodes`.
-356 | - **Concept rules:**
-357 | 
-358 |   - **Entities** carry `name`, `entityType`, `observations[]`. Names are unique. Observations are atomic facts.
-359 |   - **Relations** are directed and written in **active voice**: `{from, to, relationType}`.
-360 |   - **Observations** are strings attached to entities; add/remove independently.
-361 | - **Operational guarantees:**
-362 | 
-363 |   - Treat `create_*` as **idempotent upserts**. Skip duplicates silently.
-364 |   - `delete_*` calls are **tolerant** to missing targets. No errors on non-existent items.
-365 |   - `open_nodes` returns only requested entities and their inter-relations; silently skips misses.
-366 | - **Usage patterns (batched, quality-first):**
-367 | 
-368 |   - Maintain an in-memory buffer of observations and relation updates during execution.
-369 |   - Flush to `memory` only on any of:
-370 | 
-371 |     1. Subtask boundary reached (from §1.1),
-372 |     2. Status transition intent (`in-progress|verify|done|blocked|needs-local-tests`),
-373 |     3. 10 observations accumulated, or
-374 |     4. 60s since last flush.
-375 |   - On flush, send a single upsert with a `batch_id`, `dedupe_keys[]`, and `context` (task\_id, files\_touched, guidance\_refs).
-376 |   - Prefer merging observations into concise summaries when multiple micro-events target the same entity within a flush window.
-377 | - **Setup pointers (non-blocking):**
-378 | 
-379 |   - Storage file via `MEMORY_FILE_PATH` env; default `memory.json`.
-380 |   - Configure server in **user** MCP config or workspace `.vscode/mcp.json`. Do not embed install steps here.
-381 | - **Prompting note:**
-382 | 
-383 |   - If a separate chat-personalization prompt is used, it must not override gates (§A, §B) nor status flow (§3). Treat it as guidance for memory creation frequency and categories.
-384 | 
-385 | ### 1.1) Subtask plan and finish-in-one-go contract (**NEW**)
-386 | 
-387 | - **Before starting execution**, derive a **subtask plan** with clear **Definition of Done (DoD)** per subtask.
-388 | - **Finish-in-one-go policy:** Once execution starts, work the subtask list to completion within the session unless a blocking gate occurs (§A, §B, or external dependency). If blocked, record the block and propose an unblock plan; do not leave partial work without a recorded reason.
-389 | - **Recording:** Persist the subtask plan to **memory** under `task:${task_id}` as `observations.plan` with timestamps.
-390 | 
-391 | ### 1.2) Execution logging to memory (**NEW**)
-392 | 
-393 | - For each subtask: on **start** and **finish**, append an observation including `subtask_id`, `action`, `files_touched[]`, and short result.
-394 | - Keep a running `percent_complete` on the task node. Update after each subtask.
-395 | - Mirror links: `task:${task_id}` —\[touches]→ `file:<path>` as work proceeds, not only at the end.
-396 | 
-397 | #### Observation schema (batched)
-398 | 
-399 | ```
-400 | {
-401 |   subtask_id, action, ts_utc, files_touched[],
-402 |   summary, details_md, metrics:{time_ms?, tokens?, pass?},
-403 |   guidance_refs[], dedupe_key
-404 | }
-405 | ```
-406 | 
-407 | - Compute `dedupe_key` as a stable hash of `{task_id, subtask_id, action, summary}`.
-408 | - Replace per-event writes with buffered batches per §1.0.
-409 | 
-410 | ## Memory MCP Usage — Quality-over-Quantity Mode
-411 | 
-412 | ### Write policy
-413 | 
-414 | - Maintain an in-memory buffer for observations and relation updates.
-415 | - Flush triggers (any):
-416 | 
-417 |   1. Subtask boundary per §1.1,
-418 |   2. Status transition intent,
-419 |   3. 10 buffered observations,
-420 |   4. 60s since last flush.
-421 | - Single-call upsert per flush with `batch_id`, `dedupe_keys[]`, and `context`.
-422 | 
-423 | ### Observation schema
-424 | 
-425 | - Item: `{subtask_id, action, ts_utc, files_touched[], summary, details_md, metrics:{time_ms?, tokens?, pass?}, guidance_refs[], dedupe_key}`.
-426 | - `dedupe_key` = hash(task\_id, subtask\_id, action, summary). Treat creates as idempotent upserts. Skips on duplicate.
-427 | 
-428 | ### Merge & summarization
-429 | 
-430 | - If multiple items target the same entity within a window, coalesce into one summary with bullet details.
-431 | - Keep observations atomic but summarized; avoid trivial micro-events.
-432 | 
-433 | ### Read-after-write consistency
-434 | 
-435 | - On finalization: force `final:true` flush, then `open_nodes` to verify write result.
-436 | - Retry once with 250–500 ms backoff on mismatch; record outcome as observation.
-437 | 
-438 | ### Error and backoff
-439 | 
-440 | - Network errors: exponential backoff starting at 250 ms, max 3 attempts per flush.
-441 | - On persistent failure: mark `memory_unavailable:true` in session preamble and proceed read-only.
-442 | 
-443 | ### Post-save Task Master coupling
-444 | 
-445 | - After any successful flush that changes `percent_complete` or has `status_intent`:
-446 | 
-447 |   - Update **Task Master** using either the CLI (`task-master set-status`) or the MCP server.
-448 | 
-449 |     - **Start of execution** → set Task Master status to **`in-progress`**.
-450 |     - **Internal `verify` phase** → **do not** set a nonstandard Task Master status. Keep **`in-progress`** and attach a note in memory (and, if supported, task details) that verification is running.
-451 |     - **Outcomes**
-452 | 
-453 |       - Success → set **`done`**.
-454 |       - Failure or deferral → set **`deferred`** and include a reason note (e.g., `blocked` or `needs-local-tests`).
-455 | 
-456 | - Record hook: `{hook:"task-master", result:"ok|error", ts_utc}` in memory.
-457 | 
-458 | ### Completion
-459 | 
-460 | - Replace per-event writes with batch buffer per the policy above.
-461 | - Update `percent_complete` only at flush time.
-462 | 
-463 | ### Completion
-464 | 
-465 | - Write concise `completion_summary_md` + `evidence_refs[]`.
-466 | - Ensure graph links and observations are updated before exit.
-467 | 
-468 | ## 2) On task completion (status → done)
-469 | 
-470 | - **Before finalizing:**
-471 | 
-472 |   - Force a final buffer flush with `final:true`.
-473 |   - Re-read (`open_nodes`) the affected entities to confirm merge result; if mismatch, retry once with backoff (250–500 ms).
-474 |   - Attach a consolidated `completion_summary_md` and `evidence_refs[]` to `task:${task_id}`.
-475 | 
-476 | - Write a concise completion to memory including:
-477 | 
-478 |   - `task_id`, `title`, `status`, `next step`
-479 |   - Files touched
-480 |   - Commit/PR link (if applicable)
-481 |   - Test results (if applicable)
-482 | 
-483 | - **Completion criteria (explicit):**
-484 | 
-485 |   - All subtasks from §1.1 are marked **done** and their DoD satisfied.
-486 |   - Required gates passed (§A, §B).
-487 |   - Post-completion checks executed or proposed (§2.1).
-488 | 
-489 | - **Update the Knowledge Graph (memory)**:
-490 | 
-491 |   - Ensure base entity `project:${PROJECT_TAG}` exists.
-492 |   - Upsert `task:${task_id}` and any `file:<path>` entities touched.
-493 |   - Create/refresh relations:
-494 | 
-495 |     - `project:${PROJECT_TAG}` —\[owns]→ `task:${task_id}`
-496 |     - `task:${task_id}` —\[touches]→ `file:<path>`
-497 |     - `task:${task_id}` —\[status]→ `<status>`
-498 |     - Optional: `task:${task_id}` —\[depends\_on]→ `<entity>`
-499 |   - Attach `observations` capturing key outcomes (e.g., perf metrics, regressions, decisions).
-500 | 
-501 | - Seed/Update the knowledge graph **before** exiting the task so subsequent sessions can leverage it.
-502 | 
-503 | - Do **NOT** write to `AGENTS.md` beyond these standing instructions.
-504 | 
-505 | ### 2.1) Post-completion checks and tests (**REVISED — Run-then-verify**)
-506 | 
-507 | - **Order of operations:**
-508 |   a) Append subtask completion logs to **memory** (§1.2).
-509 |   b) Set task status to **`verify`** (new intermediate state).
-510 |   c) Evaluate the **Safety Gate** per **§8 Environment & Testing Policy**.
-511 |   d) If **safe**, run **stateless checks automatically** (see §8 Allowed Automatic Checks).
-512 |   e) If **unsafe**, **defer** execution and emit a **Local Test Instructions** block for the user.
-513 | 
-514 | - **Recording:** Write outcomes to `task:${task_id}.observations.test_results` and also set:
-515 | 
-516 |   - `tests_deferred: true|false`
-517 |   - `tests_deferred_reason: <string|null>`
-518 |   - `test_log_path: artifacts/test/<UTC-timestamp>.log` when any checks are executed.
-519 | 
-520 | - **Status transitions:**
 [TRUNCATED]
 ```
 
@@ -1822,781 +1279,773 @@ catalog.json
 49 |         "/scope-control"
 50 |       ],
 51 |       "path": "instruction-file.md"
-52 |     },
-53 |     {
-54 |       "phase": "P0 Preflight Docs",
-55 |       "command": "/system-instruction-editor",
-56 |       "title": "System Instruction: Canonical Instruction File Editor",
-57 |       "purpose": "Publish the canonical system instruction guardrail before work begins.",
-58 |       "gate": "DocFetchReport",
-59 |       "status": "Canonical instruction editor guardrail prepared for use.",
-60 |       "previous": [
-61 |         "/instruction-file"
-62 |       ],
-63 |       "next": [
-64 |         "/planning-process",
-65 |         "/scope-control"
-66 |       ],
-67 |       "path": "system-level-instruction-editor.md"
-68 |     }
-69 |   ],
-70 |   "p1-plan-scope": [
+52 |     }
+53 |   ],
+54 |   "p1-plan-scope": [
+55 |     {
+56 |       "phase": "P1 Plan & Scope",
+57 |       "command": "/planning-process",
+58 |       "title": "Planning Process",
+59 |       "purpose": "Draft, refine, and execute a feature plan with strict scope control and progress tracking.",
+60 |       "gate": "Scope Gate",
+61 |       "status": "confirm problem, users, Done criteria, and stack risks are logged.",
+62 |       "previous": [
+63 |         "Preflight Docs (AGENTS baseline)"
+64 |       ],
+65 |       "next": [
+66 |         "/scope-control",
+67 |         "/stack-evaluation"
+68 |       ],
+69 |       "path": "planning-process.md"
+70 |     },
 71 |     {
 72 |       "phase": "P1 Plan & Scope",
-73 |       "command": "/planning-process",
-74 |       "title": "Planning Process",
-75 |       "purpose": "Draft, refine, and execute a feature plan with strict scope control and progress tracking.",
-76 |       "gate": "Scope Gate",
-77 |       "status": "confirm problem, users, Done criteria, and stack risks are logged.",
+73 |       "command": "/prototype-feature",
+74 |       "title": "Prototype Feature",
+75 |       "purpose": "Spin up a standalone prototype in a clean repo before merging into main.",
+76 |       "gate": "Prototype review",
+77 |       "status": "Validate spike outcomes before committing to scope.",
 78 |       "previous": [
-79 |         "Preflight Docs (AGENTS baseline)"
+79 |         "/planning-process"
 80 |       ],
 81 |       "next": [
-82 |         "/scope-control",
-83 |         "/stack-evaluation"
+82 |         "/scaffold-fullstack",
+83 |         "/api-contract"
 84 |       ],
-85 |       "path": "planning-process.md"
+85 |       "path": "prototype-feature.md"
 86 |     },
 87 |     {
 88 |       "phase": "P1 Plan & Scope",
-89 |       "command": "/prototype-feature",
-90 |       "title": "Prototype Feature",
-91 |       "purpose": "Spin up a standalone prototype in a clean repo before merging into main.",
-92 |       "gate": "Prototype review",
-93 |       "status": "Validate spike outcomes before committing to scope.",
+89 |       "command": "/scope-control",
+90 |       "title": "Scope Control",
+91 |       "purpose": "Enforce explicit scope boundaries and maintain \"won't do\" and \"ideas for later\" lists.",
+92 |       "gate": "Scope Gate",
+93 |       "status": "Done criteria, scope lists, and stack choices are committed.",
 94 |       "previous": [
 95 |         "/planning-process"
 96 |       ],
 97 |       "next": [
-98 |         "/scaffold-fullstack",
-99 |         "/api-contract"
+98 |         "/stack-evaluation",
+99 |         "/scaffold-fullstack"
 100 |       ],
-101 |       "path": "prototype-feature.md"
+101 |       "path": "scope-control.md"
 102 |     },
 103 |     {
 104 |       "phase": "P1 Plan & Scope",
-105 |       "command": "/scope-control",
-106 |       "title": "Scope Control",
-107 |       "purpose": "Enforce explicit scope boundaries and maintain \"won't do\" and \"ideas for later\" lists.",
+105 |       "command": "/stack-evaluation",
+106 |       "title": "Stack Evaluation",
+107 |       "purpose": "Evaluate language/framework choices relative to AI familiarity and repo goals.",
 108 |       "gate": "Scope Gate",
-109 |       "status": "Done criteria, scope lists, and stack choices are committed.",
+109 |       "status": "record recommended stack and top risks before building.",
 110 |       "previous": [
-111 |         "/planning-process"
+111 |         "/scope-control"
 112 |       ],
 113 |       "next": [
-114 |         "/stack-evaluation",
-115 |         "/scaffold-fullstack"
+114 |         "/scaffold-fullstack",
+115 |         "/api-contract"
 116 |       ],
-117 |       "path": "scope-control.md"
-118 |     },
-119 |     {
-120 |       "phase": "P1 Plan & Scope",
-121 |       "command": "/stack-evaluation",
-122 |       "title": "Stack Evaluation",
-123 |       "purpose": "Evaluate language/framework choices relative to AI familiarity and repo goals.",
-124 |       "gate": "Scope Gate",
-125 |       "status": "record recommended stack and top risks before building.",
-126 |       "previous": [
-127 |         "/scope-control"
-128 |       ],
-129 |       "next": [
-130 |         "/scaffold-fullstack",
-131 |         "/api-contract"
-132 |       ],
-133 |       "path": "stack-evaluation.md"
-134 |     }
-135 |   ],
-136 |   "p2-app-scaffold-contracts": [
+117 |       "path": "stack-evaluation.md"
+118 |     }
+119 |   ],
+120 |   "p2-app-scaffold-contracts": [
+121 |     {
+122 |       "phase": "P2 App Scaffold & Contracts",
+123 |       "command": "/api-contract \"<feature or domain>\"",
+124 |       "title": "API Contract",
+125 |       "purpose": "Author an initial OpenAPI 3.1 or GraphQL SDL contract from requirements.",
+126 |       "gate": "Test Gate lite",
+127 |       "status": "contract checked into repo with sample generation running cleanly.",
+128 |       "previous": [
+129 |         "/scaffold-fullstack"
+130 |       ],
+131 |       "next": [
+132 |         "/openapi-generate",
+133 |         "/modular-architecture"
+134 |       ],
+135 |       "path": "api-contract.md"
+136 |     },
 137 |     {
 138 |       "phase": "P2 App Scaffold & Contracts",
-139 |       "command": "/api-contract \"<feature or domain>\"",
-140 |       "title": "API Contract",
-141 |       "purpose": "Author an initial OpenAPI 3.1 or GraphQL SDL contract from requirements.",
+139 |       "command": "/api-docs-local",
+140 |       "title": "API Docs Local",
+141 |       "purpose": "Fetch API docs and store locally for offline, deterministic reference.",
 142 |       "gate": "Test Gate lite",
-143 |       "status": "contract checked into repo with sample generation running cleanly.",
+143 |       "status": "contracts cached locally for repeatable generation.",
 144 |       "previous": [
 145 |         "/scaffold-fullstack"
 146 |       ],
 147 |       "next": [
-148 |         "/openapi-generate",
-149 |         "/modular-architecture"
+148 |         "/api-contract",
+149 |         "/openapi-generate"
 150 |       ],
-151 |       "path": "api-contract.md"
+151 |       "path": "api-docs-local.md"
 152 |     },
 153 |     {
 154 |       "phase": "P2 App Scaffold & Contracts",
-155 |       "command": "/api-docs-local",
-156 |       "title": "API Docs Local",
-157 |       "purpose": "Fetch API docs and store locally for offline, deterministic reference.",
+155 |       "command": "/openapi-generate <server|client> <lang> <spec-path>",
+156 |       "title": "OpenAPI Generate",
+157 |       "purpose": "Generate server stubs or typed clients from an OpenAPI spec.",
 158 |       "gate": "Test Gate lite",
-159 |       "status": "contracts cached locally for repeatable generation.",
+159 |       "status": "generated code builds and CI checks cover the new scripts.",
 160 |       "previous": [
-161 |         "/scaffold-fullstack"
+161 |         "/api-contract"
 162 |       ],
 163 |       "next": [
-164 |         "/api-contract",
-165 |         "/openapi-generate"
+164 |         "/modular-architecture",
+165 |         "/db-bootstrap"
 166 |       ],
-167 |       "path": "api-docs-local.md"
+167 |       "path": "openapi-generate.md"
 168 |     },
 169 |     {
 170 |       "phase": "P2 App Scaffold & Contracts",
-171 |       "command": "/openapi-generate <server|client> <lang> <spec-path>",
-172 |       "title": "OpenAPI Generate",
-173 |       "purpose": "Generate server stubs or typed clients from an OpenAPI spec.",
-174 |       "gate": "Test Gate lite",
-175 |       "status": "generated code builds and CI checks cover the new scripts.",
+171 |       "command": "/prototype-feature",
+172 |       "title": "Prototype Feature",
+173 |       "purpose": "Spin up a standalone prototype in a clean repo before merging into main.",
+174 |       "gate": "Prototype review",
+175 |       "status": "Validate spike outcomes before committing to scope.",
 176 |       "previous": [
-177 |         "/api-contract"
+177 |         "/planning-process"
 178 |       ],
 179 |       "next": [
-180 |         "/modular-architecture",
-181 |         "/db-bootstrap"
+180 |         "/scaffold-fullstack",
+181 |         "/api-contract"
 182 |       ],
-183 |       "path": "openapi-generate.md"
+183 |       "path": "prototype-feature.md"
 184 |     },
 185 |     {
 186 |       "phase": "P2 App Scaffold & Contracts",
-187 |       "command": "/prototype-feature",
-188 |       "title": "Prototype Feature",
-189 |       "purpose": "Spin up a standalone prototype in a clean repo before merging into main.",
-190 |       "gate": "Prototype review",
-191 |       "status": "Validate spike outcomes before committing to scope.",
+187 |       "command": "/reference-implementation",
+188 |       "title": "Reference Implementation",
+189 |       "purpose": "Mimic the style and API of a known working example.",
+190 |       "gate": "Test Gate lite",
+191 |       "status": "align new modules with proven patterns before deeper work.",
 192 |       "previous": [
-193 |         "/planning-process"
-194 |       ],
-195 |       "next": [
-196 |         "/scaffold-fullstack",
-197 |         "/api-contract"
-198 |       ],
-199 |       "path": "prototype-feature.md"
-200 |     },
-201 |     {
-202 |       "phase": "P2 App Scaffold & Contracts",
-203 |       "command": "/reference-implementation",
-204 |       "title": "Reference Implementation",
-205 |       "purpose": "Mimic the style and API of a known working example.",
-206 |       "gate": "Test Gate lite",
-207 |       "status": "align new modules with proven patterns before deeper work.",
-208 |       "previous": [
-209 |         "/scaffold-fullstack",
-210 |         "/api-contract"
+193 |         "/scaffold-fullstack",
+194 |         "/api-contract"
+195 |       ],
+196 |       "next": [
+197 |         "/modular-architecture",
+198 |         "/openapi-generate"
+199 |       ],
+200 |       "path": "reference-implementation.md"
+201 |     },
+202 |     {
+203 |       "phase": "P2 App Scaffold & Contracts",
+204 |       "command": "/scaffold-fullstack <stack>",
+205 |       "title": "Scaffold Full‑Stack App",
+206 |       "purpose": "Create a minimal, production-ready monorepo template with app, API, tests, CI seeds, and infra stubs.",
+207 |       "gate": "Test Gate lite",
+208 |       "status": "ensure lint/build scripts execute on the generated scaffold.",
+209 |       "previous": [
+210 |         "/stack-evaluation"
 211 |       ],
 212 |       "next": [
-213 |         "/modular-architecture",
-214 |         "/openapi-generate"
-215 |       ],
-216 |       "path": "reference-implementation.md"
-217 |     },
-218 |     {
-219 |       "phase": "P2 App Scaffold & Contracts",
-220 |       "command": "/scaffold-fullstack <stack>",
-221 |       "title": "Scaffold Full‑Stack App",
-222 |       "purpose": "Create a minimal, production-ready monorepo template with app, API, tests, CI seeds, and infra stubs.",
-223 |       "gate": "Test Gate lite",
-224 |       "status": "ensure lint/build scripts execute on the generated scaffold.",
-225 |       "previous": [
-226 |         "/stack-evaluation"
-227 |       ],
-228 |       "next": [
-229 |         "/api-contract",
-230 |         "/openapi-generate",
-231 |         "/modular-architecture"
-232 |       ],
-233 |       "path": "scaffold-fullstack.md"
-234 |     }
-235 |   ],
-236 |   "p3-data-auth": [
-237 |     {
-238 |       "phase": "P3 Data & Auth",
-239 |       "command": "/auth-scaffold <oauth|email|oidc>",
-240 |       "title": "Auth Scaffold",
-241 |       "purpose": "Scaffold auth flows, routes, storage, and a basic threat model.",
-242 |       "gate": "Migration dry-run",
-243 |       "status": "auth flows threat-modeled and test accounts wired.",
-244 |       "previous": [
-245 |         "/migration-plan"
-246 |       ],
-247 |       "next": [
-248 |         "/modular-architecture",
-249 |         "/ui-screenshots",
-250 |         "/e2e-runner-setup"
+213 |         "/api-contract",
+214 |         "/openapi-generate",
+215 |         "/modular-architecture"
+216 |       ],
+217 |       "path": "scaffold-fullstack.md"
+218 |     }
+219 |   ],
+220 |   "p3-data-auth": [
+221 |     {
+222 |       "phase": "P3 Data & Auth",
+223 |       "command": "/auth-scaffold <oauth|email|oidc>",
+224 |       "title": "Auth Scaffold",
+225 |       "purpose": "Scaffold auth flows, routes, storage, and a basic threat model.",
+226 |       "gate": "Migration dry-run",
+227 |       "status": "auth flows threat-modeled and test accounts wired.",
+228 |       "previous": [
+229 |         "/migration-plan"
+230 |       ],
+231 |       "next": [
+232 |         "/modular-architecture",
+233 |         "/ui-screenshots",
+234 |         "/e2e-runner-setup"
+235 |       ],
+236 |       "path": "auth-scaffold.md"
+237 |     },
+238 |     {
+239 |       "phase": "P3 Data & Auth",
+240 |       "command": "/db-bootstrap <postgres|mysql|sqlite|mongodb>",
+241 |       "title": "DB Bootstrap",
+242 |       "purpose": "Pick a database, initialize migrations, local compose, and seed scripts.",
+243 |       "gate": "Migration dry-run",
+244 |       "status": "migrations apply/rollback cleanly with seeds populated.",
+245 |       "previous": [
+246 |         "/modular-architecture"
+247 |       ],
+248 |       "next": [
+249 |         "/migration-plan",
+250 |         "/auth-scaffold"
 251 |       ],
-252 |       "path": "auth-scaffold.md"
+252 |       "path": "db-bootstrap.md"
 253 |     },
 254 |     {
 255 |       "phase": "P3 Data & Auth",
-256 |       "command": "/db-bootstrap <postgres|mysql|sqlite|mongodb>",
-257 |       "title": "DB Bootstrap",
-258 |       "purpose": "Pick a database, initialize migrations, local compose, and seed scripts.",
+256 |       "command": "/migration-plan \"<change summary>\"",
+257 |       "title": "Migration Plan",
+258 |       "purpose": "Produce safe up/down migration steps with checks and rollback notes.",
 259 |       "gate": "Migration dry-run",
-260 |       "status": "migrations apply/rollback cleanly with seeds populated.",
+260 |       "status": "validated rollback steps and safety checks documented.",
 261 |       "previous": [
-262 |         "/modular-architecture"
+262 |         "/db-bootstrap"
 263 |       ],
 264 |       "next": [
-265 |         "/migration-plan",
-266 |         "/auth-scaffold"
+265 |         "/auth-scaffold",
+266 |         "/e2e-runner-setup"
 267 |       ],
-268 |       "path": "db-bootstrap.md"
-269 |     },
-270 |     {
-271 |       "phase": "P3 Data & Auth",
-272 |       "command": "/migration-plan \"<change summary>\"",
-273 |       "title": "Migration Plan",
-274 |       "purpose": "Produce safe up/down migration steps with checks and rollback notes.",
-275 |       "gate": "Migration dry-run",
-276 |       "status": "validated rollback steps and safety checks documented.",
-277 |       "previous": [
-278 |         "/db-bootstrap"
-279 |       ],
-280 |       "next": [
-281 |         "/auth-scaffold",
-282 |         "/e2e-runner-setup"
-283 |       ],
-284 |       "path": "migration-plan.md"
-285 |     }
-286 |   ],
-287 |   "p4-frontend-ux": [
+268 |       "path": "migration-plan.md"
+269 |     }
+270 |   ],
+271 |   "p4-frontend-ux": [
+272 |     {
+273 |       "phase": "P4 Frontend UX",
+274 |       "command": "/design-assets",
+275 |       "title": "Design Assets",
+276 |       "purpose": "Generate favicons and small design snippets from product brand.",
+277 |       "gate": "Accessibility checks queued",
+278 |       "status": "ensure assets support design review.",
+279 |       "previous": [
+280 |         "/modular-architecture"
+281 |       ],
+282 |       "next": [
+283 |         "/ui-screenshots",
+284 |         "/logging-strategy"
+285 |       ],
+286 |       "path": "design-assets.md"
+287 |     },
 288 |     {
 289 |       "phase": "P4 Frontend UX",
-290 |       "command": "/design-assets",
-291 |       "title": "Design Assets",
-292 |       "purpose": "Generate favicons and small design snippets from product brand.",
+290 |       "command": "/ui-screenshots",
+291 |       "title": "UI Screenshots",
+292 |       "purpose": "Analyze screenshots for UI bugs or inspiration and propose actionable UI changes.",
 293 |       "gate": "Accessibility checks queued",
-294 |       "status": "ensure assets support design review.",
+294 |       "status": "capture UX issues and backlog fixes.",
 295 |       "previous": [
-296 |         "/modular-architecture"
-297 |       ],
-298 |       "next": [
-299 |         "/ui-screenshots",
-300 |         "/logging-strategy"
-301 |       ],
-302 |       "path": "design-assets.md"
-303 |     },
-304 |     {
-305 |       "phase": "P4 Frontend UX",
-306 |       "command": "/ui-screenshots",
-307 |       "title": "UI Screenshots",
-308 |       "purpose": "Analyze screenshots for UI bugs or inspiration and propose actionable UI changes.",
-309 |       "gate": "Accessibility checks queued",
-310 |       "status": "capture UX issues and backlog fixes.",
-311 |       "previous": [
-312 |         "/design-assets",
-313 |         "/modular-architecture"
-314 |       ],
-315 |       "next": [
-316 |         "/logging-strategy",
-317 |         "/e2e-runner-setup"
-318 |       ],
-319 |       "path": "ui-screenshots.md"
-320 |     }
-321 |   ],
-322 |   "p5-quality-gates-tests": [
+296 |         "/design-assets",
+297 |         "/modular-architecture"
+298 |       ],
+299 |       "next": [
+300 |         "/logging-strategy",
+301 |         "/e2e-runner-setup"
+302 |       ],
+303 |       "path": "ui-screenshots.md"
+304 |     }
+305 |   ],
+306 |   "p5-quality-gates-tests": [
+307 |     {
+308 |       "phase": "P5 Quality Gates & Tests",
+309 |       "command": "/coverage-guide",
+310 |       "title": "Coverage Guide",
+311 |       "purpose": "Propose high-ROI tests to raise coverage using uncovered areas.",
+312 |       "gate": "Test Gate",
+313 |       "status": "coverage targets and regression guard plan recorded.",
+314 |       "previous": [
+315 |         "/integration-test"
+316 |       ],
+317 |       "next": [
+318 |         "/regression-guard",
+319 |         "/version-control-guide"
+320 |       ],
+321 |       "path": "coverage-guide.md"
+322 |     },
 323 |     {
 324 |       "phase": "P5 Quality Gates & Tests",
-325 |       "command": "/coverage-guide",
-326 |       "title": "Coverage Guide",
-327 |       "purpose": "Propose high-ROI tests to raise coverage using uncovered areas.",
+325 |       "command": "/e2e-runner-setup <playwright|cypress>",
+326 |       "title": "E2E Runner Setup",
+327 |       "purpose": "Configure an end-to-end test runner with fixtures and a data sandbox.",
 328 |       "gate": "Test Gate",
-329 |       "status": "coverage targets and regression guard plan recorded.",
+329 |       "status": "runner green locally and wired into CI before expanding coverage.",
 330 |       "previous": [
-331 |         "/integration-test"
-332 |       ],
-333 |       "next": [
-334 |         "/regression-guard",
-335 |         "/version-control-guide"
-336 |       ],
-337 |       "path": "coverage-guide.md"
-338 |     },
-339 |     {
-340 |       "phase": "P5 Quality Gates & Tests",
-341 |       "command": "/e2e-runner-setup <playwright|cypress>",
-342 |       "title": "E2E Runner Setup",
-343 |       "purpose": "Configure an end-to-end test runner with fixtures and a data sandbox.",
-344 |       "gate": "Test Gate",
-345 |       "status": "runner green locally and wired into CI before expanding coverage.",
-346 |       "previous": [
-347 |         "/auth-scaffold",
-348 |         "/ui-screenshots"
+331 |         "/auth-scaffold",
+332 |         "/ui-screenshots"
+333 |       ],
+334 |       "next": [
+335 |         "/integration-test",
+336 |         "/coverage-guide"
+337 |       ],
+338 |       "path": "e2e-runner-setup.md"
+339 |     },
+340 |     {
+341 |       "phase": "P5 Quality Gates & Tests",
+342 |       "command": "/generate <source-file>",
+343 |       "title": "Generate Unit Tests",
+344 |       "purpose": "Generate unit tests for a given source file.",
+345 |       "gate": "Test Gate",
+346 |       "status": "targeted unit tests authored for the specified module.",
+347 |       "previous": [
+348 |         "/coverage-guide"
 349 |       ],
 350 |       "next": [
-351 |         "/integration-test",
-352 |         "/coverage-guide"
-353 |       ],
-354 |       "path": "e2e-runner-setup.md"
-355 |     },
-356 |     {
-357 |       "phase": "P5 Quality Gates & Tests",
-358 |       "command": "/generate <source-file>",
-359 |       "title": "Generate Unit Tests",
-360 |       "purpose": "Generate unit tests for a given source file.",
-361 |       "gate": "Test Gate",
-362 |       "status": "targeted unit tests authored for the specified module.",
-363 |       "previous": [
-364 |         "/coverage-guide"
-365 |       ],
-366 |       "next": [
+351 |         "/regression-guard"
+352 |       ],
+353 |       "path": "generate.md"
+354 |     },
+355 |     {
+356 |       "phase": "P5 Quality Gates & Tests",
+357 |       "command": "/integration-test",
+358 |       "title": "Integration Test",
+359 |       "purpose": "Generate E2E tests that simulate real user flows.",
+360 |       "gate": "Test Gate",
+361 |       "status": "happy path E2E must pass locally and in CI.",
+362 |       "previous": [
+363 |         "/e2e-runner-setup"
+364 |       ],
+365 |       "next": [
+366 |         "/coverage-guide",
 367 |         "/regression-guard"
 368 |       ],
-369 |       "path": "generate.md"
+369 |       "path": "integration-test.md"
 370 |     },
 371 |     {
 372 |       "phase": "P5 Quality Gates & Tests",
-373 |       "command": "/integration-test",
-374 |       "title": "Integration Test",
-375 |       "purpose": "Generate E2E tests that simulate real user flows.",
+373 |       "command": "/regression-guard",
+374 |       "title": "Regression Guard",
+375 |       "purpose": "Detect unrelated changes and add tests to prevent regressions.",
 376 |       "gate": "Test Gate",
-377 |       "status": "happy path E2E must pass locally and in CI.",
+377 |       "status": "regression coverage in place before CI hand-off.",
 378 |       "previous": [
-379 |         "/e2e-runner-setup"
+379 |         "/coverage-guide"
 380 |       ],
 381 |       "next": [
-382 |         "/coverage-guide",
-383 |         "/regression-guard"
+382 |         "/version-control-guide",
+383 |         "/devops-automation"
 384 |       ],
-385 |       "path": "integration-test.md"
-386 |     },
-387 |     {
-388 |       "phase": "P5 Quality Gates & Tests",
-389 |       "command": "/regression-guard",
-390 |       "title": "Regression Guard",
-391 |       "purpose": "Detect unrelated changes and add tests to prevent regressions.",
-392 |       "gate": "Test Gate",
-393 |       "status": "regression coverage in place before CI hand-off.",
-394 |       "previous": [
-395 |         "/coverage-guide"
-396 |       ],
-397 |       "next": [
-398 |         "/version-control-guide",
-399 |         "/devops-automation"
-400 |       ],
-401 |       "path": "regression-guard.md"
-402 |     }
-403 |   ],
-404 |   "p6-ci-cd-env": [
-405 |     {
-406 |       "phase": "P6 CI/CD & Env",
-407 |       "command": "/devops-automation",
-408 |       "title": "DevOps Automation",
-409 |       "purpose": "Configure servers, DNS, SSL, CI/CD at a pragmatic level.",
-410 |       "gate": "Review Gate",
-411 |       "status": "CI pipeline codified, rollback steps rehearsed.",
-412 |       "previous": [
-413 |         "/version-control-guide"
-414 |       ],
-415 |       "next": [
-416 |         "/env-setup",
+385 |       "path": "regression-guard.md"
+386 |     }
+387 |   ],
+388 |   "p6-ci-cd-env": [
+389 |     {
+390 |       "phase": "P6 CI/CD & Env",
+391 |       "command": "/devops-automation",
+392 |       "title": "DevOps Automation",
+393 |       "purpose": "Configure servers, DNS, SSL, CI/CD at a pragmatic level.",
+394 |       "gate": "Review Gate",
+395 |       "status": "CI pipeline codified, rollback steps rehearsed.",
+396 |       "previous": [
+397 |         "/version-control-guide"
+398 |       ],
+399 |       "next": [
+400 |         "/env-setup",
+401 |         "/secrets-manager-setup",
+402 |         "/iac-bootstrap"
+403 |       ],
+404 |       "path": "devops-automation.md"
+405 |     },
+406 |     {
+407 |       "phase": "P6 CI/CD & Env",
+408 |       "command": "/env-setup",
+409 |       "title": "Env Setup",
+410 |       "purpose": "Create .env.example, runtime schema validation, and per-env overrides.",
+411 |       "gate": "Review Gate",
+412 |       "status": "environment schemas enforced and CI respects strict loading.",
+413 |       "previous": [
+414 |         "/devops-automation"
+415 |       ],
+416 |       "next": [
 417 |         "/secrets-manager-setup",
 418 |         "/iac-bootstrap"
 419 |       ],
-420 |       "path": "devops-automation.md"
+420 |       "path": "env-setup.md"
 421 |     },
 422 |     {
 423 |       "phase": "P6 CI/CD & Env",
-424 |       "command": "/env-setup",
-425 |       "title": "Env Setup",
-426 |       "purpose": "Create .env.example, runtime schema validation, and per-env overrides.",
+424 |       "command": "/iac-bootstrap <aws|gcp|azure|fly|render>",
+425 |       "title": "IaC Bootstrap",
+426 |       "purpose": "Create minimal Infrastructure-as-Code for the chosen platform plus CI hooks.",
 427 |       "gate": "Review Gate",
-428 |       "status": "environment schemas enforced and CI respects strict loading.",
+428 |       "status": "IaC applied in staging with drift detection configured.",
 429 |       "previous": [
-430 |         "/devops-automation"
+430 |         "/secrets-manager-setup"
 431 |       ],
 432 |       "next": [
-433 |         "/secrets-manager-setup",
-434 |         "/iac-bootstrap"
+433 |         "/owners",
+434 |         "/review"
 435 |       ],
-436 |       "path": "env-setup.md"
+436 |       "path": "iac-bootstrap.md"
 437 |     },
 438 |     {
 439 |       "phase": "P6 CI/CD & Env",
-440 |       "command": "/iac-bootstrap <aws|gcp|azure|fly|render>",
-441 |       "title": "IaC Bootstrap",
-442 |       "purpose": "Create minimal Infrastructure-as-Code for the chosen platform plus CI hooks.",
+440 |       "command": "/secrets-manager-setup <provider>",
+441 |       "title": "Secrets Manager Setup",
+442 |       "purpose": "Provision a secrets store and map application variables to it.",
 443 |       "gate": "Review Gate",
-444 |       "status": "IaC applied in staging with drift detection configured.",
+444 |       "status": "secret paths mapped and least-privilege policies drafted.",
 445 |       "previous": [
-446 |         "/secrets-manager-setup"
+446 |         "/env-setup"
 447 |       ],
 448 |       "next": [
-449 |         "/owners",
-450 |         "/review"
+449 |         "/iac-bootstrap",
+450 |         "/owners"
 451 |       ],
-452 |       "path": "iac-bootstrap.md"
+452 |       "path": "secrets-manager-setup.md"
 453 |     },
 454 |     {
 455 |       "phase": "P6 CI/CD & Env",
-456 |       "command": "/secrets-manager-setup <provider>",
-457 |       "title": "Secrets Manager Setup",
-458 |       "purpose": "Provision a secrets store and map application variables to it.",
+456 |       "command": "/version-control-guide",
+457 |       "title": "Version Control Guide",
+458 |       "purpose": "Enforce clean incremental commits and clean-room re-implementation when finalizing.",
 459 |       "gate": "Review Gate",
-460 |       "status": "secret paths mapped and least-privilege policies drafted.",
+460 |       "status": "clean diff, CI green, and approvals ready.",
 461 |       "previous": [
-462 |         "/env-setup"
+462 |         "/regression-guard"
 463 |       ],
 464 |       "next": [
-465 |         "/iac-bootstrap",
-466 |         "/owners"
+465 |         "/devops-automation",
+466 |         "/env-setup"
 467 |       ],
-468 |       "path": "secrets-manager-setup.md"
+468 |       "path": "version-control-guide.md"
 469 |     },
 470 |     {
 471 |       "phase": "P6 CI/CD & Env",
-472 |       "command": "/version-control-guide",
-473 |       "title": "Version Control Guide",
-474 |       "purpose": "Enforce clean incremental commits and clean-room re-implementation when finalizing.",
+472 |       "command": "commit",
+473 |       "title": "Commit Message Assistant",
+474 |       "purpose": "Generate a conventional, review-ready commit message from the currently staged changes.",
 475 |       "gate": "Review Gate",
 476 |       "status": "clean diff, CI green, and approvals ready.",
 477 |       "previous": [
-478 |         "/regression-guard"
+478 |         "/version-control-guide"
 479 |       ],
 480 |       "next": [
 481 |         "/devops-automation",
 482 |         "/env-setup"
 483 |       ],
-484 |       "path": "version-control-guide.md"
-485 |     },
-486 |     {
-487 |       "phase": "P6 CI/CD & Env",
-488 |       "command": "commit",
-489 |       "title": "Commit Message Assistant",
-490 |       "purpose": "Generate a conventional, review-ready commit message from the currently staged changes.",
-491 |       "gate": "Review Gate",
-492 |       "status": "clean diff, CI green, and approvals ready.",
-493 |       "previous": [
-494 |         "/version-control-guide"
-495 |       ],
-496 |       "next": [
-497 |         "/devops-automation",
-498 |         "/env-setup"
-499 |       ],
-500 |       "path": "commit.md"
-501 |     }
-502 |   ],
-503 |   "p7-release-ops": [
+484 |       "path": "commit.md"
+485 |     }
+486 |   ],
+487 |   "p7-release-ops": [
+488 |     {
+489 |       "phase": "P7 Release & Ops",
+490 |       "command": "/audit",
+491 |       "title": "Audit",
+492 |       "purpose": "Audit repository hygiene and suggest improvements.",
+493 |       "gate": "Release Gate",
+494 |       "status": "readiness criteria before shipping.",
+495 |       "previous": [
+496 |         "/logging-strategy"
+497 |       ],
+498 |       "next": [
+499 |         "/error-analysis",
+500 |         "/fix"
+501 |       ],
+502 |       "path": "audit.md"
+503 |     },
 504 |     {
 505 |       "phase": "P7 Release & Ops",
-506 |       "command": "/audit",
-507 |       "title": "Audit",
-508 |       "purpose": "Audit repository hygiene and suggest improvements.",
-509 |       "gate": "Release Gate",
-510 |       "status": "readiness criteria before shipping.",
+506 |       "command": "/explain-code",
+507 |       "title": "Explain Code",
+508 |       "purpose": "Provide line-by-line explanations for a given file or diff.",
+509 |       "gate": "Review Gate",
+510 |       "status": "Improve reviewer comprehension before approvals.",
 511 |       "previous": [
-512 |         "/logging-strategy"
-513 |       ],
-514 |       "next": [
-515 |         "/error-analysis",
-516 |         "/fix"
-517 |       ],
-518 |       "path": "audit.md"
-519 |     },
-520 |     {
-521 |       "phase": "P7 Release & Ops",
-522 |       "command": "/explain-code",
-523 |       "title": "Explain Code",
-524 |       "purpose": "Provide line-by-line explanations for a given file or diff.",
-525 |       "gate": "Review Gate",
-526 |       "status": "Improve reviewer comprehension before approvals.",
-527 |       "previous": [
-528 |         "/owners",
-529 |         "/review"
+512 |         "/owners",
+513 |         "/review"
+514 |       ],
+515 |       "next": [
+516 |         "/review-branch",
+517 |         "/pr-desc"
+518 |       ],
+519 |       "path": "explain-code.md"
+520 |     },
+521 |     {
+522 |       "phase": "P7 Release & Ops",
+523 |       "command": "/monitoring-setup",
+524 |       "title": "Monitoring Setup",
+525 |       "purpose": "Bootstrap logs, metrics, and traces with dashboards per domain.",
+526 |       "gate": "Release Gate",
+527 |       "status": "observability baselines ready before rollout.",
+528 |       "previous": [
+529 |         "/version-proposal"
 530 |       ],
 531 |       "next": [
-532 |         "/review-branch",
-533 |         "/pr-desc"
+532 |         "/slo-setup",
+533 |         "/logging-strategy"
 534 |       ],
-535 |       "path": "explain-code.md"
+535 |       "path": "monitoring-setup.md"
 536 |     },
 537 |     {
 538 |       "phase": "P7 Release & Ops",
-539 |       "command": "/monitoring-setup",
-540 |       "title": "Monitoring Setup",
-541 |       "purpose": "Bootstrap logs, metrics, and traces with dashboards per domain.",
-542 |       "gate": "Release Gate",
-543 |       "status": "observability baselines ready before rollout.",
+539 |       "command": "/owners <path>",
+540 |       "title": "Owners",
+541 |       "purpose": "Suggest likely owners or reviewers for the specified path.",
+542 |       "gate": "Review Gate",
+543 |       "status": "confirm approvers and escalation paths before PR submission.",
 544 |       "previous": [
-545 |         "/version-proposal"
+545 |         "/iac-bootstrap"
 546 |       ],
 547 |       "next": [
-548 |         "/slo-setup",
-549 |         "/logging-strategy"
-550 |       ],
-551 |       "path": "monitoring-setup.md"
-552 |     },
-553 |     {
-554 |       "phase": "P7 Release & Ops",
-555 |       "command": "/owners <path>",
-556 |       "title": "Owners",
-557 |       "purpose": "Suggest likely owners or reviewers for the specified path.",
-558 |       "gate": "Review Gate",
-559 |       "status": "confirm approvers and escalation paths before PR submission.",
-560 |       "previous": [
-561 |         "/iac-bootstrap"
-562 |       ],
-563 |       "next": [
-564 |         "/review",
-565 |         "/review-branch",
-566 |         "/pr-desc"
+548 |         "/review",
+549 |         "/review-branch",
+550 |         "/pr-desc"
+551 |       ],
+552 |       "path": "owners.md"
+553 |     },
+554 |     {
+555 |       "phase": "P7 Release & Ops",
+556 |       "command": "/pr-desc <context>",
+557 |       "title": "PR Description",
+558 |       "purpose": "Draft a PR description from the branch diff.",
+559 |       "gate": "Review Gate",
+560 |       "status": "PR narrative ready for approvals and release prep.",
+561 |       "previous": [
+562 |         "/review-branch"
+563 |       ],
+564 |       "next": [
+565 |         "/release-notes",
+566 |         "/version-proposal"
 567 |       ],
-568 |       "path": "owners.md"
+568 |       "path": "pr-desc.md"
 569 |     },
 570 |     {
 571 |       "phase": "P7 Release & Ops",
-572 |       "command": "/pr-desc <context>",
-573 |       "title": "PR Description",
-574 |       "purpose": "Draft a PR description from the branch diff.",
-575 |       "gate": "Review Gate",
-576 |       "status": "PR narrative ready for approvals and release prep.",
+572 |       "command": "/release-notes <git-range>",
+573 |       "title": "Release Notes",
+574 |       "purpose": "Generate human-readable release notes from recent commits.",
+575 |       "gate": "Release Gate",
+576 |       "status": "notes compiled for staging review and production rollout.",
 577 |       "previous": [
-578 |         "/review-branch"
+578 |         "/pr-desc"
 579 |       ],
 580 |       "next": [
-581 |         "/release-notes",
-582 |         "/version-proposal"
+581 |         "/version-proposal",
+582 |         "/monitoring-setup"
 583 |       ],
-584 |       "path": "pr-desc.md"
+584 |       "path": "release-notes.md"
 585 |     },
 586 |     {
 587 |       "phase": "P7 Release & Ops",
-588 |       "command": "/release-notes <git-range>",
-589 |       "title": "Release Notes",
-590 |       "purpose": "Generate human-readable release notes from recent commits.",
-591 |       "gate": "Release Gate",
-592 |       "status": "notes compiled for staging review and production rollout.",
+588 |       "command": "/review <pattern>",
+589 |       "title": "Review",
+590 |       "purpose": "Review code matching a pattern and deliver actionable feedback.",
+591 |       "gate": "Review Gate",
+592 |       "status": "peer review coverage met before merging.",
 593 |       "previous": [
-594 |         "/pr-desc"
+594 |         "/owners"
 595 |       ],
 596 |       "next": [
-597 |         "/version-proposal",
-598 |         "/monitoring-setup"
+597 |         "/review-branch",
+598 |         "/pr-desc"
 599 |       ],
-600 |       "path": "release-notes.md"
+600 |       "path": "review.md"
 601 |     },
 602 |     {
 603 |       "phase": "P7 Release & Ops",
-604 |       "command": "/review <pattern>",
-605 |       "title": "Review",
-606 |       "purpose": "Review code matching a pattern and deliver actionable feedback.",
+604 |       "command": "/review-branch",
+605 |       "title": "Review Branch",
+606 |       "purpose": "Provide a high-level review of the current branch versus origin/main.",
 607 |       "gate": "Review Gate",
-608 |       "status": "peer review coverage met before merging.",
+608 |       "status": "branch scope validated before PR submission.",
 609 |       "previous": [
-610 |         "/owners"
+610 |         "/review"
 611 |       ],
 612 |       "next": [
-613 |         "/review-branch",
-614 |         "/pr-desc"
+613 |         "/pr-desc",
+614 |         "/release-notes"
 615 |       ],
-616 |       "path": "review.md"
+616 |       "path": "review-branch.md"
 617 |     },
 618 |     {
 619 |       "phase": "P7 Release & Ops",
-620 |       "command": "/review-branch",
-621 |       "title": "Review Branch",
-622 |       "purpose": "Provide a high-level review of the current branch versus origin/main.",
-623 |       "gate": "Review Gate",
-624 |       "status": "branch scope validated before PR submission.",
+620 |       "command": "/slo-setup",
+621 |       "title": "SLO Setup",
+622 |       "purpose": "Define Service Level Objectives, burn alerts, and runbooks.",
+623 |       "gate": "Release Gate",
+624 |       "status": "SLOs and alerts reviewed before production rollout.",
 625 |       "previous": [
-626 |         "/review"
+626 |         "/monitoring-setup"
 627 |       ],
 628 |       "next": [
-629 |         "/pr-desc",
-630 |         "/release-notes"
+629 |         "/logging-strategy",
+630 |         "/audit"
 631 |       ],
-632 |       "path": "review-branch.md"
+632 |       "path": "slo-setup.md"
 633 |     },
 634 |     {
 635 |       "phase": "P7 Release & Ops",
-636 |       "command": "/slo-setup",
-637 |       "title": "SLO Setup",
-638 |       "purpose": "Define Service Level Objectives, burn alerts, and runbooks.",
+636 |       "command": "/version-proposal",
+637 |       "title": "Version Proposal",
+638 |       "purpose": "Propose the next semantic version based on commit history.",
 639 |       "gate": "Release Gate",
-640 |       "status": "SLOs and alerts reviewed before production rollout.",
+640 |       "status": "version bump decision recorded before deployment.",
 641 |       "previous": [
-642 |         "/monitoring-setup"
+642 |         "/release-notes"
 643 |       ],
 644 |       "next": [
-645 |         "/logging-strategy",
-646 |         "/audit"
+645 |         "/monitoring-setup",
+646 |         "/slo-setup"
 647 |       ],
-648 |       "path": "slo-setup.md"
-649 |     },
-650 |     {
-651 |       "phase": "P7 Release & Ops",
-652 |       "command": "/version-proposal",
-653 |       "title": "Version Proposal",
-654 |       "purpose": "Propose the next semantic version based on commit history.",
-655 |       "gate": "Release Gate",
-656 |       "status": "version bump decision recorded before deployment.",
-657 |       "previous": [
-658 |         "/release-notes"
-659 |       ],
-660 |       "next": [
-661 |         "/monitoring-setup",
-662 |         "/slo-setup"
-663 |       ],
-664 |       "path": "version-proposal.md"
-665 |     }
-666 |   ],
-667 |   "p8-post-release-hardening": [
+648 |       "path": "version-proposal.md"
+649 |     }
+650 |   ],
+651 |   "p8-post-release-hardening": [
+652 |     {
+653 |       "phase": "P8 Post-release Hardening",
+654 |       "command": "/cleanup-branches",
+655 |       "title": "Cleanup Branches",
+656 |       "purpose": "Recommend which local branches are safe to delete and which to keep.",
+657 |       "gate": "Post-release cleanup",
+658 |       "status": "repo tidy with stale branches archived.",
+659 |       "previous": [
+660 |         "/dead-code-scan"
+661 |       ],
+662 |       "next": [
+663 |         "/feature-flags",
+664 |         "/model-strengths"
+665 |       ],
+666 |       "path": "cleanup-branches.md"
+667 |     },
 668 |     {
 669 |       "phase": "P8 Post-release Hardening",
-670 |       "command": "/cleanup-branches",
-671 |       "title": "Cleanup Branches",
-672 |       "purpose": "Recommend which local branches are safe to delete and which to keep.",
+670 |       "command": "/dead-code-scan",
+671 |       "title": "Dead Code Scan",
+672 |       "purpose": "Identify likely dead or unused files and exports using static signals.",
 673 |       "gate": "Post-release cleanup",
-674 |       "status": "repo tidy with stale branches archived.",
+674 |       "status": "ensure code removals keep prod stable.",
 675 |       "previous": [
-676 |         "/dead-code-scan"
+676 |         "/file-modularity"
 677 |       ],
 678 |       "next": [
-679 |         "/feature-flags",
-680 |         "/model-strengths"
+679 |         "/cleanup-branches",
+680 |         "/feature-flags"
 681 |       ],
-682 |       "path": "cleanup-branches.md"
+682 |       "path": "dead-code-scan.md"
 683 |     },
 684 |     {
 685 |       "phase": "P8 Post-release Hardening",
-686 |       "command": "/dead-code-scan",
-687 |       "title": "Dead Code Scan",
-688 |       "purpose": "Identify likely dead or unused files and exports using static signals.",
+686 |       "command": "/error-analysis",
+687 |       "title": "Error Analysis",
+688 |       "purpose": "Analyze error logs and enumerate likely root causes with fixes.",
 689 |       "gate": "Post-release cleanup",
-690 |       "status": "ensure code removals keep prod stable.",
+690 |       "status": "Sev-1 incidents triaged with fixes scheduled.",
 691 |       "previous": [
-692 |         "/file-modularity"
-693 |       ],
-694 |       "next": [
-695 |         "/cleanup-branches",
-696 |         "/feature-flags"
-697 |       ],
-698 |       "path": "dead-code-scan.md"
-699 |     },
-700 |     {
-701 |       "phase": "P8 Post-release Hardening",
-702 |       "command": "/error-analysis",
-703 |       "title": "Error Analysis",
-704 |       "purpose": "Analyze error logs and enumerate likely root causes with fixes.",
-705 |       "gate": "Post-release cleanup",
-706 |       "status": "Sev-1 incidents triaged with fixes scheduled.",
-707 |       "previous": [
-708 |         "/logging-strategy",
-709 |         "/audit"
+692 |         "/logging-strategy",
+693 |         "/audit"
+694 |       ],
+695 |       "next": [
+696 |         "/fix",
+697 |         "/refactor-suggestions"
+698 |       ],
+699 |       "path": "error-analysis.md"
+700 |     },
+701 |     {
+702 |       "phase": "P8 Post-release Hardening",
+703 |       "command": "/feature-flags <provider>",
+704 |       "title": "Feature Flags",
+705 |       "purpose": "Integrate a flag provider, wire the SDK, and enforce guardrails.",
+706 |       "gate": "Post-release cleanup",
+707 |       "status": "guardrails added before toggling new flows.",
+708 |       "previous": [
+709 |         "/cleanup-branches"
 710 |       ],
 711 |       "next": [
-712 |         "/fix",
-713 |         "/refactor-suggestions"
+712 |         "/model-strengths",
+713 |         "/model-evaluation"
 714 |       ],
-715 |       "path": "error-analysis.md"
+715 |       "path": "feature-flags.md"
 716 |     },
 717 |     {
 718 |       "phase": "P8 Post-release Hardening",
-719 |       "command": "/feature-flags <provider>",
-720 |       "title": "Feature Flags",
-721 |       "purpose": "Integrate a flag provider, wire the SDK, and enforce guardrails.",
+719 |       "command": "/file-modularity",
+720 |       "title": "File Modularity",
+721 |       "purpose": "Enforce smaller files and propose safe splits for giant files.",
 722 |       "gate": "Post-release cleanup",
-723 |       "status": "guardrails added before toggling new flows.",
+723 |       "status": "structure debt addressed without destabilizing prod.",
 724 |       "previous": [
-725 |         "/cleanup-branches"
+725 |         "/refactor-suggestions"
 726 |       ],
 727 |       "next": [
-728 |         "/model-strengths",
-729 |         "/model-evaluation"
+728 |         "/dead-code-scan",
+729 |         "/cleanup-branches"
 730 |       ],
-731 |       "path": "feature-flags.md"
+731 |       "path": "file-modularity.md"
 732 |     },
 733 |     {
 734 |       "phase": "P8 Post-release Hardening",
-735 |       "command": "/file-modularity",
-736 |       "title": "File Modularity",
-737 |       "purpose": "Enforce smaller files and propose safe splits for giant files.",
+735 |       "command": "/fix \"<bug summary>\"",
+736 |       "title": "Fix",
+737 |       "purpose": "Propose a minimal, correct fix with diff-style patches.",
 738 |       "gate": "Post-release cleanup",
-739 |       "status": "structure debt addressed without destabilizing prod.",
+739 |       "status": "validated fix with regression coverage before closing incident.",
 740 |       "previous": [
-741 |         "/refactor-suggestions"
+741 |         "/error-analysis"
 742 |       ],
 743 |       "next": [
-744 |         "/dead-code-scan",
-745 |         "/cleanup-branches"
+744 |         "/refactor-suggestions",
+745 |         "/file-modularity"
 746 |       ],
-747 |       "path": "file-modularity.md"
+747 |       "path": "fix.md"
 748 |     },
 749 |     {
 750 |       "phase": "P8 Post-release Hardening",
-751 |       "command": "/fix \"<bug summary>\"",
-752 |       "title": "Fix",
-753 |       "purpose": "Propose a minimal, correct fix with diff-style patches.",
+751 |       "command": "/refactor-suggestions",
+752 |       "title": "Refactor Suggestions",
+753 |       "purpose": "Propose repo-wide refactoring opportunities after tests exist.",
 754 |       "gate": "Post-release cleanup",
-755 |       "status": "validated fix with regression coverage before closing incident.",
+755 |       "status": "plan high-leverage refactors once Sev-1 issues settle.",
 756 |       "previous": [
-757 |         "/error-analysis"
+757 |         "/fix"
 758 |       ],
 759 |       "next": [
-760 |         "/refactor-suggestions",
-761 |         "/file-modularity"
+760 |         "/file-modularity",
+761 |         "/dead-code-scan"
 762 |       ],
-763 |       "path": "fix.md"
-764 |     },
-765 |     {
-766 |       "phase": "P8 Post-release Hardening",
-767 |       "command": "/refactor-suggestions",
-768 |       "title": "Refactor Suggestions",
-769 |       "purpose": "Propose repo-wide refactoring opportunities after tests exist.",
-770 |       "gate": "Post-release cleanup",
-771 |       "status": "plan high-leverage refactors once Sev-1 issues settle.",
-772 |       "previous": [
-773 |         "/fix"
-774 |       ],
-775 |       "next": [
-776 |         "/file-modularity",
-777 |         "/dead-code-scan"
-778 |       ],
-779 |       "path": "refactor-suggestions.md"
-780 |     }
-781 |   ],
-782 |   "p9-model-tactics": [
-783 |     {
-784 |       "phase": "P9 Model Tactics",
-785 |       "command": "/compare-outputs",
-786 |       "title": "Compare Outputs",
-787 |       "purpose": "Run multiple models or tools on the same prompt and summarize best output.",
-788 |       "gate": "Model uplift",
-789 |       "status": "comparative data compiled before switching defaults.",
-790 |       "previous": [
-791 |         "/model-evaluation"
-792 |       ],
-793 |       "next": [
+763 |       "path": "refactor-suggestions.md"
+764 |     }
+765 |   ],
+766 |   "p9-model-tactics": [
+767 |     {
+768 |       "phase": "P9 Model Tactics",
+769 |       "command": "/compare-outputs",
+770 |       "title": "Compare Outputs",
+771 |       "purpose": "Run multiple models or tools on the same prompt and summarize best output.",
+772 |       "gate": "Model uplift",
+773 |       "status": "comparative data compiled before switching defaults.",
+774 |       "previous": [
+775 |         "/model-evaluation"
+776 |       ],
+777 |       "next": [
+778 |         "/switch-model"
+779 |       ],
+780 |       "path": "compare-outputs.md"
+781 |     },
+782 |     {
+783 |       "phase": "P9 Model Tactics",
+784 |       "command": "/model-evaluation",
+785 |       "title": "Model Evaluation",
+786 |       "purpose": "Try a new model and compare outputs against a baseline.",
+787 |       "gate": "Model uplift",
+788 |       "status": "experiments must beat baseline quality metrics.",
+789 |       "previous": [
+790 |         "/model-strengths"
+791 |       ],
+792 |       "next": [
+793 |         "/compare-outputs",
 794 |         "/switch-model"
 795 |       ],
-796 |       "path": "compare-outputs.md"
+796 |       "path": "model-evaluation.md"
 797 |     },
 798 |     {
 799 |       "phase": "P9 Model Tactics",
-800 |       "command": "/model-evaluation",
-801 |       "title": "Model Evaluation",
-802 |       "purpose": "Try a new model and compare outputs against a baseline.",
+800 |       "command": "/model-strengths",
+801 |       "title": "Model Strengths",
+802 |       "purpose": "Choose model per task type.",
 803 |       "gate": "Model uplift",
-804 |       "status": "experiments must beat baseline quality metrics.",
+804 |       "status": "capture baseline routing before experimentation.",
 805 |       "previous": [
-806 |         "/model-strengths"
-807 |       ],
-808 |       "next": [
-809 |         "/compare-outputs",
-810 |         "/switch-model"
-811 |       ],
-812 |       "path": "model-evaluation.md"
-813 |     },
-814 |     {
-815 |       "phase": "P9 Model Tactics",
-816 |       "command": "/model-strengths",
-817 |       "title": "Model Strengths",
-818 |       "purpose": "Choose model per task type.",
-819 |       "gate": "Model uplift",
-820 |       "status": "capture baseline routing before experimentation.",
-821 |       "previous": [
-822 |         "/feature-flags (optional)",
-823 |         "Stage-specific blockers"
-824 |       ],
-825 |       "next": [
-826 |         "/model-evaluation",
+806 |         "/feature-flags (optional)",
+807 |         "Stage-specific blockers"
+808 |       ],
+809 |       "next": [
+810 |         "/model-evaluation",
+811 |         "/compare-outputs"
+812 |       ],
+813 |       "path": "model-strengths.md"
+814 |     },
+815 |     {
+816 |       "phase": "P9 Model Tactics",
+817 |       "command": "/switch-model",
+818 |       "title": "Switch Model",
 [TRUNCATED]
 ```
 
@@ -3123,6 +2572,77 @@ eslint-review.md
 17 | Expected Output:
 18 | 
 19 | - Structured report following the specified sections.
+```
+
+eslint.config.mjs
+```
+1 | import js from '@eslint/js';
+2 | import globals from 'globals';
+3 | import tseslint from '@typescript-eslint/eslint-plugin';
+4 | import tsParser from '@typescript-eslint/parser';
+5 | 
+6 | export default [
+7 |   {
+8 |     ignores: ['dist/**', 'node_modules/**', 'packages/**/dist/**', '**/*.d.ts'],
+9 |   },
+10 |   js.configs.recommended,
+11 |   {
+12 |     languageOptions: {
+13 |       globals: {
+14 |         ...globals.node,
+15 |         ...globals.es2021,
+16 |       },
+17 |     },
+18 |   },
+19 |   {
+20 |     files: ['**/*.js', '**/*.cjs', '**/*.mjs'],
+21 |     rules: {
+22 |       'no-unused-vars': 'off',
+23 |       'no-undef': 'off',
+24 |       'no-empty': 'off',
+25 |       'no-useless-escape': 'off',
+26 |     },
+27 |   },
+28 |   {
+29 |     files: ['**/*.ts', '**/*.tsx'],
+30 |     languageOptions: {
+31 |       parser: tsParser,
+32 |       parserOptions: {
+33 |         ecmaVersion: 'latest',
+34 |         sourceType: 'module',
+35 |       },
+36 |       globals: {
+37 |         ...globals.node,
+38 |         ...globals.es2021,
+39 |         ...globals.jest,
+40 |       },
+41 |     },
+42 |     plugins: {
+43 |       '@typescript-eslint': tseslint,
+44 |     },
+45 |     rules: {
+46 |       ...tseslint.configs.recommended.rules,
+47 |       ...tseslint.configs.stylistic.rules,
+48 |       '@typescript-eslint/array-type': 'off',
+49 |       '@typescript-eslint/non-nullable-type-assertion-style': 'off',
+50 |       '@typescript-eslint/no-explicit-any': 'off',
+51 |       '@typescript-eslint/no-unsafe-assignment': 'off',
+52 |       '@typescript-eslint/no-unsafe-call': 'off',
+53 |       '@typescript-eslint/no-unsafe-member-access': 'off',
+54 |       '@typescript-eslint/no-unsafe-return': 'off',
+55 |       '@typescript-eslint/no-redundant-type-constituents': 'off',
+56 |       '@typescript-eslint/require-await': 'off',
+57 |       '@typescript-eslint/prefer-regexp-exec': 'off',
+58 |       '@typescript-eslint/consistent-indexed-object-style': 'off',
+59 |       '@typescript-eslint/no-unnecessary-type-assertion': 'off',
+60 |       '@typescript-eslint/no-unsafe-argument': 'off',
+61 |       '@typescript-eslint/no-unused-vars': 'off',
+62 |       'no-empty': 'off',
+63 |       'no-undef': 'off',
+64 |       'no-useless-escape': 'off',
+65 |     },
+66 |   },
+67 | ];
 ```
 
 evidence-capture.md
@@ -3887,7 +3407,7 @@ package.json
 4 |   "type": "module",
 5 |   "scripts": {
 6 |     "build": "tsc --project tsconfig.build.json",
-7 |     "build:catalog": "node --loader ts-node/esm scripts/build_catalog.ts",
+7 |     "build:catalog": "ts-node --esm scripts/build_catalog.ts",
 8 |     "inspect": "npx @modelcontextprotocol/inspector --config inspector.config.json",
 9 |     "prompts": "node --enable-source-maps dist/cli/main.js",
 10 |     "start": "node dist/mcp/server.js --tasks .taskmaster/tasks/tasks.json --tag master",
@@ -3902,52 +3422,63 @@ package.json
 19 |     "test:state": "npm run test:jest -- test/state/StateStore.test.ts",
 20 |     "test:tools": "npm run test:jest -- test/integration/tools.test.ts",
 21 |     "test:workflow": "node --loader ts-node/esm scripts/__tests__/workflow_sync.test.ts",
-22 |     "validate:metadata": "node --loader ts-node/esm scripts/validate_metadata.ts",
+22 |     "validate:metadata": "ts-node --esm scripts/validate_metadata.ts",
 23 |     "prepublishOnly": "npm run test && npm run build",
 24 |     "noop": "node -e \"process.exit(0)\"",
-25 |     "ci:pack-check": "node scripts/ci/verify-pack-contains.mjs"
-26 |   },
-27 |   "dependencies": {
-28 |     "@modelcontextprotocol/sdk": "^1.17.5",
-29 |     "ajv": "^6.12.6",
-30 |     "commander": "^12.1.0",
-31 |     "gray-matter": "^4.0.3",
-32 |     "js-yaml": "^4.1.0",
-33 |     "zod": "^3.25.76"
-34 |   },
-35 |   "devDependencies": {
-36 |     "@types/jest": "^29.5.12",
-37 |     "@types/js-yaml": "^4.0.9",
-38 |     "@types/node": "^20.14.9",
-39 |     "glob": "^10.3.10",
-40 |     "jest": "^29.7.0",
-41 |     "ts-node": "^10.9.2",
-42 |     "ts-jest": "^29.1.1",
-43 |     "typescript": "^5.4.0"
-44 |   },
-45 |   "mcpAllowScripts": [
-46 |     "validate:metadata",
-47 |     "build:catalog",
-48 |     "noop",
-49 |     "build",
-50 |     "test:jest",
-51 |     "lint"
-52 |   ],
-53 |   "bin": {
-54 |     "prompts": "./bin/prompts"
+25 |     "ci:pack-check": "node scripts/ci/verify-pack-contains.mjs",
+26 |     "lint": "eslint . --ext .ts,.tsx --report-unused-disable-directives",
+27 |     "format": "prettier --check .",
+28 |     "format:fix": "prettier --write ."
+29 |   },
+30 |   "dependencies": {
+31 |     "@mastra/core": "^0.18.0",
+32 |     "@modelcontextprotocol/sdk": "^1.17.5",
+33 |     "ajv": "^6.12.6",
+34 |     "commander": "^12.1.0",
+35 |     "js-yaml": "^4.1.0",
+36 |     "zod": "^3.25.76"
+37 |   },
+38 |   "devDependencies": {
+39 |     "@types/jest": "^29.5.12",
+40 |     "@types/js-yaml": "^4.0.9",
+41 |     "@types/node": "^20.14.9",
+42 |     "@typescript-eslint/eslint-plugin": "^8.15.0",
+43 |     "@typescript-eslint/parser": "^8.15.0",
+44 |     "globals": "^15.12.0",
+45 |     "eslint": "^9.12.0",
+46 |     "eslint-config-prettier": "^9.1.0",
+47 |     "eslint-plugin-prettier": "^5.2.1",
+48 |     "glob": "^10.3.10",
+49 |     "gray-matter": "^4.0.3",
+50 |     "jest": "^29.7.0",
+51 |     "ts-jest": "^29.1.1",
+52 |     "ts-node": "^10.9.2",
+53 |     "typescript": "^5.4.0",
+54 |     "prettier": "^3.3.3"
 55 |   },
-56 |   "version": "0.1.0",
-57 |   "files": [
-58 |     "bin",
-59 |     "dist",
-60 |     "schemas",
-61 |     "resources",
-62 |     "prompts",
-63 |     "README.md",
-64 |     "WORKFLOW.md",
-65 |     "catalog.json"
-66 |   ]
-67 | }
+56 |   "mcpAllowScripts": [
+57 |     "validate:metadata",
+58 |     "build:catalog",
+59 |     "noop",
+60 |     "build",
+61 |     "test:jest",
+62 |     "lint"
+63 |   ],
+64 |   "bin": {
+65 |     "prompts": "./bin/prompts"
+66 |   },
+67 |   "version": "0.1.0",
+68 |   "files": [
+69 |     "bin",
+70 |     "dist",
+71 |     "schemas",
+72 |     "resources",
+73 |     "prompts",
+74 |     "README.md",
+75 |     "WORKFLOW.md",
+76 |     "catalog.json"
+77 |   ]
+78 | }
 ```
 
 plan-delta.md
@@ -4179,6 +3710,15 @@ prettier-adopt_Migration_report.md
 16 | Expected Output:
 17 | 
 18 | - Structured report following the specified sections.
+```
+
+prettier.config.cjs
+```
+1 | module.exports = {
+2 |   printWidth: 100,
+3 |   singleQuote: true,
+4 |   trailingComma: 'all',
+5 | };
 ```
 
 prototype-feature.md
@@ -4931,43 +4471,70 @@ switch-model.md
 
 system-level-instruction-editor.md
 ```
-1 | ---
-2 | phase: "P0 Preflight Docs"
-3 | gate: "DocFetchReport"
-4 | status: "Canonical instruction editor guardrail prepared for use."
-5 | owner: "Prompts Team"
-6 | date: "2024-09-01"
-7 | previous:
-8 |   - "/instruction-file"
+1 | phase: "P0 Preflight Docs"
+2 | gate: "Scope Gate"
+3 | status: "draft"
+4 | owner: "Prompt Ops"
+5 | date: "2025-09-20"
+6 | previous:
+7 |   - "/instruction-file.md"
+8 |   - "/planning-process.md"
 9 | next:
-10 |   - "/planning-process"
-11 |   - "/scope-control"
+10 |   - "/AGENTS.md"
+11 |   - "/GEMINI.md"
 12 | tags:
-13 |   - "documentation"
-14 |   - "preflight"
+13 |   - "instructions"
+14 |   - "editor"
 15 | ---
 16 | 
 17 | # System Instruction: Canonical Instruction File Editor
 18 | 
-19 | Trigger: /system-instruction-editor
+19 | Trigger: /<slash-command>
 20 | 
-21 | Purpose: Publish the canonical system instruction guardrail before work begins.
+21 | Purpose: <1–2 lines describing the objective and outcome criteria.>
 22 | 
 23 | ## Inputs
 24 | 
-25 | - Latest DocFetchReport summary and approvals.
-26 | - Existing instruction artifacts (`cursor.rules`, `windsurf.rules`, `claude.md`).
-27 | - Safety, legal, or policy updates provided by stakeholders.
-28 | - Outstanding TODOs or follow-ups from prior instruction reviews.
-29 | - Version control diffs for instruction-related files.
+25 | - <logs/artifacts to collect>
+26 | - <affected services/modules>
+27 | - <build/version/commit>
+28 | - <time window/region/tenant>
+29 | - <SLO/SLA impacted>
 30 | 
 31 | ## Steps
 32 | 
-33 | 1. Gather the current instruction artifacts and diff them against the repo baseline.
-34 | 2. Capture required additions/removals from DocFetchReport or stakeholder feedback.
-35 | 3. Update the canonical instruction file, keeping sections organized and annotated.
-36 | 4. Flag any sections needing follow-up review or approvals.
-37 | 5. Commit the updated instruction file and notify owners of changes.
+33 | 1. Collect relevant data (<test logs, traces, metrics, dumps, repro steps>).
+34 | 2. Group by symptom/pattern; for each group, list 2–3 plausible causes.
+35 | 3. Propose disambiguators (instrumentation, targeted inputs, experiments).
+36 | 4. Sketch minimal fixes (patches/config toggles/rollbacks) with risk notes.
+37 | 5. Validate fixes (tests to run, monitors to watch, acceptance criteria).
+38 | 6. Roll out & verify (staged rollout plan, owners, ETA).
+39 | 7. Capture follow-ups (refactors, docs, guardrails).
+40 | 
+41 | 1. **Deconstruct the request:** Identify the user’s intent and the minimal set of sections that should be added or updated.
+42 | 2. **Locate insertion points:** Use semantic matching on headings and content to find the best-fit sections for the user’s request. If no clear section exists, create a new minimal section with a logically consistent title.
+43 | 3. **Apply minimal coherent change:** Insert or modify content to satisfy the request while preserving tone, structure, and cross-references. Keep unrelated sections unchanged.
+44 | 4. **Run invariants:**
+45 | 
+46 |    - The entire file must be present (no placeholders, no truncation).
+47 |    - Markdown structure and formatting must remain valid.
+48 |    - Internal references and links stay accurate.
+49 | 5. **Render in Canvas:**
+50 | 
+51 |    - If editing an existing file: open in Canvas and **replace the full contents** with the updated version.
+52 |    - If creating a new file: create it in Canvas and display the **entire file**.
+53 | 6. **Variants (optional or on request):** Generate `GEMINI.md` and/or `CLAUDE.md` from the updated `AGENTS.md` using only the Platform Substitution Rules. Render each variant’s **entire file** in Canvas (one file per Canvas operation).
+54 | 7. **Size-limit fallback:** If a size cap prevents full-file rendering in Canvas, output the **entire file in chat**, then append:
+55 | 
+56 |    - “*Note: Full content was output in chat due to a size limit preventing Canvas rendering.*”
+57 | 
+58 | ## Output format
+59 | 
+60 | - Table: <symptom/item> → <likely causes> → <next checks> → <candidate fix> → <owner/ETA>.
+61 | 
+62 | ## Example rows
+63 | 
+64 | - "<example symptom or error>" → <cause A, cause B> → <check 1, check 2> → <fix sketch> → <owner/ETA>.
 ```
 
 tm-advance.md
@@ -6596,7 +6163,6 @@ MCP/Ingest Task-Master schema.md
 332 | 
 333 | | SourceID | Title                          | Publisher | URL                                                                                                                                                          | PubDate    | Accessed   | Quote                                                            | Finding                           | Rel | Conf |
 334 | | -------- | ------------------------------ | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------- | ---------- | ---------------------------------------------------------------- | --------------------------------- | --- | ---- |
-335 | | S8.1     | Google is bringing Gemini CLI… | The Verge | [https://www.theverge.com/news/692517/google-gemini-cli-ai-agent-dev-terminal](https://www.theverge.com/news/692517/google-gemini-cli-ai-agent-dev-terminal) | 2025-06-25 | 2025-09-21 | “preview… free… usage limit of 60 rpm and 1,000 daily requests.” | Reports preview limits.           | H   | 0.75 |
 [TRUNCATED]
 ```
 
@@ -7282,8 +6848,6 @@ MCP/acidic_soil_prompts_integration_rollup_2025_09_21_america_chicago.md
 352 | | 2. CLI                   | Complete | Start with Commander; revisit oclif if installers needed.           |
 353 | | 3. Mastra layer          | Complete | Register `prompts-tools` on Mastra agent using AI SDK.              |
 354 | | 4. Zero-cost models      | Complete | Ship presets for Ollama and Gemini‑CLI.                             |
-355 | | 5. Providers vs clients  | Complete | Codex = MCP client; Gemini‑CLI = AI‑SDK provider + MCP client.      |
-356 | | 6. Touch points          | Complete | Publish Codex TOML + Gemini settings JSON snippets.                 |
 [TRUNCATED]
 ```
 
@@ -7814,11 +7378,334 @@ artifacts/tasks-20250921-173701.json
 295 |             "dependencies": [
 296 |               "5.1"
 297 |             ],
-298 |             "details": "Add a public async `load` method to the `StateStore` class. This method will attempt to read `.mcp/state.json` using `fs.promises.readFile`. If the file doesn't exist (catch the 'ENOENT' error), it should initialize a default `ProjectState` object: `{ completedTools: [], artifacts: {} }`. The loaded or default state should be stored in a private property (e.g., `_state`). The method should return the state.",
-299 |             "status": "done",
-300 |             "testStrategy": "Test that `load` returns the default state when `state.json` is missing. Create a mock `state.json` file and test that `load` correctly reads and parses its content."
-301 |           },
-302 |           {
+[TRUNCATED]
+```
+
+artifacts/tasks-20250924-123119.json
+```
+1 | {
+2 |   "master": {
+3 |     "tasks": [
+4 |       {
+5 |         "id": 1,
+6 |         "title": "Project Setup and Server Bootstrap",
+7 |         "description": "Initialize a Node.js TypeScript project and set up the basic MCP server using stdio transport. This includes creating the main entry point, configuring graceful shutdown, and establishing structured NDJSON logging.",
+8 |         "details": "Create a `package.json` with dependencies like `@modelcontextprotocol/sdk` and `typescript`. Set up `tsconfig.json` for compilation to `dist/`. Implement the main server file (`src/index.ts`) to instantiate `StdioServerTransport`, register server info (name, version), and handle SIGINT/SIGTERM for graceful shutdown. Implement a basic structured logger that outputs NDJSON.",
+9 |         "testStrategy": "Manually start the server and connect with an MCP client like MCP Inspector. Verify that the server reports its name and version. Send a SIGINT signal and confirm the server logs a 'server_stop' message and exits cleanly.",
+10 |         "priority": "high",
+11 |         "dependencies": [],
+12 |         "status": "done",
+13 |         "subtasks": [
+14 |           {
+15 |             "id": 1,
+16 |             "title": "Configure package.json and tsconfig.json",
+17 |             "description": "Update the project's package.json to include necessary dependencies and scripts. Configure tsconfig.json to define the TypeScript compilation settings, ensuring output is directed to the dist/ directory.",
+18 |             "dependencies": [],
+19 |             "details": "In `package.json`, add `@modelcontextprotocol/sdk` to `dependencies`. Add `typescript`, `ts-node`, and `@types/node` to `devDependencies`. Add a `build` script (`\"tsc\"`) and a `start` script (`\"node dist/index.js\"`). In `tsconfig.json`, set `compilerOptions.outDir` to `./dist`, `rootDir` to `./src`, and ensure `moduleResolution` is `node`.",
+20 |             "status": "done",
+21 |             "testStrategy": ""
+22 |           },
+23 |           {
+24 |             "id": 2,
+25 |             "title": "Implement a Structured NDJSON Logger",
+26 |             "description": "Create a simple logger in `src/logger.ts` that writes structured log messages to `stdout` in NDJSON (Newline Delimited JSON) format. This utility will be used for all server logging.",
+27 |             "dependencies": [],
+28 |             "details": "Implement a `Logger` class or object in `src/logger.ts` with `info`, `warn`, and `error` methods. Each method should accept a message and an optional metadata object. The output for each log entry must be a single-line JSON string containing a timestamp, log level, message, and any metadata, written to `process.stdout`.",
+29 |             "status": "done",
+30 |             "testStrategy": ""
+31 |           },
+32 |           {
+33 |             "id": 3,
+34 |             "title": "Bootstrap MCP Server with Stdio Transport",
+35 |             "description": "In the main entry point `src/index.ts`, initialize the core server components by instantiating the MCP server and the standard I/O transport layer.",
+36 |             "dependencies": [
+37 |               "1.1",
+38 |               "1.2"
+39 |             ],
+40 |             "details": "In `src/index.ts`, import the logger from `./logger.ts`. Import `MCPServer` and `StdioServerTransport` from `@modelcontextprotocol/sdk`. Inside a `main` async function, instantiate the logger, then the `StdioServerTransport`, and finally the `MCPServer`, passing the transport and logger to its constructor.",
+41 |             "status": "done",
+42 |             "testStrategy": ""
+43 |           },
+44 |           {
+45 |             "id": 4,
+46 |             "title": "Register Server Information and Start Listening",
+47 |             "description": "Configure the server with its identity by registering its name and version, and then start the server to begin listening for client connections over stdio.",
+48 |             "dependencies": [
+49 |               "1.3"
+50 |             ],
+51 |             "details": "In the `main` function of `src/index.ts`, read the `version` from `package.json`. Call the `server.info.register()` method with a server name (e.g., \"MCP Reference Server\") and the version. After registration, call `server.start()` and log a confirmation message indicating the server is running.",
+52 |             "status": "done",
+53 |             "testStrategy": "After completing this subtask, run the `start` script. Use an MCP client like MCP Inspector to connect to the running process and verify that the server's name and version are correctly reported."
+54 |           },
+55 |           {
+56 |             "id": 5,
+57 |             "title": "Implement Graceful Shutdown and Top-Level Error Handling",
+58 |             "description": "Add signal handlers in `src/index.ts` to ensure the server shuts down cleanly on SIGINT/SIGTERM signals and that any uncaught exceptions are logged before exiting.",
+59 |             "dependencies": [
+60 |               "1.3"
+61 |             ],
+62 |             "details": "Add listeners for `process.on('SIGINT', ...)` and `process.on('SIGTERM', ...)`. The handler should invoke `await server.stop()`, log a 'server_stop' message, and exit with `process.exit(0)`. Also, implement a `process.on('uncaughtException', ...)` handler to log the fatal error using the NDJSON logger before exiting with a non-zero status code.",
+63 |             "status": "done",
+64 |             "testStrategy": "With the server running, send a SIGINT signal (Ctrl+C). Verify that the 'server_stop' message is logged in NDJSON format and the process exits cleanly without an error code."
+65 |           }
+66 |         ]
+67 |       },
+68 |       {
+69 |         "id": 37,
+70 |         "title": "Wire Execution Loop and Action Mapping",
+71 |         "description": "Enable full-loop automation by mapping tasks to executable actions and expanding MCP execution tools.",
+72 |         "details": "Map tasks to scripts (or actions.json), extend workflow tools to resolve actions by task id, add domain-runner tools (tests, lint, build), and introduce a server flag to mirror exec enablement.",
+73 |         "testStrategy": "Integration test that picks the next task, resolves an action, runs it in dry-run, then executes in gated mode and marks status done.",
+74 |         "priority": "medium",
+75 |         "dependencies": [
+76 |           32
+77 |         ],
+78 |         "status": "done",
+79 |         "subtasks": [
+80 |           {
+81 |             "id": 1,
+82 |             "title": "Add action mapping for tasks",
+83 |             "description": "Allow tasks to declare { action: { script, args } } in metadata or a new actions.json; extend run_script to look up by task id.",
+84 |             "dependencies": [
+85 |               32
+86 |             ],
+87 |             "details": "Teach the adapter to read per-task action metadata. If not present, look into actions.json keyed by task id. Provide a new MCP tool workflow/run_task_action that resolves and dispatches to run_script.",
+88 |             "status": "pending",
+89 |             "testStrategy": "Fixture with a task containing action metadata; verify dry-run shows correct command; enable exec and assert ok exit code for a harmless script."
+90 |           },
+91 |           {
+92 |             "id": 2,
+93 |             "title": "Add domain execution tools",
+94 |             "description": "Register first-class tools for common domains: workflow/run_tests, workflow/run_lint, workflow/run_build, each with Zod schemas.",
+95 |             "dependencies": [
+96 |               "37.1"
+97 |             ],
+98 |             "details": "Wrap package scripts like test, lint, build. Tools should support dryRun, timeoutMs, and surface structured results { ok, exitCode, output }.",
+99 |             "status": "pending",
+100 |             "testStrategy": "Unit tests for each tool's dryRun; integration test for a no-op or trivial command that always succeeds."
+101 |           },
+102 |           {
+103 |             "id": 3,
+104 |             "title": "Exec flag parity",
+105 |             "description": "Add a --exec-enabled server flag that mirrors PROMPTS_EXEC_ALLOW for controlled execution via MCP.",
+106 |             "dependencies": [
+107 |               "37.1"
+108 |             ],
+109 |             "details": "Server parses --exec-enabled and sets PROMPTS_EXEC_ALLOW=1 internally when true; logs a warning banner. Document in docs/mcp-cli.md.",
+110 |             "status": "pending",
+111 |             "testStrategy": "Server boot test verifying the flag toggles execution state and that run_script is permitted only when enabled."
+112 |           },
+113 |           {
+114 |             "id": 4,
+115 |             "title": "Full-loop automation test",
+116 |             "description": "Agent-style test: next_task → resolve action → dry-run → live run (gated) → set_task_status done → graph_export.",
+117 |             "dependencies": [
+118 |               "37.1",
+119 |               "37.2",
+120 |               "37.3"
+121 |             ],
+122 |             "details": "Leverage examples/agent-demo.md flow; ensure the loop completes and persists status.",
+123 |             "status": "pending",
+124 |             "testStrategy": "Integration test under test/integration that exercises the entire loop with a harmless script."
+125 |           }
+126 |         ]
+127 |       },
+128 |       {
+129 |         "id": 2,
+130 |         "title": "Implement Safety Control Utilities",
+131 |         "description": "Create utility functions for redacting secrets in logs and capping payload sizes to prevent data leakage and excessive resource usage.",
+132 |         "details": "Create a logging utility that wraps the base logger. This utility should scan log objects for keys matching the regex `/(key|secret|token)/i` and replace their values with `[redacted]`. Create a `capPayload` function that truncates strings larger than ~1 MB and appends a note like `[truncated N bytes]`. These utilities should be pure functions and easily testable.",
+133 |         "testStrategy": "Unit test the redaction logic by passing objects with keys like `API_KEY` and `SECRET_TOKEN`. Unit test the `capPayload` function with strings smaller than, equal to, and larger than the 1 MB threshold to verify correct truncation and messaging.",
+134 |         "priority": "high",
+135 |         "dependencies": [
+136 |           1
+137 |         ],
+138 |         "status": "done",
+139 |         "subtasks": [
+140 |           {
+141 |             "id": 1,
+142 |             "title": "Create `redactSecrets` Utility Function",
+143 |             "description": "Implement a pure function to recursively scan an object and redact values for keys matching a specific regex.",
+144 |             "dependencies": [],
+145 |             "details": "In a new file, `src/utils/safety.ts`, create and export a pure function `redactSecrets(data: any)`. This function should recursively traverse any given object or array. If it encounters an object key that matches the case-insensitive regex `/(key|secret|token)/i`, it must replace the corresponding value with the string `[redacted]`. The function should handle nested objects and arrays without modifying the original input object (i.e., it should return a new, deep-cloned object).",
+146 |             "status": "done",
+147 |             "testStrategy": "This function will be tested in a subsequent subtask. Focus on a clean, recursive implementation."
+148 |           },
+149 |           {
+150 |             "id": 2,
+151 |             "title": "Create `capPayload` Utility Function",
+152 |             "description": "Implement a pure function to truncate large strings to a specified maximum size.",
+153 |             "dependencies": [],
+154 |             "details": "In the same `src/utils/safety.ts` file, create and export a pure function `capPayload(payload: string, maxSize: number = 1024 * 1024)`. This function will check if the input string's size exceeds `maxSize`. If it does, the function should truncate the string to `maxSize` bytes and append a message indicating how many bytes were removed, e.g., `[truncated 42 bytes]`. If the string is within the limit, it should be returned unmodified.",
+155 |             "status": "done",
+156 |             "testStrategy": "Testing for this function will be defined in a separate subtask."
+157 |           },
+158 |           {
+159 |             "id": 3,
+160 |             "title": "Implement Unit Tests for `redactSecrets`",
+161 |             "description": "Create a suite of unit tests to validate the behavior of the `redactSecrets` function.",
+162 |             "dependencies": [
+163 |               "2.1"
+164 |             ],
+165 |             "details": "In a new test file, `src/utils/safety.test.ts`, write comprehensive unit tests for the `redactSecrets` function. Test cases should include: an object with sensitive keys (`apiKey`, `SECRET_TOKEN`), a deeply nested object with sensitive keys, an array of objects, an object with no sensitive keys (to ensure it remains unchanged), and non-object inputs to ensure graceful handling.",
+166 |             "status": "done",
+167 |             "testStrategy": "Use a testing framework like Jest or Vitest. Assert that the original object is not mutated and that the returned object has the correct values redacted."
+168 |           },
+169 |           {
+170 |             "id": 4,
+171 |             "title": "Implement Unit Tests for `capPayload`",
+172 |             "description": "Create a suite of unit tests to validate the behavior of the `capPayload` function.",
+173 |             "dependencies": [
+174 |               "2.2"
+175 |             ],
+176 |             "details": "In the `src/utils/safety.test.ts` file, add unit tests for the `capPayload` function. Cover the main scenarios: a string smaller than the 1MB threshold, a string larger than the threshold (verifying correct truncation and the appended message), and edge cases like an empty string or a string exactly at the threshold.",
+177 |             "status": "done",
+178 |             "testStrategy": "Verify both the returned string's content and its length to confirm the truncation logic is working as expected."
+179 |           },
+180 |           {
+181 |             "id": 5,
+182 |             "title": "Create and Integrate Secure Logger Wrapper",
+183 |             "description": "Create a logging utility that wraps the base logger to automatically redact secrets from log objects.",
+184 |             "dependencies": [
+185 |               "2.1"
+186 |             ],
+187 |             "details": "Based on the existing logging implementation, create a secure logger wrapper. This wrapper will expose standard logging methods (e.g., `info`, `warn`, `error`). Before passing a log object to the base logger, it must first process the object with the `redactSecrets` function created in subtask 2.1. This ensures that no sensitive data is ever written to the logs. This new utility should be exported for use throughout the application.",
+188 |             "status": "done",
+189 |             "testStrategy": "Manually inspect log output after integrating the new logger in a test script or a single application entry point to confirm that objects containing keys like 'token' are correctly redacted."
+190 |           }
+191 |         ]
+192 |       },
+193 |       {
+194 |         "id": 3,
+195 |         "title": "Implement Resource Exposure",
+196 |         "description": "Load prompt metadata from `resources/prompts.meta.yaml` and expose each prompt's Markdown file as a `file://` resource.",
+197 |         "details": "On server startup, parse `prompts.meta.yaml`. For each entry, register a resource with the MCP server. The resource should have a human-friendly name (from the `title` field) and a `file://` URI pointing to the absolute path of the corresponding Markdown file. The resource content preview should be capped using the utility from task 2.",
+198 |         "testStrategy": "Start the server and use an MCP client to list resources. Verify that each prompt from the metadata file is listed with the correct name and a valid `file://` URI. Check that reading an oversized resource returns truncated content.",
+199 |         "priority": "high",
+200 |         "dependencies": [
+201 |           1,
+202 |           2
+203 |         ],
+204 |         "status": "done",
+205 |         "subtasks": [
+206 |           {
+207 |             "id": 1,
+208 |             "title": "Create a utility to parse `prompts.meta.yaml`",
+209 |             "description": "Add the `js-yaml` dependency to the project. Create a new utility function that reads the `resources/prompts.meta.yaml` file, parses its content, and returns a structured object. This function should handle potential file read or parsing errors gracefully.",
+210 |             "dependencies": [],
+211 |             "details": "Create a new file, e.g., `src/prompts/loader.ts`. Add a function `loadPromptMetadata()` that uses `fs.readFileSync` and `yaml.load`. Define a TypeScript interface for the expected structure of the YAML file (e.g., `{ prompts: [...] }`).",
+212 |             "status": "done",
+213 |             "testStrategy": "Add a unit test that uses a mock YAML file to ensure the parsing logic correctly converts YAML content to a JavaScript object."
+214 |           },
+215 |           {
+216 |             "id": 2,
+217 |             "title": "Implement logic to transform metadata into resource objects",
+218 |             "description": "Create a function that takes the parsed prompt metadata, iterates through each prompt entry, and transforms it into a `Resource` object as expected by the MCP server. This includes resolving the file path to an absolute `file://` URI.",
+219 |             "dependencies": [
+220 |               "3.1"
+221 |             ],
+222 |             "details": "In `src/prompts/loader.ts`, create a function like `preparePromptResources(metadata)`. For each prompt, use the `path` module to resolve the relative file path from `prompts.meta.yaml` to an absolute path. Format the absolute path as a `file://` URI. The resulting object should conform to the `Resource` interface, which includes `name` (from `title`) and `uri`.",
+223 |             "status": "done",
+224 |             "testStrategy": "Unit test this transformation logic to ensure file paths are correctly resolved to absolute `file://` URIs on different operating systems."
+225 |           },
+226 |           {
+227 |             "id": 3,
+228 |             "title": "Generate and cap content previews for each resource",
+229 |             "description": "Enhance the resource preparation logic to read the content of each prompt's Markdown file and generate a capped content preview using the utility from task 2.",
+230 |             "dependencies": [
+231 |               "3.2"
+232 |             ],
+233 |             "details": "Modify the function from the previous subtask. For each prompt, read the content of its Markdown file using `fs.readFileSync`. Import and use the `capContent` utility (assuming it's in `src/util/content.ts`) to truncate the file content. Add the resulting string to the `contentPreview` field of the `Resource` object.",
+234 |             "status": "done",
+235 |             "testStrategy": "Verify that a test resource with content larger than the cap is correctly truncated, and one with smaller content remains unchanged."
+236 |           },
+237 |           {
+238 |             "id": 4,
+239 |             "title": "Integrate resource registration into the server startup sequence",
+240 |             "description": "In the main server entry point, call the new functions to load, prepare, and register the prompt resources with the MCP server instance after it has been initialized.",
+241 |             "dependencies": [
+242 |               "3.2",
+243 |               "3.3"
+244 |             ],
+245 |             "details": "Modify `src/main.ts`. After the `MCPServer` instance is created, call the prompt loading and preparation functions. Iterate over the generated list of `Resource` objects and call `mcpServer.registerResource()` for each one. This should happen before the server starts listening for connections.",
+246 |             "status": "done",
+247 |             "testStrategy": "Manually run the server and check the startup logs for any errors related to resource registration."
+248 |           },
+249 |           {
+250 |             "id": 5,
+251 |             "title": "Add an integration test to validate resource exposure",
+252 |             "description": "Create a new integration test that starts the server, uses an MCP client to request the list of all available resources, and validates that the prompts from `prompts.meta.yaml` are present with the correct details.",
+253 |             "dependencies": [
+254 |               "3.4"
+255 |             ],
+256 |             "details": "In a new test file, e.g., `test/integration/resource.test.ts`, write a test case that connects to the running server. It should call the `list_resources` tool. The test will then assert that the returned list contains entries corresponding to the prompts, verifying the `name`, `uri` (is a valid `file://` URI), and `contentPreview` (is a non-empty, capped string).",
+257 |             "status": "done",
+258 |             "testStrategy": "This subtask is the test itself. Ensure it covers at least two different prompts from the metadata file."
+259 |           }
+260 |         ]
+261 |       },
+262 |       {
+263 |         "id": 4,
+264 |         "title": "Implement Dynamic Prompt Tools",
+265 |         "description": "Expose each prompt defined in `resources/prompts.meta.yaml` as a dynamically generated MCP tool.",
+266 |         "details": "During server startup, iterate through the entries in `prompts.meta.yaml`. For each entry, dynamically register an MCP tool with an `id` matching the metadata. Generate input/output schemas based on the metadata. The tool's handler should read the corresponding Markdown file from `resources/prompts/`, append a rendered footer, and return the content, applying the payload cap from task 2.",
+267 |         "testStrategy": "Use an MCP client to list tools and verify that a tool exists for each prompt in the metadata file. Invoke a tool and confirm the response contains the correct Markdown content. Test with a prompt file larger than 1 MB to ensure the response is truncated.",
+268 |         "priority": "high",
+269 |         "dependencies": [
+270 |           2,
+271 |           3
+272 |         ],
+273 |         "status": "done",
+274 |         "subtasks": [
+275 |           {
+276 |             "id": 1,
+277 |             "title": "Create a Utility to Load and Parse Prompt Metadata",
+278 |             "description": "Implement a function that reads `resources/prompts.meta.yaml`, parses it, and returns a validated, typed array of prompt metadata objects. This will serve as the single source of truth for prompt definitions.",
+279 |             "dependencies": [],
+280 |             "details": "Create a new file `src/lib/prompt-loader.ts`. Add an exported function `loadPromptDefinitions()`. This function should use the `fs` module to read `resources/prompts.meta.yaml` and the `js-yaml` library to parse its content. Define a TypeScript interface for the prompt metadata structure (e.g., `PromptDefinition`) and ensure the parsed data conforms to this type before returning it. This utility will be called during server startup.",
+281 |             "status": "done",
+282 |             "testStrategy": "Add a unit test to verify that the function correctly parses a sample YAML string and returns the expected array of objects."
+283 |           },
+284 |           {
+285 |             "id": 2,
+286 |             "title": "Develop a Generic Handler for Prompt Tools",
+287 |             "description": "Create a generic handler function that can be used by all dynamically generated prompt tools. The handler will be responsible for reading the prompt content, appending a footer, and applying the payload cap.",
+288 |             "dependencies": [],
+289 |             "details": "In a new file, e.g., `src/tools/prompt-handler.ts`, create a factory function `createPromptHandler(promptFilePath: string)`. This function should return an async `ToolHandler` function. The handler will read the file content from the provided `promptFilePath`, append a standard rendered footer (a simple string for now), and then apply the payload capping utility from Task 2 to the final content. The handler should return an object like `{ content: '...' }`.",
+290 |             "status": "done",
+291 |             "testStrategy": "Unit test the created handler to ensure it reads a file, appends the footer, and correctly truncates content that exceeds the payload cap."
+292 |           },
+293 |           {
+294 |             "id": 3,
+295 |             "title": "Implement Dynamic Schema Generation from Metadata",
+296 |             "description": "Create a function that generates JSON schemas for a tool's input and output based on the `variables` defined in its metadata.",
+297 |             "dependencies": [
+298 |               "4.1"
+299 |             ],
+300 |             "details": "In a new utility file, e.g., `src/lib/schema-generator.ts`, create a function `generateSchemas(metadata: PromptDefinition)`. This function will generate the `inputSchema` by creating a JSON Schema `object` with `properties` corresponding to each item in the metadata's `variables` array. The `outputSchema` should be a static JSON Schema defining an object with a single string property named `content`.",
+301 |             "status": "done",
+302 |             "testStrategy": "Unit test the schema generator with sample prompt metadata to ensure it produces valid input and output JSON schemas."
+303 |           },
+304 |           {
+305 |             "id": 4,
+306 |             "title": "Integrate Dynamic Tool Registration into Server Startup",
+307 |             "description": "Modify the server's startup sequence to iterate through the loaded prompt definitions and register an MCP tool for each one.",
+308 |             "dependencies": [
+309 |               "4.1",
+310 |               "4.2",
+311 |               "4.3"
+312 |             ],
+313 |             "details": "In the primary tool registration file (e.g., `src/tools/tool-registry.ts`), create a new async function `registerPromptTools(mcpServer: McpServer)`. This function will call `loadPromptDefinitions()` (from subtask 4.1). It will then loop through each definition, calling `generateSchemas()` (subtask 4.3) and `createPromptHandler()` (subtask 4.2) for each. Finally, it will construct the complete `ToolDefinition` object (with `id`, schemas, and handler) and register it using `mcpServer.registerTool()`. Call this new function from the main server entry point (`src/server.ts`) during initialization.",
+314 |             "status": "done",
+315 |             "testStrategy": "After implementation, manually start the server and check the logs or use an MCP client to confirm that tools corresponding to `prompts.meta.yaml` are being registered without errors."
+316 |           },
+317 |           {
+318 |             "id": 5,
+319 |             "title": "Add Integration Tests for Dynamic Prompt Tools",
+320 |             "description": "Implement integration tests to verify that the dynamic tools are correctly exposed and functional through the MCP server.",
+321 |             "dependencies": [
+322 |               "4.4"
+323 |             ],
 [TRUNCATED]
 ```
 
@@ -7901,8 +7788,7 @@ docs/client_setup.md
 68 | ## Safety and execution
 69 | 
 70 | - The server is read‑only by default; `--write-enabled` must be set to persist status changes.
-71 | - Script execution is disabled by default; add `--exec-enabled` to allow calling `workflow/run_script`, `workflow/run_task_action`, and domain wrappers. Scripts must also be listed in `package.json#mcpAllowScripts`.
-72 | 
+71 | - Script execution is disabled by default; add `--exec-enabled` to allow calling `workflow_run_script`, `workflow_run_task_action`, and domain wrappers. Scripts must also be listed in `package.json#mcpAllowScripts`.
 ```
 
 docs/mcp-cli.md
@@ -7966,11 +7852,11 @@ docs/mcp-cli.md
 57 | | `workflow/refresh_metadata` | Rebuilds catalog artifacts. | Matches CLI tooling. |
 58 | | `workflow/export_task_list` | Emits curated task list for clients. | Matches CLI tooling. |
 59 | | `workflow/advance_state` | Records tool completions into `.mcp/state.json`. | Mutating. |
-60 | | `workflow/run_script` | Executes an allowlisted npm script. | Dry-run supported; gated for safety. |
-61 | | `workflow/run_task_action` | Resolves `{script,args}` by task id (metadata or actions.json) and executes via `run_script`. | Dry-run supported; gated for safety. |
-62 | | `workflow/run_tests` | Runs project tests via allowlisted script. | Wrapper around `run_script`. |
-63 | | `workflow/run_build` | Runs project build via allowlisted script. | Wrapper around `run_script`. |
-64 | | `workflow/run_lint` | Runs project lint via allowlisted script. | Wrapper around `run_script`. |
+60 | | `workflow_run_script` | Executes an allowlisted npm script. | Dry-run supported; gated for safety. |
+61 | | `workflow_run_task_action` | Resolves `{script,args}` by task id (metadata or actions.json) and executes via `run_script`. | Dry-run supported; gated for safety. |
+62 | | `workflow_run_tests` | Runs project tests via allowlisted script. | Wrapper around `run_script`. |
+63 | | `workflow_run_build` | Runs project build via allowlisted script. | Wrapper around `run_script`. |
+64 | | `workflow_run_lint` | Runs project lint via allowlisted script. | Wrapper around `run_script`. |
 65 | 
 66 | ### How this improves your workflow (use cases)
 67 | 
@@ -8063,11 +7949,11 @@ docs/mcp-cli.md
 154 |   - Allowlist: scripts must appear in `package.json#mcpAllowScripts`.
 155 |   - Exec gate: either set environment `PROMPTS_EXEC_ALLOW=1` or launch the server with `--exec-enabled`.
 156 | - Most execution tools support `dryRun: true` so you can preview the exact command before allowing live runs.
-157 | - Actions by task id: `workflow/run_task_action` looks for `{ metadata.action: {script,args} }` on a task or in an `actions.json` mapping (keyed by task id) and dispatches through the same safe path.
+157 | - Actions by task id: `workflow_run_task_action` looks for `{ metadata.action: {script,args} }` on a task or in an `actions.json` mapping (keyed by task id) and dispatches through the same safe path.
 158 | 
 159 | #### actions.json format (for run_task_action)
 160 | 
-161 | `workflow/run_task_action` can resolve a task’s execution action from either the task’s own metadata or from a repo-level mapping file. The default mapping file name is `actions.json` (relative to the server’s working directory); you can override the path by passing the optional `actionsPath` input.
+161 | `workflow_run_task_action` can resolve a task’s execution action from either the task’s own metadata or from a repo-level mapping file. The default mapping file name is `actions.json` (relative to the server’s working directory); you can override the path by passing the optional `actionsPath` input.
 162 | 
 163 | Schema and example:
 164 | 
@@ -8143,6 +8029,107 @@ docs/observability.md
 34 | 
 ```
 
+errlog/test-tools.txt
+```
+1 | 
+2 | > prompts@0.1.0 test:tools
+3 | > npm run test:jest -- test/integration/tools.test.ts
+4 | 
+5 | 
+6 | > prompts@0.1.0 test:jest
+7 | > NODE_OPTIONS=--experimental-vm-modules jest --runInBand test/integration/tools.test.ts
+8 | 
+9 | {"timestamp":"2025-09-23T16:31:42.526Z","level":"info","message":"prompt_resources_registered","metadata":{"count":6}}
+10 | {"timestamp":"2025-09-23T16:31:42.528Z","level":"info","message":"prompt_tools_registered","metadata":{"count":6}}
+11 | (node:53180) ExperimentalWarning: VM Modules is an experimental feature and might change at any time
+12 | (Use `node --trace-warnings ...` to show where the warning was created)
+13 | {"timestamp":"2025-09-23T16:31:42.531Z","level":"info","message":"workflow_tools_registered","metadata":{"count":7,"tools":["refresh_metadata","export_task_list","advance_state","workflow_run_script","workflow_run_tests","workflow_run_build","workflow_run_lint"]}}
+14 | {"timestamp":"2025-09-23T16:31:42.567Z","level":"info","message":"advance_state_recorded","metadata":{"id":"instruction-file","artifactCount":1}}
+15 | {"timestamp":"2025-09-23T16:31:42.569Z","level":"info","message":"export_task_list_completed","metadata":{"count":6}}
+16 | {"timestamp":"2025-09-23T16:31:43.827Z","level":"info","message":"refresh_metadata_completed","metadata":{"updateWorkflow":false}}
+17 | PASS test/integration/tools.test.ts
+18 |   prompt and workflow tools
+19 |     ✓ register tools and serve content over MCP (1309 ms)
+20 | 
+21 | Test Suites: 1 passed, 1 total
+22 | Tests:       1 passed, 1 total
+23 | Snapshots:   0 total
+24 | Time:        1.515 s, estimated 2 s
+25 | Ran all test suites matching /test\/integration\/tools.test.ts/i.
+```
+
+errlog/test.txt
+```
+1 | 
+2 | > prompts@0.1.0 test
+3 | > npm run test:workflow && npm run test:jest
+4 | 
+5 | 
+6 | > prompts@0.1.0 test:workflow
+7 | > node --loader ts-node/esm scripts/__tests__/workflow_sync.test.ts
+8 | 
+9 | (node:53366) ExperimentalWarning: `--experimental-loader` may be removed in the future; instead use `register()`:
+10 | --import 'data:text/javascript,import { register } from "node:module"; import { pathToFileURL } from "node:url"; register("ts-node/esm", pathToFileURL("./"));'
+11 | (Use `node --trace-warnings ...` to show where the warning was created)
+12 | (node:53366) [DEP0180] DeprecationWarning: fs.Stats constructor is deprecated.
+13 | (Use `node --trace-deprecation ...` to show where the warning was created)
+14 | workflow sync regression test passed.
+15 | 
+16 | > prompts@0.1.0 test:jest
+17 | > NODE_OPTIONS=--experimental-vm-modules jest --runInBand
+18 | 
+19 | {"timestamp":"2025-09-23T16:32:02.507Z","level":"info","message":"prompt_resources_registered","metadata":{"count":6}}
+20 | {"timestamp":"2025-09-23T16:32:02.508Z","level":"info","message":"prompt_tools_registered","metadata":{"count":6}}
+21 | (node:53390) ExperimentalWarning: VM Modules is an experimental feature and might change at any time
+22 | (Use `node --trace-warnings ...` to show where the warning was created)
+23 | {"timestamp":"2025-09-23T16:32:02.511Z","level":"info","message":"workflow_tools_registered","metadata":{"count":7,"tools":["refresh_metadata","export_task_list","advance_state","workflow_run_script","workflow_run_tests","workflow_run_build","workflow_run_lint"]}}
+24 | {"timestamp":"2025-09-23T16:32:02.543Z","level":"info","message":"advance_state_recorded","metadata":{"id":"instruction-file","artifactCount":1}}
+25 | {"timestamp":"2025-09-23T16:32:02.544Z","level":"info","message":"export_task_list_completed","metadata":{"count":6}}
+26 | {"timestamp":"2025-09-23T16:32:03.720Z","level":"info","message":"refresh_metadata_completed","metadata":{"updateWorkflow":false}}
+27 | PASS test/integration/tools.test.ts
+28 | PASS test/integration/loop-execution.test.ts
+29 | PASS test/integration/run-script.live-enabled.test.ts
+30 | {"timestamp":"2025-09-23T16:32:04.244Z","level":"info","message":"prompt_resources_registered","metadata":{"count":6}}
+31 | {"timestamp":"2025-09-23T16:32:04.245Z","level":"info","message":"prompt_tools_registered","metadata":{"count":6}}
+32 | {"timestamp":"2025-09-23T16:32:04.246Z","level":"info","message":"workflow_tools_registered","metadata":{"count":8,"tools":["refresh_metadata","export_task_list","advance_state","workflow_run_script","workflow_run_tests","workflow_run_build","workflow_run_lint","workflow_run_task_action"]}}
+33 | PASS test/integration/server-advertises.test.ts
+34 | {"timestamp":"2025-09-23T16:32:04.340Z","level":"info","message":"next_task_selected","metadata":{"id":1,"title":"Initial work"}}
+35 | {"timestamp":"2025-09-23T16:32:04.341Z","level":"info","message":"list_tasks","metadata":{"count":2}}
+36 | {"timestamp":"2025-09-23T16:32:04.342Z","level":"info","message":"graph_export","metadata":{"count":2}}
+37 | {"timestamp":"2025-09-23T16:32:04.346Z","level":"info","message":"set_task_status_completed","metadata":{"id":1,"status":"pending","persisted":false}}
+38 | {"timestamp":"2025-09-23T16:32:04.350Z","level":"info","message":"set_task_status_completed","metadata":{"id":1,"status":"done","persisted":true}}
+39 | PASS test/mcp/task-tools.test.ts
+40 | {"timestamp":"2025-09-23T16:32:04.442Z","level":"info","message":"prompt_resources_registered","metadata":{"count":6}}
+41 | PASS test/integration/resources.test.ts
+42 | PASS test/integration/run-task-action.error-cases.test.ts
+43 | PASS tests/adapters/ingest.test.ts
+44 | PASS test/cli/prompts-cli.test.ts
+45 | PASS test/mcp/task-service.test.ts
+46 | PASS test/integration/agent-smoke.test.ts
+47 | PASS test/adapters/ingest.schema-path.test.ts
+48 | PASS test/mastra/prompts-tools.test.ts
+49 | PASS test/providers/factory.test.ts
+50 | PASS test/integration/run-script.error-event.test.ts
+51 | PASS test/planner/Planner.test.ts
+52 | PASS test/integration/run-script.test.ts
+53 | PASS src/tools/prompt-handler.test.ts
+54 | PASS test/state/update.test.ts
+55 | PASS test/state/StateStore.test.ts
+56 | PASS test/adapters/enrichment.test.ts
+57 | PASS test/state/graph/computeReadiness.test.ts
+58 | PASS test/state/graph/next.test.ts
+59 | PASS test/integration/run-lint.test.ts
+60 | PASS src/utils/safety.test.ts
+61 | PASS src/prompts/loader.test.ts
+62 | PASS src/prompts/schema.test.ts
+63 | 
+64 | Test Suites: 27 passed, 27 total
+65 | Tests:       61 passed, 61 total
+66 | Snapshots:   0 total
+67 | Time:        3.644 s, estimated 4 s
+68 | Ran all test suites.
+```
+
 examples/actions.json
 ```
 1 | {
@@ -8198,7 +8185,7 @@ examples/agent-demo.md
 42 | 
 43 | - Start server read-only for exploration: `node dist/mcp/server.js --write=false`.
 44 | - Switch to `--write=true` when you’re ready to persist `set_task_status` or `workflow/advance_state` changes.
-45 | - For executing local scripts safely, prefer `workflow/run_task_action`:
+45 | - For executing local scripts safely, prefer `workflow_run_task_action`:
 46 |   - Map `{script,args}` via task metadata or `actions.json` keyed by task id.
 47 |   - Preview with `dryRun: true`.
 48 |   - Enable live runs by launching with `--exec-enabled` (or setting `PROMPTS_EXEC_ALLOW=1`).
@@ -8538,6 +8525,22 @@ schemas/task.json
 185 |     }
 186 |   }
 187 | }
+```
+
+scripts/ai-commit.sh
+```
+1 | #!/usr/bin/env bash
+2 | set -euo pipefail
+3 | 
+4 | added_files=$(git diff --cached --name-only)
+5 | [ -z "$added_files" ] && { echo "No staged changes."; exit 1; }
+6 | 
+7 | echo "Staged files:"; echo "$added_files"
+8 | 
+9 | msg="$(git diff --cached | gemini --model gemini-2.5-flash --prompt 'Generate a concise Conventional Commit (type(scope): summary).')"
+10 | [ -z "$msg" ] && { echo "Empty message."; exit 1; }
+11 | 
+12 | git commit -m "$msg"
 ```
 
 scripts/build_catalog.ts
@@ -8931,15 +8934,69 @@ scripts/file_utils.ts
 
 scripts/front_matter.ts
 ```
-1 | export {
-2 |   ensureArray,
-3 |   formatFrontMatter,
-4 |   parseFrontMatter,
-5 |   type FrontMatterRecord,
-6 |   type MetadataValue,
-7 |   type ParsedFrontMatter,
-8 |   type Scalar,
-9 | } from '../src/utils/front_matter.ts';
+1 | import matter from 'gray-matter';
+2 | 
+3 | export type Scalar = string;
+4 | 
+5 | export type MetadataValue = Scalar | Scalar[];
+6 | 
+7 | export interface ParsedFrontMatter {
+8 |   metadata: Record<string, MetadataValue>;
+9 |   endOffset: number;
+10 | }
+11 | 
+12 | const FRONT_MATTER_PATTERN = /^---\r?\n([\s\S]*?)\r?\n---\r?\n?/;
+13 | 
+14 | export function parseFrontMatter(content: string): ParsedFrontMatter | null {
+15 |   if (!content.startsWith('---')) {
+16 |     return null;
+17 |   }
+18 | 
+19 |   const match = content.match(FRONT_MATTER_PATTERN);
+20 |   if (!match) {
+21 |     throw new Error('Front matter missing closing delimiter.');
+22 |   }
+23 | 
+24 |   const parsed = matter(content, { excerpt: false });
+25 |   const metadata = normalizeMetadata(parsed.data);
+26 | 
+27 |   return {
+28 |     metadata,
+29 |     endOffset: match[0].length,
+30 |   };
+31 | }
+32 | 
+33 | function normalizeMetadata(raw: unknown): Record<string, MetadataValue> {
+34 |   if (raw === null || typeof raw !== 'object') {
+35 |     return {};
+36 |   }
+37 | 
+38 |   const entries = Object.entries(raw as Record<string, unknown>);
+39 |   const normalized: Record<string, MetadataValue> = {};
+40 | 
+41 |   for (const [key, value] of entries) {
+42 |     if (value === undefined || value === null) {
+43 |       continue;
+44 |     }
+45 |     if (Array.isArray(value)) {
+46 |       normalized[key] = value.map((item) => stringify(item)).filter((item) => item.length > 0);
+47 |     } else {
+48 |       const stringValue = stringify(value);
+49 |       if (stringValue.length > 0) {
+50 |         normalized[key] = stringValue;
+51 |       }
+52 |     }
+53 |   }
+54 | 
+55 |   return normalized;
+56 | }
+57 | 
+58 | function stringify(input: unknown): string {
+59 |   if (typeof input === 'string') {
+60 |     return input.trim();
+61 |   }
+62 |   return String(input).trim();
+63 | }
 ```
 
 scripts/generate_docs.ts
@@ -9450,31 +9507,39 @@ scripts/generate_docs.ts
 
 scripts/markdown_utils.ts
 ```
-1 | import path from 'path';
-2 | 
-3 | import { glob } from 'glob';
-4 | 
-5 | import { loadPhases as loadWorkflowPhases } from '../src/utils/markdown.ts';
-6 | 
-7 | const DEFAULT_IGNORE = [
-8 |   '**/node_modules/**',
-9 |   '**/.git/**',
-10 |   '**/.taskmaster/**',
-11 |   '**/.github/**',
-12 |   '**/dist/**',
-13 | ];
-14 | 
-15 | export async function collectMarkdownFiles(rootDir: string): Promise<string[]> {
-16 |   const matches = await glob('**/*.md', {
-17 |     cwd: rootDir,
-18 |     ignore: DEFAULT_IGNORE,
-19 |     nodir: true,
-20 |     absolute: true,
-21 |   });
-22 |   return matches.map((match) => path.resolve(match));
-23 | }
-24 | 
-25 | export { loadWorkflowPhases as loadPhases };
+1 | import { promises as fs } from 'fs';
+2 | import path from 'path';
+3 | 
+4 | import { glob } from 'glob';
+5 | 
+6 | const DEFAULT_IGNORE = [
+7 |   '**/node_modules/**',
+8 |   '**/.git/**',
+9 |   '**/.taskmaster/**',
+10 |   '**/.github/**',
+11 |   '**/dist/**',
+12 | ];
+13 | 
+14 | export async function collectMarkdownFiles(rootDir: string): Promise<string[]> {
+15 |   const matches = await glob('**/*.md', {
+16 |     cwd: rootDir,
+17 |     ignore: DEFAULT_IGNORE,
+18 |     nodir: true,
+19 |     absolute: true,
+20 |   });
+21 |   return matches.map((match) => path.resolve(match));
+22 | }
+23 | 
+24 | export async function loadPhases(workflowPath: string): Promise<Set<string>> {
+25 |   const content = await fs.readFile(workflowPath, 'utf8');
+26 |   const headingRegex = /^(##|###)\s+(.+)$/gm;
+27 |   const phases = new Set<string>();
+28 |   let match: RegExpExecArray | null;
+29 |   while ((match = headingRegex.exec(content)) !== null) {
+30 |     phases.add(match[2].trim());
+31 |   }
+32 |   return phases;
+33 | }
 ```
 
 scripts/validate_metadata.ts
@@ -9484,176 +9549,102 @@ scripts/validate_metadata.ts
 3 | import { fileURLToPath } from 'url';
 4 | 
 5 | import { z } from 'zod';
-6 | import { load as loadYaml } from 'js-yaml';
-7 | 
-8 | import { parseFrontMatter } from './front_matter.ts';
-9 | import { collectMarkdownFiles, loadPhases } from './markdown_utils.ts';
-10 | 
-11 | const moduleDir = path.dirname(fileURLToPath(import.meta.url));
-12 | const CUSTOM_ROOT_ENV = 'PROMPTS_VALIDATION_ROOT';
-13 | 
-14 | const stringField = z.string().trim().min(1, 'value must be a non-empty string');
-15 | const stringArray = z.array(stringField).nonempty('must contain at least one entry');
-16 | const stringOrArray = z.union([stringField, stringArray]);
-17 | 
-18 | const metadataSchema = z
-19 |   .object({
-20 |     phase: stringOrArray,
-21 |     gate: stringField,
-22 |     status: stringField,
-23 |     previous: stringArray,
-24 |     next: stringArray,
-25 |     tags: z.array(stringField).optional(),
-26 |   })
-27 |   .passthrough();
-28 | 
-29 | async function main(): Promise<void> {
-30 |   const customRoot = process.env[CUSTOM_ROOT_ENV];
-31 |   const repoRoot = customRoot ? path.resolve(customRoot) : path.resolve(moduleDir, '..');
-32 |   const workflowPath = path.join(repoRoot, 'WORKFLOW.md');
-33 |   const validPhases = await loadPhases(workflowPath);
-34 |   const markdownFiles = await collectMarkdownFiles(repoRoot);
-35 |   const trackedPaths = await loadTrackedMarkdownPaths(repoRoot);
-36 |   const useTrackedFilter = trackedPaths.size > 0;
-37 |   const promptsPrefix = `prompts${path.sep}`;
-38 | 
-39 |   const errors: string[] = [];
-40 |   let validatedFiles = 0;
-41 | 
-42 |   for (const filePath of markdownFiles) {
-43 |     const relativePath = path.relative(repoRoot, filePath);
-44 |     const normalizedRelative = normalizeRelativePath(relativePath);
-45 |     const shouldValidate =
-46 |       normalizedRelative.startsWith(promptsPrefix) || !useTrackedFilter || trackedPaths.has(normalizedRelative);
-47 |     if (!shouldValidate) {
-48 |       continue;
-49 |     }
-50 |     const content = await fs.readFile(filePath, 'utf8');
-51 |     const parsed = parseFrontMatter(content);
-52 |     if (!parsed) {
-53 |       errors.push(`${relativePath}: missing YAML front matter`);
-54 |       continue;
-55 |     }
-56 | 
-57 |     validatedFiles += 1;
-58 | 
-59 |     const validation = metadataSchema.safeParse(parsed.metadata);
-60 |     if (!validation.success) {
-61 |       for (const issue of validation.error.issues) {
-62 |         const location = issue.path.length > 0 ? issue.path.join('.') : 'front matter';
-63 |         errors.push(`${relativePath}: ${location} ${issue.message}`);
-64 |       }
-65 |       continue;
-66 |     }
-67 | 
-68 |     const metadata = validation.data;
-69 |     const phases = toArray(metadata.phase);
-70 |     const missingPhases = findMissingPhases(phases, validPhases);
-71 |     if (missingPhases.length > 0) {
-72 |       errors.push(
-73 |         `${relativePath}: phase value(s) not found in WORKFLOW.md headings: ${missingPhases.join(', ')}.`,
-74 |       );
-75 |     }
-76 |   }
-77 | 
-78 |   if (errors.length > 0) {
-79 |     console.error('Metadata validation failed:\n');
-80 |     for (const error of errors) {
-81 |       console.error(`- ${error}`);
-82 |     }
-83 |     process.exitCode = 1;
-84 |     return;
-85 |   }
-86 | 
-87 |   console.log(`Metadata validated for ${validatedFiles} file(s).`);
-88 | }
-89 | 
-90 | function toArray(input: z.infer<typeof stringOrArray>): string[] {
-91 |   return Array.isArray(input) ? input : [input];
-92 | }
-93 | 
-94 | function findMissingPhases(phases: string[], validPhases: Set<string>): string[] {
-95 |   if (phases.length === 0) {
-96 |     return [];
-97 |   }
-98 |   const headings = Array.from(validPhases).map((heading) => heading.toLowerCase());
-99 |   const missing: string[] = [];
-100 |   for (const phase of phases) {
-101 |     const normalized = phase.toLowerCase();
-102 |     const found = headings.some((heading) => heading.includes(normalized));
-103 |     if (!found) {
-104 |       missing.push(phase);
-105 |     }
-106 |   }
-107 |   return missing;
-108 | }
-109 | 
-110 | async function loadTrackedMarkdownPaths(repoRoot: string): Promise<Set<string>> {
-111 |   const tracked = new Set<string>();
-112 |   await appendCatalogPaths(repoRoot, tracked);
-113 |   await appendMetadataPaths(repoRoot, tracked);
-114 |   return tracked;
-115 | }
-116 | 
-117 | async function appendCatalogPaths(repoRoot: string, tracked: Set<string>): Promise<void> {
-118 |   const catalogPath = path.join(repoRoot, 'catalog.json');
-119 |   try {
-120 |     const raw = await fs.readFile(catalogPath, 'utf8');
-121 |     const catalog = JSON.parse(raw) as Record<string, unknown>;
-122 |     for (const value of Object.values(catalog)) {
-123 |       if (!Array.isArray(value)) {
-124 |         continue;
-125 |       }
-126 |       for (const entry of value) {
-127 |         if (isPlainObject(entry) && typeof entry.path === 'string') {
-128 |           tracked.add(normalizeRelativePath(entry.path));
-129 |         }
-130 |       }
-131 |     }
-132 |   } catch (error) {
-133 |     if ((error as NodeJS.ErrnoException).code !== 'ENOENT') {
-134 |       console.warn(`Failed to read catalog.json: ${(error as Error).message}`);
-135 |     }
-136 |   }
-137 | }
-138 | 
-139 | async function appendMetadataPaths(repoRoot: string, tracked: Set<string>): Promise<void> {
-140 |   const metadataPath = path.join(repoRoot, 'resources', 'prompts.meta.yaml');
-141 |   try {
-142 |     const raw = await fs.readFile(metadataPath, 'utf8');
-143 |     const parsed = loadYaml(raw);
-144 |     if (!Array.isArray(parsed)) {
-145 |       return;
-146 |     }
-147 |     for (const entry of parsed) {
-148 |       if (isPlainObject(entry) && typeof entry.path === 'string') {
-149 |         tracked.add(normalizeRelativePath(entry.path));
-150 |       }
-151 |     }
-152 |   } catch (error) {
-153 |     if ((error as NodeJS.ErrnoException).code !== 'ENOENT') {
-154 |       console.warn(`Failed to read prompts.meta.yaml: ${(error as Error).message}`);
-155 |     }
-156 |   }
-157 | }
-158 | 
-159 | function normalizeRelativePath(filePath: string): string {
-160 |   const normalized = path.normalize(filePath);
-161 |   if (normalized.startsWith(`.${path.sep}`)) {
-162 |     return normalized.slice(2);
-163 |   }
-164 |   return normalized;
-165 | }
-166 | 
-167 | function isPlainObject(value: unknown): value is Record<string, unknown> {
-168 |   return !!value && typeof value === 'object' && !Array.isArray(value);
-169 | }
-170 | 
-171 | main().catch((error) => {
-172 |   console.error('Failed to validate metadata.');
-173 |   console.error(error);
-174 |   process.exitCode = 1;
-175 | });
+6 | 
+7 | import { parseFrontMatter } from './front_matter.ts';
+8 | import { collectMarkdownFiles, loadPhases } from './markdown_utils.ts';
+9 | 
+10 | const moduleDir = path.dirname(fileURLToPath(import.meta.url));
+11 | 
+12 | const stringField = z.string().trim().min(1, 'value must be a non-empty string');
+13 | const stringArray = z.array(stringField).nonempty('must contain at least one entry');
+14 | const stringOrArray = z.union([stringField, stringArray]);
+15 | 
+16 | const metadataSchema = z
+17 |   .object({
+18 |     phase: stringOrArray,
+19 |     gate: stringField,
+20 |     status: stringField,
+21 |     previous: stringArray,
+22 |     next: stringArray,
+23 |     tags: z.array(stringField).optional(),
+24 |   })
+25 |   .passthrough();
+26 | 
+27 | async function main(): Promise<void> {
+28 |   const repoRoot = path.resolve(moduleDir, '..');
+29 |   const workflowPath = path.join(repoRoot, 'WORKFLOW.md');
+30 |   const validPhases = await loadPhases(workflowPath);
+31 |   const markdownFiles = await collectMarkdownFiles(repoRoot);
+32 | 
+33 |   const errors: string[] = [];
+34 |   let validatedFiles = 0;
+35 | 
+36 |   for (const filePath of markdownFiles) {
+37 |     const relativePath = path.relative(repoRoot, filePath);
+38 |     const content = await fs.readFile(filePath, 'utf8');
+39 |     const parsed = parseFrontMatter(content);
+40 |     if (!parsed) {
+41 |       continue;
+42 |     }
+43 | 
+44 |     validatedFiles += 1;
+45 | 
+46 |     const validation = metadataSchema.safeParse(parsed.metadata);
+47 |     if (!validation.success) {
+48 |       for (const issue of validation.error.issues) {
+49 |         const location = issue.path.length > 0 ? issue.path.join('.') : 'front matter';
+50 |         errors.push(`${relativePath}: ${location} ${issue.message}`);
+51 |       }
+52 |       continue;
+53 |     }
+54 | 
+55 |     const metadata = validation.data;
+56 |     const phases = toArray(metadata.phase);
+57 |     const missingPhases = findMissingPhases(phases, validPhases);
+58 |     if (missingPhases.length > 0) {
+59 |       errors.push(
+60 |         `${relativePath}: phase value(s) not found in WORKFLOW.md headings: ${missingPhases.join(', ')}.`,
+61 |       );
+62 |     }
+63 |   }
+64 | 
+65 |   if (errors.length > 0) {
+66 |     console.error('Metadata validation failed:\n');
+67 |     for (const error of errors) {
+68 |       console.error(`- ${error}`);
+69 |     }
+70 |     process.exitCode = 1;
+71 |     return;
+72 |   }
+73 | 
+74 |   console.log(`Metadata validation passed for ${validatedFiles} file(s).`);
+75 | }
+76 | 
+77 | function toArray(input: z.infer<typeof stringOrArray>): string[] {
+78 |   return Array.isArray(input) ? input : [input];
+79 | }
+80 | 
+81 | function findMissingPhases(phases: string[], validPhases: Set<string>): string[] {
+82 |   if (phases.length === 0) {
+83 |     return [];
+84 |   }
+85 |   const headings = Array.from(validPhases).map((heading) => heading.toLowerCase());
+86 |   const missing: string[] = [];
+87 |   for (const phase of phases) {
+88 |     const normalized = phase.toLowerCase();
+89 |     const found = headings.some((heading) => heading.includes(normalized));
+90 |     if (!found) {
+91 |       missing.push(phase);
+92 |     }
+93 |   }
+94 |   return missing;
+95 | }
+96 | 
+97 | main().catch((error) => {
+98 |   console.error('Failed to validate metadata.');
+99 |   console.error(error);
+100 |   process.exitCode = 1;
+101 | });
 ```
 
 src/logger.ts
@@ -9967,18 +9958,19 @@ tests/.gitkeep
 17 |         with:
 18 |           node-version: '20'
 19 |           cache: 'npm'
-20 | 
-21 |       - name: Install deps
-22 |         run: npm ci
-23 | 
-24 |       - name: Build
-25 |         run: npm run build
-26 | 
-27 |       - name: Verify package contents (schemas + server)
-28 |         env:
-29 |           npm_config_cache: ${{ runner.temp }}/npm-cache
-30 |         run: npm run ci:pack-check
-31 | 
+20 |           cache-dependency-path: package-lock.json
+21 | 
+22 |       - name: Install deps
+23 |         run: npm ci
+24 | 
+25 |       - name: Build
+26 |         run: npm run build
+27 | 
+28 |       - name: Verify package contents (schemas + server)
+29 |         env:
+30 |           npm_config_cache: ${{ runner.temp }}/npm-cache
+31 |         run: npm run ci:pack-check
+32 | 
 ```
 
 .taskmaster/docs/PRDv2.md
@@ -10307,6 +10299,241 @@ tests/.gitkeep
 322 | 
 ```
 
+.taskmaster/docs/prd-v3.md
+```
+1 | # Overview
+2 | 
+3 | Mastra–MCP Prompt Orchestrator (MMPO) converts a repository of Markdown prompts into production-grade, agent-callable tools using Mastra’s Model Context Protocol (MCP) patterns. It serves internal agent developers, prompt engineers, and research analysts who need consistent, discoverable, and composable “prompt tools,” plus curated external toolsets (filesystem, GitHub, search, browser) and an optional local inference provider (Nexa SDK). MMPO reduces glue-code, enforces schemas, and standardizes integration so that agents can reason, plan, and act with predictable inputs/outputs.
+4 | 
+5 | # Core Features
+6 | 
+7 | **1) Prompt Registry & Auto-Tooling**
+8 | 
+9 | - **What:** One MCP tool per prompt generated from prompt metadata (slug, description, variables), with strict input schemas and versioning.
+10 | - **Why:** Eliminates ad-hoc prompt usage; enables discoverability and safe, typed invocation by agents and clients.
+11 | - **High-level How:** Loader scans `prompts/` for metadata, builds a schema per prompt (from `variables[]`), registers tools on an MCP server under `prompts/<slug>`, returning `{content}` and structured outputs where applicable.
+12 | - **Acceptance criteria (BDD):**
+13 |   - Given a prompt file with `variables[]`, When the server starts, Then an MCP tool named `prompts/<slug>` is registered with a matching JSON-schema.
+14 |   - Given a missing optional variable default, When the tool is invoked without that variable, Then invocation succeeds using the default and logs resolved inputs.
+15 |   - Given a prompt marked deprecated, When clients request tools, Then the deprecated tool is hidden by default and flagged in metadata.
+16 | 
+17 | **2) Mastra MCP Client Orchestration (Static + Dynamic Toolsets)**
+18 | 
+19 | - **What:** Combine core, low-latency utilities via static `getTools()` with per-request `getToolsets()` attachments (e.g., search, GitHub) to minimize overhead and scope access.
+20 | - **Why:** Faster warm paths and safer, least-privilege dynamic capabilities.
+21 | - **High-level How:** The Agent process initializes a client with a static set; planners attach additional toolsets on demand for a task window.
+22 | - **Acceptance criteria (BDD):**
+23 |   - Given only static tools configured, When a task does not require external resources, Then no dynamic toolset is attached and latency stays within target.
+24 |   - Given a task requires GitHub read-only, When `getToolsets()` attaches the GitHub set, Then only read endpoints are available in that session.
+25 |   - Given dynamic tools attached, When the task completes, Then the client detaches them and clears credentials from memory.
+26 | 
+27 | **3) Mastra MCP Server & Agent-as-Tool Exposure**
+28 | 
+29 | - **What:** Expose internal agents as MCP tools (`ask_<agentKey>`) alongside prompt tools with human-readable descriptions.
+30 | - **Why:** Enables external MCP clients to call house agents and allows composition (agents calling agents) through a unified surface.
+31 | - **High-level How:** Start a Mastra-backed MCP server; register prompt tools and export agents with descriptions; run over stdio initially.
+32 | - **Acceptance criteria (BDD):**
+33 |   - Given an agent with a non-empty description, When the server starts, Then a tool `ask_<agentKey>` appears in the tool list.
+34 |   - Given a tool call to `ask_planner` with a question, When executed, Then the agent returns a structured plan artifact.
+35 |   - Given a client without permission, When attempting to call a restricted agent tool, Then the server denies with a policy error.
+36 | 
+37 | **4) Curated MCP Integrations (FS, GitHub, Search, Browser)**
+38 | 
+39 | - **What:** Production-ready connectors: Filesystem (sandboxed), GitHub (read-only default), Web Search/Fetch, and Browser automation.
+40 | - **Why:** Provides the essential research and codebase context needed by agents while controlling risk and blast radius.
+41 | - **High-level How:** Version-pin selected servers; gate write operations behind dry-run/approvals; expose as dynamic toolsets.
+42 | - **Acceptance criteria (BDD):**
+43 |   - Given FS sandbox roots configured, When a tool reads files outside roots, Then access is denied and audited.
+44 |   - Given GitHub read-only mode, When a tool tries to write, Then the call is blocked and a remediation hint is returned.
+45 |   - Given Search/Fetch results, When an agent requests page content, Then the server returns parsed text with source metadata.
+46 |   - Given Browser automation unavailable on host, When a plan requests browser steps, Then the system falls back to fetch+parse with notices.
+47 | 
+48 | **5) Local Provider Integration (Nexa SDK)**
+49 | 
+50 | - **What:** Optional local, OpenAI-compatible inference provider for chat, embeddings, and reranking; selectable per task.
+51 | - **Why:** Improves privacy, cost, and offline resilience; supports hardware acceleration where available.
+52 | - **High-level How:** Provider abstraction accepts base URL + model; feature flags enable `/embeddings` and `/reranking` when present; model-format awareness (e.g., MLX vs GGUF).
+53 | - **Acceptance criteria (BDD):**
+54 |   - Given the local provider is reachable, When selected, Then chat requests stream tokens and complete within latency targets.
+55 |   - Given embeddings enabled, When an agent requests vectorization, Then vectors are produced with recorded model+dimension metadata.
+56 |   - Given reranking unavailable on provider, When requested, Then the system degrades to client-side scoring and logs the fallback.
+57 | 
+58 | **6) Safety, Policy, and Side-Effect Guardrails**
+59 | 
+60 | - **What:** Least-privilege credentials, dry-run by default on mutating actions, E2E audit logs, rate limits, and PII-safe telemetry.
+61 | - **Why:** Prevents accidental changes, enforces governance, and supports incident response.
+62 | - **High-level How:** Policy engine mediates all tool calls; mutation calls require `intent=write` and optional approval tokens.
+63 | - **Acceptance criteria (BDD):**
+64 |   - Given `intent` not set to `write`, When a mutating operation is invoked, Then the call is rejected with instructions to enable write safely.
+65 |   - Given audit logging enabled, When any tool runs, Then inputs/outputs/latency and decision traces are recorded without sensitive payloads.
+66 |   - Given rate limits configured, When calls exceed thresholds, Then callers receive backoff guidance and a retry-after hint.
+67 | 
+68 | # User Experience
+69 | 
+70 | **Personas**
+71 | 
+72 | - Prompt Engineer: curates prompts, defines variables, validates outputs.
+73 | - Agent Developer: composes agents with prompt tools and external toolsets.
+74 | - Research Analyst: runs orchestrations with minimal setup; reads structured outputs.
+75 | - Platform/Security Admin: configures sandboxes, scopes, policies, and auditing.
+76 | 
+77 | **Key Flows**
+78 | 
+79 | - Register a prompt → tool is generated → agent invokes tool with typed inputs → result is used downstream.
+80 | - Attach dynamic toolsets per task (e.g., GitHub read-only + Search) and detach on completion.
+81 | - Switch provider to local (Nexa) for privacy/offline tasks; revert to remote provider as needed.
+82 | 
+83 | **UI/UX Considerations**
+84 | 
+85 | - Minimal CLI and configuration-first experience; optional lightweight admin page for tool catalog, policies, and logs.
+86 | - Clear affordances for dry-run vs write mode; explicit banners when fallbacks are active.
+87 | - Structured artifacts (plans, citations, summaries) output as JSON alongside human-readable text.
+88 | 
+89 | **Accessibility Considerations**
+90 | 
+91 | - Keyboard-first interactions in any UI; semantic headings/labels.
+92 | - High-contrast mode and screen-reader-friendly form fields for tool inputs.
+93 | 
+94 | # Technical Architecture
+95 | 
+96 | **System Components**
+97 | 
+98 | - Prompt Loader & Schema Builder: parses metadata, generates JSON-schemas, versions tools.
+99 | - MCP Server: hosts prompt tools and `ask_<agent>` tools over stdio; optional SSE/HTTP later.
+100 | - MCP Client Orchestrator: manages static tools and on-demand dynamic toolsets per request.
+101 | - Integration Servers: Filesystem (sandboxed), GitHub (read-only default), Search/Fetch, Browser automation.
+102 | - Provider Layer: pluggable OpenAI-compatible providers; optional Nexa local provider.
+103 | - Policy & Guardrails: intent gates, approvals, rate limits, audit logs.
+104 | - Observability: metrics, traces, structured logs; redaction for sensitive fields.
+105 | 
+106 | **Data Models**
+107 | 
+108 | - Prompt: `{ slug, name, description, version, variables: [{ name, type, required, default, description }], category, deprecated?: boolean }`.
+109 | - Tool Registration: `{ toolName, schemaRef, version, sideEffects: 'none'|'read'|'write', visibility }`.
+110 | - Run Record: `{ id, toolName, inputs, outputsRef, status, latencyMs, startedAt, finishedAt, caller, fallbacks: [] }`.
+111 | - Sandbox Config: `{ roots: [path], denyPatterns: [glob], readOnly: boolean }`.
+112 | - Provider Config: `{ providerKey, baseUrl, model, features: { embeddings?: boolean, reranking?: boolean }, hardwareHints }`.
+113 | 
+114 | **APIs & Integrations**
+115 | 
+116 | - MCP Server (stdio initially) exposing: `prompts/<slug>` tools and `ask_<agent>` tools.
+117 | - MCP Client with `getTools()` (static) and `getToolsets()` (dynamic) to attach FS/GitHub/Search/Browser.
+118 | - OpenAI-compatible Provider API for chat/embeddings/reranking; model registry for format/hardware hints.
+119 | 
+120 | **Infrastructure Requirements**
+121 | 
+122 | - Runs locally-first; containerized deployment optional.
+123 | - Secrets injected via environment/secret store; no secrets persisted to logs.
+124 | - File access restricted to sandbox roots; outbound HTTP egress controlled by policy.
+125 | 
+126 | **Non-Functional Requirements (NFRs)**
+127 | 
+128 | - Latency: static tool calls p50 ≤ 300ms; dynamic toolset attach overhead ≤ 500ms; local chat p95 ≤ 3s per 100 tokens.
+129 | - Reliability: successful tool call rate ≥ 99%; graceful degradation on missing integrations.
+130 | - Observability: 100% of calls logged with redaction; trace sampling configurable.
+131 | - Security: least-privilege tokens; write actions require explicit intent and optional approval.
+132 | - Privacy: PII redaction on logs; local provider option for sensitive workloads.
+133 | 
+134 | **Cross-Platform Strategy**
+135 | 
+136 | - Platform-Specific Capabilities: macOS may run MLX models; Linux/Windows prefer GGUF. Browser automation may vary by host.
+137 | - Fallbacks (work everywhere): if Browser automation unavailable → use Search/Fetch parsing; if reranking unsupported → client-side scoring; if GitHub write blocked → read-only with patch proposal artifact; if local provider unreachable → use remote provider.
+138 | - BDD Acceptance Tests for Fallbacks:
+139 |   - Given Browser tools are unavailable on the host, When an automation step requires DOM interaction, Then the system uses Search/Fetch parsing and annotates the plan with a fallback notice.
+140 |   - Given provider reranking is unsupported, When reranking is requested, Then results are produced via client-side scoring with a recorded `fallback='client_rerank'` flag.
+141 |   - Given write intent is disabled, When a change is proposed to GitHub, Then a patch file and instructions are emitted instead of performing the write.
+142 |   - Given the local provider is down, When a chat completion is requested, Then the remote provider is used and a provider-switch event is logged.
+143 | 
+144 | **Security & Privacy Considerations**
+145 | 
+146 | - Sensitive data categories: repository paths, access tokens, search queries, and user-provided prompt inputs.
+147 | - Controls: token scoping, sandboxed FS access, network egress policies, approval gates for mutations, redacted structured logs.
+148 | - Never store secrets in prompts or tool metadata; environment-only and rotated regularly.
+149 | 
+150 | # Development Roadmap
+151 | 
+152 | **MVP Scope (with acceptance criteria)**
+153 | 
+154 | - Prompt Registry & Auto-Tooling: Given valid prompt metadata, When server boots, Then tools are registered and invocable with schema validation.
+155 | - MCP Server & Agent-as-Tool: Given at least one agent with description, When server exposes tools, Then `ask_<agent>` appears and returns structured outputs.
+156 | - MCP Client Orchestration: Given static tools configured, When a task runs, Then dynamic toolsets are not attached unless requested by the planner.
+157 | - FS & GitHub (read-only) Integrations: Given sandbox roots and GitHub read-only tokens, When invoked, Then reads succeed and writes are prevented with guidance.
+158 | - Safety & Audit: Given policy engine enabled, When any tool runs, Then an audit record is stored with redacted fields.
+159 | 
+160 | **Post-MVP Enhancements (with acceptance criteria)**
+161 | 
+162 | - Browser Automation: Given browser tools available, When a page task is run, Then DOM actions succeed and snapshots are archived.
+163 | - Local Provider (Nexa) Chat/Embeddings: Given local provider configured, When selected, Then chat streams and embeddings return within NFRs.
+164 | - Reranking Feature Flag: Given reranking is enabled, When called, Then ranked items include scores and provenance; when disabled, Then fallback scoring applies.
+165 | - Admin Catalog & Policies UI: Given a user with admin role, When visiting the catalog, Then they can view tools, toggle visibility, and edit policies with audit.
+166 | - Write Workflows with Approvals: Given `intent=write` and approval token present, When a mutating call is made, Then changes are applied and logged with reviewer identity.
+167 | - SSE/HTTP Transport Option: Given server runs with HTTP transport, When a client connects, Then the same tools are discoverable and callable over HTTP.
+168 | 
+169 | # Logical Dependency Chain
+170 | 
+171 | 1) Foundations: data models, loader, schema builder, audit, policy gates.
+172 | 2) MCP Server baseline over stdio; register prompt tools and agent tools.
+173 | 3) MCP Client static tools; planner logic for dynamic toolsets.
+174 | 4) FS sandbox + GitHub read-only; validate end-to-end flows.
+175 | 5) Search/Fetch integration; basic parsing outputs.
+176 | 6) Browser automation (optional) with graceful fallbacks.
+177 | 7) Provider abstraction; add local provider; performance tuning.
+178 | 8) Admin catalog/policies UI; approvals for writes.
+179 | 9) Alternative transports (SSE/HTTP), packaging, and version pinning.
+180 | 
+181 | # Risks and Mitigations
+182 | 
+183 | - **FS Sandbox Escape** — *Likelihood:* Medium, *Impact:* High. *Mitigation:* strict roots, deny-patterns, path normalization, unit tests for traversal.
+184 | - **GitHub Write Misuse** — *Likelihood:* Medium, *Impact:* High. *Mitigation:* read-only default; `intent=write` + approval token; dry-run patches first.
+185 | - **Integration Churn (MCP server versions)** — *Likelihood:* Medium, *Impact:* Medium. *Mitigation:* pin versions; smoke tests; compatibility matrix.
+186 | - **Local Provider Hardware Variability** — *Likelihood:* Medium, *Impact:* Medium. *Mitigation:* model-format hints; MLX on macOS and GGUF elsewhere; automatic provider fallback.
+187 | - **Prompt Schema Gaps** — *Likelihood:* High, *Impact:* Medium. *Mitigation:* conservative defaults, required flags, schema linter, CI checks.
+188 | - **Network/Egress Restrictions** — *Likelihood:* Medium, *Impact:* Medium. *Mitigation:* offline-first flows; fallbacks to local context; clear error surfaces.
+189 | - **PII/Secrets in Logs** — *Likelihood:* Low, *Impact:* High. *Mitigation:* redaction, allowlist fields, periodic audits, no secret persistence.
+190 | - **Browser Automation Instability** — *Likelihood:* Medium, *Impact:* Medium. *Mitigation:* feature flag; switch to fetch+parse fallback automatically.
+191 | - **Vendor Lock-in** — *Likelihood:* Low, *Impact:* Medium. *Mitigation:* MCP standard; OpenAI-compatible provider abstraction; portable schemas.
+192 | 
+193 | # Appendix
+194 | 
+195 | **Assumptions**
+196 | 
+197 | - Product name set to “Mastra–MCP Prompt Orchestrator (MMPO)” for clarity; may be renamed.
+198 | - Minimal CLI and optional lightweight admin UI are acceptable for v1.
+199 | - Prompt metadata includes `variables[]` sufficient for schema generation; gaps handled by defaults and linter.
+200 | - GitHub integration starts read-only; write paths require approvals and are post-MVP.
+201 | - Local provider (Nexa) is optional and toggled per environment.
+202 | - Running over stdio initially is acceptable; HTTP/SSE may follow later.
+203 | 
+204 | **Research Findings & References (from README content only)**
+205 | 
+206 | - Mastra MCPClient supports static and dynamic tool discovery.
+207 | - Mastra MCPServer exposes agents as `ask_<agentKey>` tools with descriptions.
+208 | - Mature MCP servers exist for Filesystem, GitHub, Search, and Browser automation.
+209 | - Nexa SDK offers OpenAI-compatible local APIs, embeddings, and reranking; MLX models are macOS-only; GGUF suits cross-platform needs.
+210 | 
+211 | **Context Notes (visible link text only)**
+212 | 
+213 | - mastra.ai — Mastra references and docs for MCP client/server, tools, and agents.
+214 | - npm — Filesystem MCP server package and versions.
+215 | - GitHub — Official GitHub MCP server and releases; additional server repos.
+216 | - Model Context Protocol — Developer documentation for connecting local servers.
+217 | - docs.tavily.com — Tavily MCP server documentation for search.
+218 | - Nexa Docs — Nexa SDK capabilities and endpoints.
+219 | - Hugging Face — NexaAI model availability in GGUF/MLX formats.
+220 | 
+221 | **Technical Specifications & Glossary**
+222 | 
+223 | - **MCP (Model Context Protocol):** A standard for exposing tools/servers to AI clients.
+224 | - **Mastra:** Agent framework with MCP client/server utilities and agent-as-tool exposure.
+225 | - **Toolset:** A group of related tools attached dynamically to a client session.
+226 | - **Prompt Tool:** An MCP tool generated from a Markdown prompt and variables schema.
+227 | - **Stdio Transport:** Standard I/O-based server transport used for local development.
+228 | - **MLX:** Apple’s ML framework; macOS-only; useful for local acceleration.
+229 | - **GGUF:** Quantized model format suitable across platforms and devices.
+230 | - **Intent Flag:** Parameter indicating read vs write actions for policy gating.
+231 | 
+```
+
 .taskmaster/docs/prd.txt
 ```
 1 | # Overview  
@@ -10382,121 +10609,659 @@ tests/.gitkeep
 ```
 1 | {
 2 | 	"meta": {
-3 | 		"generatedAt": "2025-09-21T22:54:40.875Z",
-4 | 		"tasksAnalyzed": 13,
-5 | 		"totalTasks": 36,
-6 | 		"analysisCount": 13,
+3 | 		"generatedAt": "2025-09-24T18:08:15.114Z",
+4 | 		"tasksAnalyzed": 17,
+5 | 		"totalTasks": 54,
+6 | 		"analysisCount": 17,
 7 | 		"thresholdScore": 5,
 8 | 		"projectName": "Taskmaster",
 9 | 		"usedResearch": true
 10 | 	},
 11 | 	"complexityAnalysis": [
 12 | 		{
-13 | 			"taskId": 22,
-14 | 			"taskTitle": "Document CLI Distribution and Usage Lifecycle",
-15 | 			"complexityScore": 3,
-16 | 			"recommendedSubtasks": 4,
-17 | 			"expansionPrompt": "1. **Configuration**: Modify `package.json` to add the `bin` field mapping `prompts-cli` to `dist/bin/cli.js`, add `dist` to the `files` array, and add a `prepublishOnly` script set to `npm run test && npm run build`. \n2. **Shebang**: Add `#!/usr/bin/env node` to the top of the main CLI source file (likely `src/bin/cli.ts` or similar).\n3. **Documentation**: Create a new 'CLI Distribution and Usage' section in `README.md`. Document the four required areas: 'Prepare for Publishing' (referencing the `package.json` changes), 'Local Development Workflow' (detailing `npm link`), 'Publishing to npm' (including the `prepublishOnly` script), and 'End-User Installation and Usage'. Provide clear, copy-pasteable commands for each step.",
-18 | 			"reasoning": "This task is primarily documentation and configuration. The codebase analysis reveals that the required changes are localized to `package.json`, `README.md`, and the addition of a single line (shebang) to the CLI entry point. There is no complex algorithmic work involved. The complexity score of 3 reflects the need to touch multiple files and write clear, verifiable instructions for a multi-step developer workflow (`npm link`, `npm publish`), which is more involved than a simple code change but is not fundamentally difficult."
+13 | 			"taskId": 38,
+14 | 			"taskTitle": "Define Core Data Models and Types",
+15 | 			"complexityScore": 2,
+16 | 			"recommendedSubtasks": 2,
+17 | 			"expansionPrompt": "This task involves creating the foundational TypeScript types for the application. Based on the analysis, a `src/types` directory already exists. Create two subtasks:\n1.  Define `Prompt`, `ToolRegistration`, and `RunRecord` interfaces in a new file `src/types/entities.ts`.\n2.  Define `SandboxConfig` and `ProviderConfig` interfaces in a new file `src/types/config.ts`.\nEnsure all types strictly match the specifications in the task details and are exported for use in other modules.",
+18 | 			"reasoning": "Codebase analysis shows a `src/types` directory exists, indicating a clear pattern for where these definitions should live. The task is purely declarative, involving the creation of TypeScript interfaces with no complex logic. The complexity is low as it's a matter of transcribing specifications into code."
 19 | 		},
 20 | 		{
-21 | 			"taskId": 25,
-22 | 			"taskTitle": "Project Initialization and Scaffolding",
-23 | 			"complexityScore": 2,
-24 | 			"recommendedSubtasks": 2,
-25 | 			"expansionPrompt": "1. **Initialize Project**: Run `pnpm init`. Install dev dependencies: `pnpm add -D typescript ts-node @types/node jest ts-jest`. \n2. **Configure TypeScript**: Create `tsconfig.json` with `\"target\": \"ES2022\"`, `\"module\": \"NodeNext\"`, `\"moduleResolution\": \"NodeNext\"`, `\"outDir\": \"./dist\"`, `\"rootDir\": \"./src\"`, and `\"strict\": true`. \n3. **Configure Jest**: Create `jest.config.js` with the `ts-jest` preset. \n4. **Create Directories**: Create the following empty directories: `src`, `schemas`, `bin`, `packages`, `tests`.",
-26 | 			"reasoning": "This is a standard, greenfield setup task. It involves running a series of well-known commands and creating configuration files from templates. The status is 'in-progress', but a codebase analysis shows these foundational files and directories do not yet exist. The complexity is low (2) because it follows a standard recipe with no custom logic or problem-solving required. It's a foundational step but mechanically simple. Breaking it into 'dependency installation' and 'config file creation' is a logical split."
+21 | 			"taskId": 39,
+22 | 			"taskTitle": "Implement Prompt Loader Service",
+23 | 			"complexityScore": 4,
+24 | 			"recommendedSubtasks": 3,
+25 | 			"expansionPrompt": "Create a new service at `src/services/prompt-loader.ts`. This service will scan a directory for markdown files and parse them. Subtasks should be:\n1.  Implement a function to scan the `prompts/` directory and return a list of file paths. Handle the case where the directory doesn't exist.\n2.  Implement a parsing function that takes a file path, reads the content, and uses the `gray-matter` library (already in `package.json`) to parse the frontmatter and content. It should map the parsed data to the `Prompt` type from Task 38.\n3.  Create a main service function that orchestrates the scanning and parsing, aggregates the results, and includes robust error handling for file read errors or parsing failures.",
+26 | 			"reasoning": "This is a greenfield implementation. While the `gray-matter` library simplifies parsing, the task involves file system I/O, error handling (missing files, malformed frontmatter), and data mapping. A `src/services` directory exists, providing a home for this new module. The complexity is moderate due to the need for robust I/O and error handling logic."
 27 | 		},
 28 | 		{
-29 | 			"taskId": 26,
-30 | 			"taskTitle": "Define Canonical Task JSON Schema",
-31 | 			"complexityScore": 2,
-32 | 			"recommendedSubtasks": 1,
-33 | 			"expansionPrompt": "Create the file `schemas/task.json`. In this file, define a JSON Schema object. Set `$schema` to `\"http://json-schema.org/draft-07/schema#\"`. The schema `type` should be `\"object\"`. Define properties for all fields listed in the description (`id`, `title`, etc.). Mark the original Task-Master fields (`id`, `title`, `description`, `status`, `dependencies`, `priority`) as `required`. The new fields (`labels`, `metadata`, etc.) should be optional. Ensure `subtasks` is defined as an array of objects.",
-34 | 			"reasoning": "This task involves creating a single, declarative JSON file. The structure and fields are explicitly defined in the task description. The complexity (2) comes from needing to know the correct JSON Schema syntax for defining types, properties, and the `required` array. It is not algorithmic and is a self-contained, atomic unit of work, hence 1 subtask is sufficient."
+29 | 			"taskId": 40,
+30 | 			"taskTitle": "Implement Prompt Schema Builder",
+31 | 			"complexityScore": 3,
+32 | 			"recommendedSubtasks": 2,
+33 | 			"expansionPrompt": "Create a new utility module, e.g., `src/lib/schema-builder.ts`. This module will contain a pure function that transforms a `Prompt` object into a JSON Schema. Subtasks:\n1.  Implement the core transformation logic that iterates through `prompt.variables` and maps each variable's `type`, `description`, and `default` value to the corresponding JSON Schema properties (`type`, `description`, `default`).\n2.  Enhance the builder to correctly handle the `required` flag by dynamically building the `required` array in the top-level schema object.",
+34 | 			"reasoning": "This task is a self-contained, pure transformation with no I/O or external dependencies. The logic involves mapping one data structure to another according to specific rules. The complexity is low-to-moderate, focused entirely on the correctness of the transformation logic."
 35 | 		},
 36 | 		{
-37 | 			"taskId": 27,
-38 | 			"taskTitle": "Implement Task-Master Ingest Adapter",
-39 | 			"complexityScore": 4,
-40 | 			"recommendedSubtasks": 3,
-41 | 			"expansionPrompt": "1. **Setup**: Create `src/adapters/taskmaster/ingest.ts`. Install `ajv` (`pnpm add ajv`). Define the internal `PromptsTask` type in a new file `src/types.ts`, mirroring the schema from Task 26.\n2. **Implementation**: In `ingest.ts`, create a main function that accepts a file path. Use Node's `fs` module to read and parse the JSON file. Instantiate `ajv` and use it to validate the parsed data against the schema from `schemas/task.json`. If valid, map the data to `PromptsTask[]`. Handle status value normalization. The function should be asynchronous and return the task array.\n3. **Testing**: Create `tests/adapters/ingest.test.ts`. Write Jest tests using a sample `tasks.json` file. Test for successful parsing, schema validation failure on an invalid file, and correct mapping of data.",
-42 | 			"reasoning": "This task is the first piece of real application logic. It involves file I/O, data parsing, integration with a validation library (`ajv`), and data transformation (mapping to an internal type). Codebase analysis shows no existing adapters or validation patterns, so this is greenfield development. The complexity score of 4 reflects the need to orchestrate these multiple steps into a single, robust function. It can be broken down into defining the types, implementing the core logic, and writing tests."
+37 | 			"taskId": 41,
+38 | 			"taskTitle": "Set up Basic Mastra MCP Server over Stdio",
+39 | 			"complexityScore": 1,
+40 | 			"recommendedSubtasks": 1,
+41 | 			"expansionPrompt": "Review the existing `src/index.ts` file. Based on the analysis of completed Task 1, the MCP server is already bootstrapped. This task is now about ensuring it's correctly configured. Create one subtask:\n1.  Verify that the `MCPServer` instance in `src/index.ts` is created and started correctly. Add comments to the startup sequence to clarify the initialization process for future integrations.",
+42 | 			"reasoning": "Codebase analysis confirms that Task 1 ('Project Setup and Server Bootstrap') has already implemented the core of this task. The `src/index.ts` file already instantiates and starts an `MCPServer` over stdio. Therefore, this task is reduced to a verification and documentation step, making its complexity very low."
 43 | 		},
 44 | 		{
-45 | 			"taskId": 28,
-46 | 			"taskTitle": "Implement State Engine: Readiness and 'next' Logic",
+45 | 			"taskId": 42,
+46 | 			"taskTitle": "Integrate Prompt Loader and Schema Builder with MCP Server",
 47 | 			"complexityScore": 5,
 48 | 			"recommendedSubtasks": 3,
-49 | 			"expansionPrompt": "1. **Setup**: Create `src/state/graph.ts` and import the `PromptsTask` type.\n2. **Readiness Logic**: Implement `computeReadiness(tasks: PromptsTask[]): PromptsTask[]`. Inside, first create a `Map<number, string>` of task IDs to their statuses for efficient lookups. Then, filter the input `tasks` array, returning only those where all `dependencies` exist in the map with a status of 'done'.\n3. **'next' Logic**: Implement `next(tasks: PromptsTask[]): PromptsTask | null`. This function should first call `computeReadiness` to get the pool of available tasks. Then, sort this pool using a multi-level sort: priority descending (map 'high' to 3, 'medium' to 2, 'low' to 1), then by the number of tasks that depend on it (dependency count) descending, and finally by task ID ascending. Return the first element of the sorted array, or null if empty.",
-50 | 			"reasoning": "This is the core algorithmic task of the project. It involves graph traversal logic (dependency checking) and a complex multi-key sort. The complexity (5) is justified because the implementation must be correct and reasonably efficient, especially the dependency checking part, which can be slow if not implemented with a lookup map. This is a greenfield implementation of a non-trivial algorithm. It naturally splits into implementing the readiness filter, the 'next' sorter, and comprehensive tests."
+49 | 			"expansionPrompt": "This task connects the pieces together in `src/index.ts`. The goal is to load all prompts and register them as tools on startup. Subtasks:\n1.  Modify `src/index.ts` to import and call the Prompt Loader service (Task 39) during the server's startup sequence.\n2.  For each loaded `Prompt`, call the Schema Builder (Task 40) to generate its JSON schema.\n3.  Implement the tool registration logic. For each prompt, call the `server.registerTool()` method with a dynamically generated tool name (`prompts/<slug>`), the generated schema, and a handler function that renders the prompt template with the provided inputs.",
+50 | 			"reasoning": "This is an integration task that ties together three separate components (Loader, Builder, Server). The complexity comes from orchestrating these parts correctly within the application's startup lifecycle. It requires understanding the `@modelcontextprotocol/sdk`'s `registerTool` API, including how to define the tool's handler function."
 51 | 		},
 52 | 		{
-53 | 			"taskId": 29,
-54 | 			"taskTitle": "Implement State Engine: Status Update Logic",
-55 | 			"complexityScore": 1,
-56 | 			"recommendedSubtasks": 1,
-57 | 			"expansionPrompt": "Create the file `src/state/update.ts`. Import the `PromptsTask` type. Implement and export a pure function `advance(tasks: PromptsTask[], id: number, newStatus: string): PromptsTask[]`. The implementation should use `tasks.map()` to iterate over the array. For the task where `task.id` matches the `id` parameter, return a new object using the spread syntax `{ ...task, status: newStatus }`. For all other tasks, return the original task object. Add a unit test in `tests/state/update.test.ts` to verify that the correct task is updated and that the original input array is not mutated.",
-58 | 			"reasoning": "This task requires implementing a pure function for an immutable update, which is a standard pattern in modern JavaScript/TypeScript. The implementation is a single line of code using `Array.prototype.map`. Codebase analysis confirms no existing state update logic exists, but the pattern is universal. The complexity is minimal (1), as it's a simple, self-contained function with no external dependencies or complex algorithms. It is an atomic operation."
+53 | 			"taskId": 43,
+54 | 			"taskTitle": "Implement Agent-as-Tool Exposure",
+55 | 			"complexityScore": 4,
+56 | 			"recommendedSubtasks": 2,
+57 | 			"expansionPrompt": "This task involves defining a placeholder agent and registering it as a tool. Subtasks:\n1.  Create a new file `src/agents/planner.ts` to define a simple 'planner' agent. This can be a class or function with a `run` method that takes a question and returns a mock plan. It must have a descriptive docstring.\n2.  In `src/index.ts`, import the planner agent and use the MCP server's `registerTool` method to expose it. The tool name should be `ask_planner`, and its schema should accept a single string input named 'question'. The tool's description should be derived from the agent's docstring.",
+58 | 			"reasoning": "Codebase analysis shows no existing 'agent' concept, so this is greenfield development. The complexity is moderate, as it requires defining a new application concept (an agent) and then integrating it using the established `registerTool` pattern. The task is simplified by starting with a placeholder implementation."
 59 | 		},
 60 | 		{
-61 | 			"taskId": 30,
-62 | 			"taskTitle": "Implement MCP Stdio Server",
-63 | 			"complexityScore": 6,
-64 | 			"recommendedSubtasks": 4,
-65 | 			"expansionPrompt": "1. **Server Shell**: Create `src/mcp/server.ts`. Use Node's `readline` module to create an interface that reads from `process.stdin` line by line.\n2. **State Management**: The server should load tasks from a file on startup using the ingest adapter (Task 27) and hold the task array in memory.\n3. **Request Loop**: In the `readline` 'line' event handler, parse the incoming line as JSON. Use a `switch` statement or a handler map based on the request's `method` property.\n4. **Handlers**: Implement handlers for `next_task` (calls `next` from Task 28), `set_task_status` (calls `advance` from Task 29 and updates the in-memory state), `get_task`, `list_tasks`, and `graph_export`. Each handler should construct a JSON response object and write it to `process.stdout` as a string followed by a newline. Implement the write-mode flag logic for `set_task_status`.",
-66 | 			"reasoning": "This task involves building a small, protocol-specific server that runs as a persistent process. It's not just a simple script. It requires managing an event loop (`readline`), handling I/O streams, managing in-memory state, and dispatching requests. The complexity (6) comes from orchestrating these components, implementing the line-delimited JSON protocol correctly, and integrating the previously built state-engine functions into a live server context. This is a significant piece of infrastructure for the project."
+61 | 			"taskId": 44,
+62 | 			"taskTitle": "Implement Foundational Audit Logging Service",
+63 | 			"complexityScore": 3,
+64 | 			"recommendedSubtasks": 2,
+65 | 			"expansionPrompt": "Create a new service at `src/services/audit-logger.ts` for recording tool executions. Subtasks:\n1.  Define the service structure with a primary function, `logRun(record: RunRecord)`, which takes a `RunRecord` object.\n2.  Implement the logging logic within `logRun`. It should use the existing structured logger from `src/lib/logging.ts` to write the `RunRecord` as a single JSON object to the console. Ensure the log entry has a distinct type, e.g., `{ \"type\": \"audit\", \"record\": { ... } }`.",
+66 | 			"reasoning": "The task involves creating a new, dedicated service. However, its complexity is reduced because it builds upon two existing pieces: the `RunRecord` type (Task 38) and the pre-existing structured logging utility found in `src/lib/logging.ts`. The core work is creating the service file and calling the existing logger with the correct data structure."
 67 | 		},
 68 | 		{
-69 | 			"taskId": 31,
-70 | 			"taskTitle": "Implement Thin CLI with Commander.js",
-71 | 			"complexityScore": 4,
-72 | 			"recommendedSubtasks": 4,
-73 | 			"expansionPrompt": "1. **Setup**: Create `src/bin/cli.ts`. Add `#!/usr/bin/env node`. Install `commander` (`pnpm add commander`). Set up the main `program` object.\n2. **Read-only Commands**: Add commands for `next`, `status`, and `graph`. Each command's action handler should load tasks using the ingest adapter, call the appropriate state engine function (e.g., `next()`), and print the result to the console as a JSON string using `JSON.stringify`.\n3. **Write Command**: Add the `advance <id> <status>` command. Its action handler should load tasks, call the `advance()` function, and then write the *entire updated task list* back to the source file, overwriting it.\n4. **Graph Command**: For the `graph` command, add an option `--format <type>` (defaulting to `json`). If `json`, output the task graph. If `dot`, transform the task graph into the DOT language format for Graphviz.",
-74 | 			"reasoning": "This task involves wiring up the core logic to a user-facing CLI using a framework. Codebase analysis shows `commander` is not yet a dependency. The complexity (4) is not in the core logic (which is already written), but in setting up the command structure, parsing arguments, handling file I/O for both reading and writing state, and formatting output correctly for multiple commands. It touches many parts of the system (ingest, state, file system) and requires careful implementation of the command actions."
+69 | 			"taskId": 45,
+70 | 			"taskTitle": "Implement Initial Policy Engine Stub",
+71 | 			"complexityScore": 5,
+72 | 			"recommendedSubtasks": 2,
+73 | 			"expansionPrompt": "This task establishes the architectural hook for a policy engine. Subtasks:\n1.  Create a new module `src/policy/engine.ts`. Define a `PolicyEngine` class with a method `check(toolCall): Promise<{approved: boolean, reason?: string}>`. Initially, this method should always return `{ approved: true }`.\n2.  Refactor the tool invocation logic in the MCP server to incorporate the policy check. This will likely involve wrapping the `handler` function provided to `server.registerTool` to first call the policy engine's `check` method before executing the original handler.",
+74 | 			"reasoning": "This is primarily an architectural task. While the initial logic is a simple passthrough, the complexity lies in correctly identifying and modifying the tool invocation pathway to insert this check. This requires a good understanding of the MCP server's execution flow and may involve creating a higher-order function to wrap all tool handlers."
 75 | 		},
 76 | 		{
-77 | 			"taskId": 32,
-78 | 			"taskTitle": "Create Mastra Tools Package for AI SDK",
-79 | 			"complexityScore": 4,
+77 | 			"taskId": 46,
+78 | 			"taskTitle": "Implement Sandboxed Filesystem (FS) Integration",
+79 | 			"complexityScore": 6,
 80 | 			"recommendedSubtasks": 3,
-81 | 			"expansionPrompt": "1. **Package Setup**: Create a new directory `packages/prompts-tools`. Inside, create a `package.json` defining the package name and its dependencies (e.g., `zod`, Vercel AI SDK). Configure the root `pnpm-workspace.yaml` to include `packages/*`.\n2. **Tool Definitions**: Create `packages/prompts-tools/src/index.ts`. Import the state engine functions (`next`, `advance`) from the main project. For each function, create a tool definition compatible with the Vercel AI SDK's `generateObject`. Use `zod` to define the `parameters` schema (e.g., `z.object({ id: z.number(), status: z.string() })` for `set_task_status`).\n3. **Tool Handlers**: The `execute` property of each tool should be an async function that calls the corresponding state engine function and returns the result. Export all tool definitions from the main `index.ts` file.",
-82 | 			"reasoning": "This is an integration task that requires knowledge of a specific third-party library (Vercel AI SDK) and monorepo project structure. The complexity (4) arises from creating a new, separately published package, managing its dependencies, and wrapping the existing core logic in the specific adapter format required by the AI SDK, including schema definitions with `zod`. While the core logic is simple, the packaging and adapter boilerplate add a moderate level of effort."
+81 | 			"expansionPrompt": "This task involves integrating an external Filesystem MCP server. Subtasks:\n1.  Add the Filesystem MCP server package as a dependency and add a script to `package.json` to run it as a separate process.\n2.  Create a configuration file (e.g., `config/fs-sandbox.json`) using the `SandboxConfig` type (Task 38) to define a default read-only sandbox with a safe root (e.g., a `./workspace` directory).\n3.  Implement logic within the main application to spawn the FS server as a child process, passing the configuration. This will be part of the setup for the Client Orchestrator (Task 48).",
+82 | 			"reasoning": "This task's complexity comes from managing an external dependency and inter-process communication, rather than writing complex TypeScript logic. It involves configuration, process management (spawning the FS server), and ensuring the two processes can communicate, which is more complex than in-process module integration."
 83 | 		},
 84 | 		{
-85 | 			"taskId": 33,
-86 | 			"taskTitle": "Implement Provider Presets and Fallback Logic",
-87 | 			"complexityScore": 6,
-88 | 			"recommendedSubtasks": 4,
-89 | 			"expansionPrompt": "1. **Provider Interface**: Create `src/providers/interface.ts`. Define a `LLMProvider` interface with a method like `generate(prompt: string): Promise<string>`.\n2. **Implementations**: Create `src/providers/ollama.ts`, `src/providers/geminiCli.ts`, and `src/providers/stub.ts`, each exporting a class that implements the `LLMProvider` interface. The `stub` provider should return a hardcoded warning message.\n3. **Availability Checks**: The Ollama provider's constructor or a static method should check for server availability by making a `fetch` call to the Ollama health endpoint. The Gemini provider should check for the CLI tool's existence in the system PATH.\n4. **Factory**: Create `src/providers/factory.ts`. Implement an async function `getProvider()` that attempts to instantiate providers in a preferred order (e.g., Ollama, then Gemini). It should use `try/catch` blocks around each instantiation. Return the first one that succeeds, and if all fail, return an instance of the `StubProvider`.",
-90 | 			"reasoning": "This task introduces a significant new abstraction layer (the Provider interface) and deals with the complexities of runtime environment detection and external service interaction. The complexity (6) is high because it involves designing an abstraction, implementing multiple versions of it, and creating a factory with fallback logic that must gracefully handle failures (like network errors or missing executables). This is a robust piece of infrastructure, not a simple function call."
+85 | 			"taskId": 47,
+86 | 			"taskTitle": "Implement Read-Only GitHub Integration",
+87 | 			"complexityScore": 5,
+88 | 			"recommendedSubtasks": 3,
+89 | 			"expansionPrompt": "Integrate the GitHub MCP server as a dynamic, read-only toolset. Subtasks:\n1.  Add the GitHub MCP server package as a dependency and add a script to `package.json` to run it.\n2.  Implement configuration logic to load a GitHub token from environment variables (e.g., `GITHUB_TOKEN`).\n3.  Update the Policy Engine (Task 45) to identify tools from the GitHub server (e.g., by a `toolName` prefix) and automatically reject any that are marked with `sideEffects: 'write'`. This enforces the read-only constraint at the application level.",
+90 | 			"reasoning": "Similar to the FS integration, this involves managing an external process. The complexity is slightly lower if the pattern from Task 46 is reused. A new element of complexity is added by the requirement to enforce read-only access, which requires integration with the Policy Engine (Task 45), making it a cross-cutting concern."
 91 | 		},
 92 | 		{
-93 | 			"taskId": 34,
-94 | 			"taskTitle": "Document Client Configuration for Codex and Gemini",
-95 | 			"complexityScore": 2,
-96 | 			"recommendedSubtasks": 2,
-97 | 			"expansionPrompt": "1. **File Creation**: Create a new file at `docs/client_setup.md`.\n2. **Content Structure**: Add a main heading 'Client Configuration'. Create two sub-sections: 'Codex Client Setup' and 'Gemini Client Setup'.\n3. **Configuration Snippets**: In each section, provide a brief explanation and then a copy-pasteable code block for the client's configuration file. Provide examples in both TOML and JSON formats. The configuration must show how to register the MCP stdio server as a tool or command source.\n4. **Path Examples**: Use a clear placeholder like `</path/to/your/project>` for the command path. Crucially, add a note and a specific example for Windows Subsystem for Linux (WSL) users, showing the `/mnt/c/Users/...` path format.",
-98 | 			"reasoning": "This is a straightforward documentation task. Codebase analysis shows no existing `docs` directory, so it's a net-new file. The complexity is low (2) because it involves writing clear technical instructions and providing configuration examples, not writing code. The main effort is ensuring the examples are correct, clear, and account for common edge cases like WSL paths. It can be split into creating the doc and then populating the content for each client."
+93 | 			"taskId": 48,
+94 | 			"taskTitle": "Implement MCP Client Orchestrator with Dynamic Toolsets",
+95 | 			"complexityScore": 8,
+96 | 			"recommendedSubtasks": 4,
+97 | 			"expansionPrompt": "Create a core client-side orchestrator for managing toolsets. This will be a new major component, likely in `src/orchestration/client.ts`. Subtasks:\n1.  Define the `ClientOrchestrator` class structure. It should initialize by connecting to the main MCP server and fetching its static tool list.\n2.  Implement a method `getToolsetsForTask(taskDescription: string)`. Initially, this can be a stub that returns the static toolset.\n3.  Implement the logic to dynamically attach/detach toolsets. This involves managing connections to multiple MCP servers (e.g., the main server, FS server, GitHub server) and presenting a unified list of available tools to the consumer.\n4.  Develop a placeholder 'agent' that uses the orchestrator to get a list of tools and execute a simple task.",
+98 | 			"reasoning": "This is a complex, greenfield architectural component. It's the brain that decides which tools an agent gets. The complexity is high due to the need to manage state for multiple client connections, merge tool definitions from different sources, and handle the lifecycle (attach/detach) of these toolsets. It depends on many other components being in place."
 99 | 		},
 100 | 		{
-101 | 			"taskId": 35,
-102 | 			"title": "Implement Optional Artifact Enrichment",
+101 | 			"taskId": 49,
+102 | 			"taskTitle": "Implement 'intent=write' Guardrail",
 103 | 			"complexityScore": 4,
-104 | 			"recommendedSubtasks": 3,
-105 | 			"expansionPrompt": "1. **Enrichment Module**: Create a new directory `src/enrichment`. Inside, create `index.ts` which exports a main async function `enrichTasks(tasks: PromptsTask[]): Promise<PromptsTask[]>`. This function will orchestrate all enrichment steps.\n2. **Artifact Parser**: Create `src/enrichment/complexity.ts`. It should export a function that, given a task, checks for a corresponding artifact file (e.g., `artifacts/task-22-complexity.json`), reads it, and parses its content. This function must be wrapped in a `try-catch` block to handle missing files or parse errors gracefully, returning the original task on failure.\n3. **Integration**: Modify the `ingest` adapter from Task 27. After the initial list of tasks is parsed and validated, call the main `enrichTasks` function, passing the task list to it. The enrichment must be non-blocking; the ingest process must succeed even if all enrichment fails. The final, enriched list of tasks should be the return value of the ingest function.",
-106 | 			"reasoning": "This task requires modifying the existing `ingest` pipeline to add an optional, fault-tolerant step. The complexity (4) comes from the need to design this process to be non-blocking and modular. It involves file system logic, data parsing, and carefully modifying an existing critical path (ingestion) without introducing fragility. The logic must handle errors gracefully so that missing artifacts don't break the entire application. This is more complex than a simple function, as it involves architectural considerations for extensibility and robustness."
+104 | 			"recommendedSubtasks": 2,
+105 | 			"expansionPrompt": "Enhance the Policy Engine to enforce a dry-run-by-default mode. Subtasks:\n1.  Modify the `PolicyEngine.check` method in `src/policy/engine.ts`. It needs to receive not just the tool call inputs, but also the tool's definition (specifically the `sideEffects` property).\n2.  Add logic to the `check` method: if `tool.sideEffects === 'write'` and `toolCall.inputs.intent !== 'write'`, then return `{ approved: false, reason: 'This is a write operation. To proceed, you must explicitly set intent=\"write\" in your call.' }`. Otherwise, approve the call.",
+106 | 			"reasoning": "This task involves adding specific, well-defined logic to an existing component (the Policy Engine from Task 45). The complexity is moderate because it requires modifying the policy engine's interface to give it access to both the tool's static definition and its dynamic inputs, which might require refactoring the hook point."
 107 | 		},
 108 | 		{
-109 | 			"taskId": 36,
-110 | 			"title": "Implement Observability and Secure Logging",
-111 | 			"complexityScore": 5,
-112 | 			"recommendedSubtasks": 4,
-113 | 			"expansionPrompt": "1. **Library and Setup**: Install a structured logging library like `pino` (`pnpm add pino`). Create `src/logging.ts`. In this file, create a factory function `createLogger(options)` that initializes and returns a `pino` logger instance.\n2. **Secure Defaults**: Configure the default logger to have a `redact` option for paths like `*.title`, `*.description`, and `*.details` to prevent logging sensitive task content. The log level should default to `info`.\n3. **CLI Integration**: Modify the CLI entry point (Task 31). Add global `--verbose` and `--unsafe-logs` flags using `commander`. Based on these flags, call `createLogger` with appropriate options (e.g., `level: 'debug'` for verbose, empty `redact` array for unsafe) and pass the logger instance to the command handlers.\n4. **Server Integration**: Modify the MCP server (Task 30) to accept similar flags or environment variables to configure its logger instance, ensuring all server output is structured and secure by default.",
-114 | 			"reasoning": "This is a cross-cutting concern that touches multiple parts of the application (CLI, server). The complexity (5) is not just in adding a library, but in implementing the security-conscious defaults. The redaction logic requires a deep understanding of the logger's API and the application's data structures. Propagating the logger instance and its configuration based on runtime flags through the application adds another layer of complexity. It's a foundational infrastructure task that requires careful design."
-115 | 		}
-116 | 	]
-117 | }
+109 | 			"taskId": 50,
+110 | 			"taskTitle": "Integrate Audit Logging with Tool Invocations",
+111 | 			"complexityScore": 4,
+112 | 			"recommendedSubtasks": 3,
+113 | 			"expansionPrompt": "Wire the Audit Logging service into the tool execution lifecycle. Subtasks:\n1.  Update the tool execution wrapper (likely near the Policy Engine hook) to create a `RunRecord` at the start of a tool call. Populate it with `toolName`, `inputs`, `caller`, and `startedAt`.\n2.  Wrap the actual tool execution in a try/catch/finally block. On success, capture the `outputsRef` and `status: 'success'`. On error, capture the error and `status: 'error'`. \n3.  In the `finally` block, calculate `latencyMs` and call the `auditLogger.logRun()` method with the completed `RunRecord` object.",
+114 | 			"reasoning": "This is an integration task. The complexity comes from correctly wrapping the tool execution to capture all states (start, success, error) and timings. It needs to be placed in the correct part of the execution pipeline, likely alongside the Policy Engine check, to ensure every call is logged. The Audit Logging service itself is already defined (Task 44)."
+115 | 		},
+116 | 		{
+117 | 			"taskId": 51,
+118 | 			"taskTitle": "Implement Search and Fetch Integration",
+119 | 			"complexityScore": 3,
+120 | 			"recommendedSubtasks": 2,
+121 | 			"expansionPrompt": "Integrate the Tavily MCP server as a dynamic toolset, following the established pattern. Subtasks:\n1.  Add the Tavily MCP server as a dependency and configure its startup, including API key management via environment variables.\n2.  Update the Client Orchestrator (Task 48) to recognize when a task requires web search and dynamically attach the Tavily toolset.",
+122 | 			"reasoning": "By this point, the pattern for integrating external MCP servers (from Tasks 46 and 47) and managing them with the orchestrator (Task 48) should be well-established. This task is about applying that pattern to a new tool. The complexity is therefore lower than the initial integrations."
+123 | 		},
+124 | 		{
+125 | 			"taskId": 52,
+126 | 			"taskTitle": "Create Pluggable Provider Abstraction Layer",
+127 | 			"complexityScore": 3,
+128 | 			"recommendedSubtasks": 2,
+129 | 			"expansionPrompt": "Create a common interface for inference providers. Subtasks:\n1.  Create a new directory `src/providers`. In `src/providers/types.ts`, define a `Provider` interface with methods like `chatCompletion(request): Promise<Response>` and `createEmbedding(request): Promise<Response>`.\n2.  Create a factory function or manager class in `src/providers/manager.ts` that can instantiate and return a specific provider implementation based on a `ProviderConfig` object.",
+130 | 			"reasoning": "This is a foundational, greenfield architecture task. Codebase analysis shows no existing provider code to refactor, which simplifies the work. The complexity is low-to-moderate and involves defining clean interfaces and a factory pattern, which is standard software design."
+131 | 		},
+132 | 		{
+133 | 			"taskId": 53,
+134 | 			"title": "Integrate Nexa SDK as a Local Provider for Chat",
+135 | 			"complexityScore": 4,
+136 | 			"recommendedSubtasks": 2,
+137 | 			"expansionPrompt": "Implement the `Provider` interface for a local Nexa server. Subtasks:\n1.  Create a new file `src/providers/nexa.ts`. Implement a `NexaProvider` class that conforms to the `Provider` interface from Task 52.\n2.  Implement the `chatCompletion` method within `NexaProvider`. It should use `fetch` to make an HTTP POST request to the configured Nexa base URL, passing the arguments in an OpenAI-compatible format. Handle API responses and errors.",
+138 | 			"reasoning": "This task is a concrete implementation of an interface defined in Task 52. The complexity is moderate, as it involves interacting with an external service over HTTP, including request/response mapping and error handling. It's a standard implementation task, not a complex architectural one."
+139 | 		},
+140 | 		{
+141 | 			"taskId": 54,
+142 | 			"taskTitle": "Implement PII Redaction in Audit Logs",
+143 | 			"complexityScore": 2,
+144 | 			"recommendedSubtasks": 1,
+145 | 			"expansionPrompt": "Integrate the existing redaction utility into the audit logging flow. Create one subtask:\n1.  In the `AuditLogger` service (`src/services/audit-logger.ts`), before writing the log, pass the `RunRecord` object through the `redact` function that already exists in `src/lib/logging.ts`. Ensure the redaction is applied to both the `inputs` and `outputsRef` fields of the record.",
+146 | 			"reasoning": "Codebase analysis confirmed that a `redact` utility function already exists in `src/lib/logging.ts` as a result of Task 2. This task is therefore a simple integration of an existing utility into an existing service. The complexity is very low, involving only a single function call at the correct location."
+147 | 		}
+148 | 	]
+149 | }
+```
+
+.taskmaster/tasks/prd-v3.tasks.json
+```
+1 | {
+2 |   "master": {
+3 |     "tasks": [
+4 |       {
+5 |         "id": 1,
+6 |         "title": "Initialize Project Structure and Core Dependencies",
+7 |         "description": "Set up the basic project scaffolding, including directory structure, package management, and initial dependencies for the MMPO application.",
+8 |         "details": "Create the root directory structure (`src/`, `prompts/`, `tests/`). Initialize a `package.json` file and install foundational libraries like Mastra, and a data validation library (e.g., Zod) for data models. Configure TypeScript (`tsconfig.json`), a linter (ESLint), and a code formatter (Prettier) to ensure code quality and consistency.",
+9 |         "testStrategy": "Verify that the project can be installed (`npm install`) and that linting/build scripts run without errors. The directory structure should match the defined standard.",
+10 |         "priority": "high",
+11 |         "dependencies": [],
+12 |         "status": "todo",
+13 |         "subtasks": [
+14 |           {
+15 |             "id": 1,
+16 |             "title": "Create base directory skeleton",
+17 |             "description": "Lay down the src, prompts, tests, and configuration folders described in the PRD.",
+18 |             "dependencies": [],
+19 |             "details": "Add empty README placeholders where needed and ensure git keeps required directories (e.g., via .gitkeep).",
+20 |             "status": "todo",
+21 |             "testStrategy": "Run `ls` at the project root and confirm src/, prompts/, tests/, and config files are present."
+22 |           },
+23 |           {
+24 |             "id": 2,
+25 |             "title": "Initialize package.json and npm scripts",
+26 |             "description": "Bootstrap npm metadata and add scripts for build, lint, format, and test flows.",
+27 |             "dependencies": [
+28 |               "1.1"
+29 |             ],
+30 |             "details": "Run `npm init -y`, set the package name, add type=module, and define scripts for build, start, lint, format, and test.",
+31 |             "status": "todo",
+32 |             "testStrategy": "Run `npm pkg get scripts` to confirm all required scripts are registered."
+33 |           },
+34 |           {
+35 |             "id": 3,
+36 |             "title": "Install core runtime and tooling dependencies",
+37 |             "description": "Install Mastra, Zod, TypeScript, ts-node, ESLint, Prettier, and type definitions required by the PRD.",
+38 |             "dependencies": [
+39 |               "1.2"
+40 |             ],
+41 |             "details": "Add mastra, zod, and supporting libraries as dependencies; add typescript, ts-node, @types/node, eslint, prettier, and related plugins as devDependencies.",
+42 |             "status": "todo",
+43 |             "testStrategy": "Run `npm ls mastra zod typescript` to verify dependency installation succeeds."
+44 |           },
+45 |           {
+46 |             "id": 4,
+47 |             "title": "Configure TypeScript, lint, and format baselines",
+48 |             "description": "Author tsconfig.json, ESLint config, and Prettier settings aligned with project conventions.",
+49 |             "dependencies": [
+50 |               "1.3"
+51 |             ],
+52 |             "details": "Set compilerOptions (outDir, rootDir, moduleResolution) in tsconfig, extend recommended ESLint configs with TypeScript support, and add a Prettier config matching house style.",
+53 |             "status": "todo",
+54 |             "testStrategy": "Run `npm run lint -- --help` and `npm run build -- --version` to ensure tooling commands execute."
+55 |           }
+56 |         ]
+57 |       },
+58 |       {
+59 |         "id": 2,
+60 |         "title": "Define Core Data Models and Schemas",
+61 |         "description": "Implement the primary data structures as defined in the PRD's 'Data Models' section to ensure type safety and consistent data handling throughout the application.",
+62 |         "details": "Using a data validation library, define and export schemas for: `Prompt`, `ToolRegistration`, `RunRecord`, `SandboxConfig`, and `ProviderConfig`. These models will serve as the single source of truth for data shapes.",
+63 |         "testStrategy": "Unit test each schema to ensure it correctly validates compliant data and rejects non-compliant data. Check that default values are applied correctly.",
+64 |         "priority": "high",
+65 |         "dependencies": [
+66 |           1
+67 |         ],
+68 |         "status": "todo",
+69 |         "subtasks": [
+70 |           {
+71 |             "id": 1,
+72 |             "title": "Draft TypeScript types for core models",
+73 |             "description": "Capture Prompt, ToolRegistration, RunRecord, SandboxConfig, and ProviderConfig as TypeScript interfaces.",
+74 |             "dependencies": [],
+75 |             "details": "Create src/models/index.ts (or similar) exporting strongly typed interfaces mirroring PRD field definitions.",
+76 |             "status": "todo",
+77 |             "testStrategy": "Run `tsc --noEmit` to ensure the interfaces compile without errors."
+78 |           },
+79 |           {
+80 |             "id": 2,
+81 |             "title": "Implement Zod schemas for each model",
+82 |             "description": "Translate interfaces into Zod schemas with validation, defaults, and refinements where required.",
+83 |             "dependencies": [
+84 |               "2.1"
+85 |             ],
+86 |             "details": "Create individual schema builders for Prompt, ToolRegistration, RunRecord, SandboxConfig, and ProviderConfig, keeping schema definitions colocated with the interfaces.",
+87 |             "status": "todo",
+88 |             "testStrategy": "Write quick Zod `safeParse` checks in a scratch file to confirm schemas accept expected shapes."
+89 |           },
+90 |           {
+91 |             "id": 3,
+92 |             "title": "Export inference helpers and TypeScript types",
+93 |             "description": "Ensure callers can import both Zod schemas and inferred types from a single module.",
+94 |             "dependencies": [
+95 |               "2.2"
+96 |             ],
+97 |             "details": "Use `z.infer` helpers and package exports to surface each schema and its derived type, maintaining tree-shakeable structure.",
+98 |             "status": "todo",
+99 |             "testStrategy": "In a unit test, import the inferred types and ensure they can be used in typed fixtures without compiler complaints."
+100 |           },
+101 |           {
+102 |             "id": 4,
+103 |             "title": "Author validation unit tests",
+104 |             "description": "Create tests that cover happy-path and failure scenarios for every schema.",
+105 |             "dependencies": [
+106 |               "2.2"
+107 |             ],
+108 |             "details": "Add tests validating optional defaults, nested arrays, and rejection of malformed payloads for each model.",
+109 |             "status": "todo",
+110 |             "testStrategy": "Run `npm test -- schema` (or equivalent) to confirm Zod validations behave as expected."
+111 |           }
+112 |         ]
+113 |       },
+114 |       {
+115 |         "id": 3,
+116 |         "title": "Implement Prompt Loader and Schema Builder",
+117 |         "description": "Create a service that scans the `prompts/` directory, parses Markdown prompt files for metadata, and generates JSON-schemas for their inputs.",
+118 |         "details": "The loader should read `.md` files from the `prompts/` directory. It will parse YAML frontmatter to extract metadata according to the `Prompt` data model (Task 2). From the `variables[]` array in the metadata, it must generate a valid JSON-schema for the tool's input. This component is key to the 'Prompt Registry & Auto-Tooling' feature.",
+119 |         "testStrategy": "Given a directory with valid and invalid prompt markdown files, verify that the loader correctly parses the valid ones, generates accurate JSON-schemas, and reports errors for the invalid ones. Test handling of optional variables and default values.",
+120 |         "priority": "high",
+121 |         "dependencies": [
+122 |           2
+123 |         ],
+124 |         "status": "todo",
+125 |         "subtasks": [
+126 |           {
+127 |             "id": 1,
+128 |             "title": "Implement prompt directory scanner",
+129 |             "description": "Walk the prompts/ directory and enumerate Markdown prompt files with frontmatter.",
+130 |             "dependencies": [],
+131 |             "details": "Support nested folders, ignore non-.md files, and return file metadata for downstream parsing.",
+132 |             "status": "todo",
+133 |             "testStrategy": "Run the scanner against fixtures containing .md and irrelevant files, verifying only valid prompts are returned."
+134 |           },
+135 |           {
+136 |             "id": 2,
+137 |             "title": "Parse YAML frontmatter into Prompt metadata",
+138 |             "description": "Extract title, description, variables, and tooling metadata from each prompt file.",
+139 |             "dependencies": [
+140 |               "3.1"
+141 |             ],
+142 |             "details": "Reuse the Prompt schema to validate parsed metadata, reporting descriptive errors for malformed frontmatter.",
+143 |             "status": "todo",
+144 |             "testStrategy": "Use fixtures with missing required fields to ensure parse errors surface with actionable messages."
+145 |           },
+146 |           {
+147 |             "id": 3,
+148 |             "title": "Generate JSON schemas from prompt variables",
+149 |             "description": "Transform the variables array into a JSON Schema definition for tool invocation inputs.",
+150 |             "dependencies": [
+151 |               "3.2"
+152 |             ],
+153 |             "details": "Support required vs optional flags, default values, enums, and nested object variables defined in metadata.",
+154 |             "status": "todo",
+155 |             "testStrategy": "Validate generated schemas with Ajv (or equivalent) against sample payloads covering required and optional fields."
+156 |           },
+157 |           {
+158 |             "id": 4,
+159 |             "title": "Implement error aggregation and reporting",
+160 |             "description": "Collect parse/validation issues per prompt and expose them in loader results.",
+161 |             "dependencies": [
+162 |               "3.3"
+163 |             ],
+164 |             "details": "Return structured errors with file path, line context when available, and remediation hints for authors.",
+165 |             "status": "todo",
+166 |             "testStrategy": "Feed prompts with deliberate mistakes and confirm the loader surfaces grouped diagnostics."
+167 |           },
+168 |           {
+169 |             "id": 5,
+170 |             "title": "Write prompt loader unit tests",
+171 |             "description": "Cover success, failure, and mixed-directory scenarios for the loader pipeline.",
+172 |             "dependencies": [
+173 |               "3.3"
+174 |             ],
+175 |             "details": "Author tests that stub filesystem access and assert on parsed metadata, generated schemas, and error outputs.",
+176 |             "status": "todo",
+177 |             "testStrategy": "Execute the prompt loader test suite to ensure all cases pass."
+178 |           }
+179 |         ]
+180 |       },
+181 |       {
+182 |         "id": 4,
+183 |         "title": "Establish Foundational Audit Logging Service",
+184 |         "description": "Create a core service for audit logging that records tool execution details in a structured, PII-safe format.",
+185 |         "details": "Implement a logger that accepts a `RunRecord` object and outputs it as structured JSON (e.g., to the console initially). The service must include a redaction mechanism to strip sensitive data from inputs and outputs before logging. This is the foundation for the 'Safety, Policy, and Side-Effect Guardrails' feature.",
+186 |         "testStrategy": "Unit test the logger to confirm that it correctly formats `RunRecord` data. Verify that the redaction logic successfully removes fields marked as sensitive and does not corrupt the overall log structure.",
+187 |         "priority": "high",
+188 |         "dependencies": [
+189 |           2
+190 |         ],
+191 |         "status": "todo",
+192 |         "subtasks": [
+193 |           {
+194 |             "id": 1,
+195 |             "title": "Design redaction helper utilities",
+196 |             "description": "Create reusable functions that scrub sensitive keys and values from RunRecord payloads.",
+197 |             "dependencies": [],
+198 |             "details": "Implement configurable redaction patterns (key-based and value-based) and ensure helpers are pure.",
+199 |             "status": "todo",
+200 |             "testStrategy": "Add focused unit tests that prove secrets, tokens, and API keys are replaced with `[redacted]`."
+201 |           },
+202 |           {
+203 |             "id": 2,
+204 |             "title": "Implement structured audit logger",
+205 |             "description": "Build a logger that persists RunRecord entries in structured JSON with timestamps and context.",
+206 |             "dependencies": [
+207 |               "4.1"
+208 |             ],
+209 |             "details": "Emit NDJSON lines including run identifiers, tool metadata, latency, and sanitized inputs/outputs.",
+210 |             "status": "todo",
+211 |             "testStrategy": "Run the logger in a smoke script and confirm emitted JSON matches the expected contract."
+212 |           },
+213 |           {
+214 |             "id": 3,
+215 |             "title": "Wire logger to RunRecord schema",
+216 |             "description": "Ensure RunRecord validation occurs before persistence and failed validations are rejected.",
+217 |             "dependencies": [
+218 |               "4.2",
+219 |               "2.2"
+220 |             ],
+221 |             "details": "Validate incoming data with the RunRecord schema, enrich with timestamps, and surface detailed errors for invalid records.",
+222 |             "status": "todo",
+223 |             "testStrategy": "Use tests that attempt to log malformed records and expect descriptive validation failures."
+224 |           },
+225 |           {
+226 |             "id": 4,
+227 |             "title": "Add audit logging test coverage",
+228 |             "description": "Create unit tests verifying redaction, formatting, and successful persistence of RunRecords.",
+229 |             "dependencies": [
+230 |               "4.3"
+231 |             ],
+232 |             "details": "Cover both happy-path logging and scenarios where sensitive fields must be sanitized before output.",
+233 |             "status": "todo",
+234 |             "testStrategy": "Run the audit logger test suite and ensure NDJSON output snapshots match expectations."
+235 |           }
+236 |         ]
+237 |       },
+238 |       {
+239 |         "id": 5,
+240 |         "title": "Build Foundational Policy Engine",
+241 |         "description": "Create the initial structure for the policy engine that will mediate all tool calls.",
+242 |         "details": "Develop a module that exposes a function to check tool call requests against a set of policies. The initial implementation will be a simple pass-through but will establish the integration point for future policy enforcement, such as intent gating and rate limiting.",
+243 |         "testStrategy": "Create a test that shows a tool call request being passed to the policy engine and successfully being approved. The engine's interface should be stable enough for other components to build against.",
+244 |         "priority": "high",
+245 |         "dependencies": [
+246 |           1
+247 |         ],
+248 |         "status": "todo",
+249 |         "subtasks": [
+250 |           {
+251 |             "id": 1,
+252 |             "title": "Define policy evaluation contracts",
+253 |             "description": "Sketch the TypeScript types and interfaces for policy checks, results, and context.",
+254 |             "dependencies": [],
+255 |             "details": "Include request metadata, tool characteristics, and policy verdict enums to support future expansion.",
+256 |             "status": "todo",
+257 |             "testStrategy": "Run `tsc --noEmit` to verify the new interfaces compile cleanly."
+258 |           },
+259 |           {
+260 |             "id": 2,
+261 |             "title": "Implement baseline policy engine",
+262 |             "description": "Create an initial policy pipeline that approves requests while emitting audit-friendly traces.",
+263 |             "dependencies": [
+264 |               "5.1"
+265 |             ],
+266 |             "details": "Provide hooks for synchronous and asynchronous checks, returning structured allow/deny responses with reasons.",
+267 |             "status": "todo",
+268 |             "testStrategy": "Author unit tests that pass mocked requests through the engine and assert the approval response structure."
+269 |           },
+270 |           {
+271 |             "id": 3,
+272 |             "title": "Integrate policy engine entry point",
+273 |             "description": "Expose a function used by the MCP server and orchestrator to vet tool invocations.",
+274 |             "dependencies": [
+275 |               "5.2"
+276 |             ],
+277 |             "details": "Add adapters that wrap tool execution paths, ensuring policy evaluation occurs before the tool runs.",
+278 |             "status": "todo",
+279 |             "testStrategy": "Use integration-style tests with stubbed tools to confirm policy checks execute before invocation."
+280 |           },
+281 |           {
+282 |             "id": 4,
+283 |             "title": "Create policy engine smoke tests",
+284 |             "description": "Write tests covering approve and deny flows, even if deny returns a placeholder reason for now.",
+285 |             "dependencies": [
+286 |               "5.2"
+287 |             ],
+288 |             "details": "Include scenarios capturing request metadata in traces for observability and future debugging.",
+289 |             "status": "todo",
+290 |             "testStrategy": "Run the policy engine test suite and verify both allow and simulated deny paths behave."
+291 |           }
+292 |         ]
+293 |       },
+294 |       {
+295 |         "id": 6,
+296 |         "title": "Set Up Mastra MCP Server with Stdio Transport",
+297 |         "description": "Initialize a Mastra-backed MCP server that communicates over standard I/O, serving as the main tool host.",
+298 |         "details": "Configure and run a basic MCP server using the Mastra framework. The server should start, listen for requests on stdin, and send responses to stdout. This fulfills the initial requirement for the 'MCP Server & Agent-as-Tool Exposure' feature.",
+299 |         "testStrategy": "Write a simple client script that can send a 'ping' or 'listTools' request to the server process via stdio and receive a valid response. Confirm the server starts and shuts down cleanly.",
+300 |         "priority": "high",
+301 |         "dependencies": [
+302 |           1
+303 |         ],
+304 |         "status": "todo",
+305 |         "subtasks": [
+306 |           {
+307 |             "id": 1,
+308 |             "title": "Create Mastra MCP server bootstrap",
+309 |             "description": "Author the server entrypoint that instantiates Mastra and prepares configuration.",
+310 |             "dependencies": [],
+311 |             "details": "Load environment variables, configure logging, and establish the Mastra app foundation.",
+312 |             "status": "todo",
+313 |             "testStrategy": "Run the server in dev mode to confirm it boots without throwing."
+314 |           },
+315 |           {
+316 |             "id": 2,
+317 |             "title": "Wire stdio transport and lifecycle",
+318 |             "description": "Connect the server to stdin/stdout using the Mastra stdio transport implementation.",
+319 |             "dependencies": [
+320 |               "6.1"
+321 |             ],
+322 |             "details": "Handle initialization sequencing, handshake events, and ensure backpressure handling is configured.",
+323 |             "status": "todo",
+324 |             "testStrategy": "Use a local script to send a ping request over stdio and confirm a valid response is returned."
+325 |           },
+326 |           {
+327 |             "id": 3,
+328 |             "title": "Implement graceful shutdown handlers",
+329 |             "description": "Capture SIGINT/SIGTERM and drain in-flight requests before exiting.",
+330 |             "dependencies": [
+331 |               "6.2"
+332 |             ],
+333 |             "details": "Register signal handlers, flush audit logs, and close transports cleanly before process exit.",
+334 |             "status": "todo",
+335 |             "testStrategy": "Start the server, send a request, then Ctrl+C and verify exit logs indicate an orderly shutdown."
+336 |           },
+337 |           {
+338 |             "id": 4,
+339 |             "title": "Document server runbook",
+340 |             "description": "Provide README notes for starting, stopping, and troubleshooting the server locally.",
+341 |             "dependencies": [
+342 |               "6.3"
+343 |             ],
+344 |             "details": "Include npm scripts, expected logs, environment variables, and links to relevant diagnostics.",
+345 |             "status": "todo",
+346 |             "testStrategy": "Have a teammate follow the runbook to boot and stop the server successfully."
+347 |           }
+348 |         ]
+349 |       },
+350 |       {
+351 |         "id": 7,
+352 |         "title": "Register Auto-Generated Prompt Tools on MCP Server",
+353 |         "description": "Integrate the Prompt Loader with the MCP Server to automatically register a tool for each discovered prompt.",
+354 |         "details": "On server startup, use the Prompt Loader (Task 3) to get the list of prompts and their generated schemas. For each prompt, register a corresponding MCP tool on the server (Task 6) at the path `prompts/<slug>`. The tool's invocation logic should render the prompt template with the provided inputs.",
+355 |         "testStrategy": "Given a `prompts/` directory with a sample prompt, when the server starts, then a client can list tools and see `prompts/<slug>`. When the tool is invoked with valid arguments, then it returns the rendered prompt content.",
+356 |         "priority": "high",
+357 |         "dependencies": [
+358 |           3,
+359 |           6
+360 |         ],
+361 |         "status": "todo",
+362 |         "subtasks": [
+363 |           {
+364 |             "id": 1,
+365 |             "title": "Load prompts at server startup",
+366 |             "description": "Invoke the prompt loader during server initialization to gather prompt metadata.",
+367 |             "dependencies": [
+368 |               "3.3",
+369 |               "6.2"
+370 |             ],
+371 |             "details": "Ensure loader errors fail fast with actionable logs so missing prompts do not silently pass.",
+372 |             "status": "todo",
+373 |             "testStrategy": "Boot the server with a known prompt and confirm startup logs include the prompt slug."
+374 |           },
+375 |           {
+376 |             "id": 2,
+377 |             "title": "Construct MCP tool definitions",
+378 |             "description": "Map prompt metadata to MCP tool descriptors including schemas and descriptions.",
+379 |             "dependencies": [
+380 |               "7.1"
+381 |             ],
+382 |             "details": "Generate tool IDs of the form prompts/<slug>, attach JSON schema payloads, and provide rich descriptions.",
+383 |             "status": "todo",
+384 |             "testStrategy": "List tools via the MCP inspector and confirm prompts/<slug> entries include expected metadata."
+385 |           },
+386 |           {
+387 |             "id": 3,
+388 |             "title": "Implement prompt rendering handler",
+389 |             "description": "Render markdown templates with provided input variables and return structured output.",
+390 |             "dependencies": [
+391 |               "7.2"
+392 |             ],
+393 |             "details": "Support default values, markdown rendering, and error messages for missing required variables.",
+394 |             "status": "todo",
+395 |             "testStrategy": "Invoke the tool with sample inputs and verify the rendered text matches the template expectations."
+396 |           },
+397 |           {
+398 |             "id": 4,
+399 |             "title": "Add prompt tool registration tests",
+400 |             "description": "Create integration tests that start the server, register prompts, and execute them end-to-end.",
+401 |             "dependencies": [
+402 |               "7.3"
+403 |             ],
+404 |             "details": "Use temporary prompt fixtures to assert tool availability and execution output.",
+405 |             "status": "todo",
+406 |             "testStrategy": "Run the integration test to confirm the prompt tool appears and renders as expected."
+407 |           }
+408 |         ]
+409 |       },
+410 |       {
+411 |         "id": 8,
+412 |         "title": "Expose Internal Agents as `ask_<agentKey>` MCP Tools",
+413 |         "description": "Register internal agents as callable tools on the MCP server, enabling agent composition.",
+414 |         "details": "Define a simple placeholder agent (e.g., a 'planner' agent). Register this agent on the MCP server (Task 6) with a tool name like `ask_planner` and a human-readable description. The tool, when called, should execute the agent and return its structured output.",
+415 |         "testStrategy": "Given an agent with a description, when the server starts, then the `ask_<agentKey>` tool appears in the tool list. When a client calls the tool with a question, then it receives a structured artifact in response.",
+416 |         "priority": "high",
+417 |         "dependencies": [
+418 |           6
+419 |         ],
+420 |         "status": "todo",
+421 |         "subtasks": [
+422 |           {
+423 |             "id": 1,
+424 |             "title": "Define internal agent registry contract",
+425 |             "description": "Specify the metadata and handler signature required to expose internal agents as tools.",
+426 |             "dependencies": [],
+427 |             "details": "Create types describing agent keys, descriptions, input schema, and response format.",
+428 |             "status": "todo",
+429 |             "testStrategy": "Run `tsc --noEmit` to ensure the registry contract compiles."
+430 |           },
+431 |           {
+432 |             "id": 2,
+433 |             "title": "Register agent-backed MCP tools",
+434 |             "description": "Map internal agents to ask_<agentKey> tool definitions during server startup.",
+435 |             "dependencies": [
+436 |               "8.1",
+437 |               "6.2"
+438 |             ],
+439 |             "details": "Iterate over registered agents, build MCP descriptors, and register them alongside prompt tools.",
+440 |             "status": "todo",
+441 |             "testStrategy": "List MCP tools and confirm ask_<agentKey> entries exist with correct descriptions."
+442 |           },
+443 |           {
+444 |             "id": 3,
+445 |             "title": "Implement agent invocation handler",
+446 |             "description": "Bridge MCP tool invocations to the underlying agent execution pipeline.",
+447 |             "dependencies": [
+448 |               "8.2"
+449 |             ],
+450 |             "details": "Resolve the requested agent, execute it with structured input, and return a normalized response payload.",
+451 |             "status": "todo",
+452 |             "testStrategy": "Call the tool with sample input and assert the agent output is propagated back to the client."
+453 |           },
+454 |           {
+455 |             "id": 4,
+456 |             "title": "Create sample agent and tests",
+457 |             "description": "Add a lightweight planner or analyzer agent and cover registration plus execution paths in tests.",
+458 |             "dependencies": [
+459 |               "8.3"
+460 |             ],
+461 |             "details": "Provide fixtures demonstrating both successful runs and graceful error propagation.",
+462 |             "status": "todo",
+463 |             "testStrategy": "Run integration tests ensuring the sample agent responds and logs appropriately."
+464 |           }
+465 |         ]
+466 |       },
+467 |       {
+468 |         "id": 9,
+469 |         "title": "Implement MCP Client Orchestrator for Tool Management",
+470 |         "description": "Create the client-side orchestrator responsible for managing static and dynamic toolsets for an agent's session.",
+471 |         "details": "Develop a class or module that will initialize an MCP client. This orchestrator will hold the logic for `getTools()` (static set) and `getToolsets()` (dynamic attachments), forming the core of the 'Mastra MCP Client Orchestration' feature.",
+472 |         "testStrategy": "Unit test the orchestrator's initialization. It should be able to instantiate an MCP client and prepare for tool registration.",
+473 |         "priority": "medium",
+474 |         "dependencies": [
+475 |           1
+476 |         ],
+477 |         "status": "todo",
+478 |         "subtasks": [
+479 |           {
+480 |             "id": 1,
+481 |             "title": "Set up orchestrator class skeleton",
+482 |             "description": "Create the orchestrator module with constructor, configuration, and lifecycle stubs.",
+483 |             "dependencies": [],
+484 |             "details": "Define properties for MCP client handles, tool caches, and configuration state.",
+485 |             "status": "todo",
+486 |             "testStrategy": "Instantiate the orchestrator in a unit test to ensure defaults are wired correctly."
+487 |           },
+488 |           {
+489 |             "id": 2,
+490 |             "title": "Implement MCP client connection management",
+491 |             "description": "Handle connecting to the Mastra MCP server, including retries and cleanup.",
+492 |             "dependencies": [
+493 |               "9.1",
+494 |               "6.2"
+495 |             ],
+496 |             "details": "Provide async init/shutdown methods that open transports, authenticate if needed, and dispose reliably.",
+497 |             "status": "todo",
+498 |             "testStrategy": "Use a mocked server endpoint to confirm connect/disconnect flows execute as expected."
+499 |           },
+500 |           {
+501 |             "id": 3,
+[TRUNCATED]
 ```
 
 .taskmaster/tasks/task_001.txt
@@ -12023,8 +12788,6 @@ tests/.gitkeep
 321 |             "dependencies": [
 322 |               "4.4"
 323 |             ],
-324 |             "details": "In a new test file under `test/integration/`, write tests that use an MCP client to interact with the running server. One test should list all available tools and assert that a tool exists for each entry in `prompts.meta.yaml`. Another test should invoke a specific prompt tool and validate that the response body contains the expected markdown content. Add a final test using a large (>1MB) prompt file to ensure the response content is correctly truncated by the payload cap.",
-325 |             "status": "done",
 [TRUNCATED]
 ```
 
@@ -12203,76 +12966,6 @@ prompts/preflight/docfetch-check.md
 82 | - **Infrastructure outages:** Mark `DocFetchReport.status` as `"Docs Missing"`, include outage details, and schedule a re-check within 24 hours.
 83 | 
 84 | Only move forward with planning (`/instruction-file`, `/planning-process`) after this checklist is satisfied and `DocFetchReport` shows a clean `"OK"` state.
-```
-
-scripts/__tests__/validate_metadata.test.ts
-```
-1 | import { strict as assert } from 'node:assert';
-2 | import { spawn } from 'node:child_process';
-3 | import { promises as fs } from 'node:fs';
-4 | import os from 'node:os';
-5 | import path from 'node:path';
-6 | import { fileURLToPath } from 'node:url';
-7 | 
-8 | async function main(): Promise<void> {
-9 |   const moduleDir = path.dirname(fileURLToPath(import.meta.url));
-10 |   const projectRoot = path.resolve(moduleDir, '..', '..');
-11 |   const tmpRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'metadata-validator-'));
-12 |   const repoRoot = path.join(tmpRoot, 'repo');
-13 |   await fs.mkdir(repoRoot, { recursive: true });
-14 |   await fs.mkdir(path.join(repoRoot, 'prompts'), { recursive: true });
-15 | 
-16 |   const workflowContent = `---\ntitle: Workflow\n---\n# Workflow\n\n## P0 Preflight Docs\n`;
-17 |   await fs.writeFile(path.join(repoRoot, 'WORKFLOW.md'), workflowContent, 'utf8');
-18 | 
-19 |   const promptPath = path.join(repoRoot, 'prompts', 'example.md');
-20 |   await fs.writeFile(promptPath, '# Example Prompt\n', 'utf8');
-21 | 
-22 |   const scriptPath = path.join(projectRoot, 'scripts', 'validate_metadata.ts');
-23 |   const child = spawn(
-24 |     process.execPath,
-25 |     ['--loader', 'ts-node/esm', scriptPath],
-26 |     {
-27 |       cwd: projectRoot,
-28 |       env: {
-29 |         ...process.env,
-30 |         PROMPTS_VALIDATION_ROOT: repoRoot,
-31 |       },
-32 |     },
-33 |   );
-34 | 
-35 |   const stderrChunks: string[] = [];
-36 |   const stdoutChunks: string[] = [];
-37 |   child.stderr?.setEncoding('utf8');
-38 |   child.stderr?.on('data', (chunk) => {
-39 |     stderrChunks.push(chunk);
-40 |   });
-41 |   child.stdout?.setEncoding('utf8');
-42 |   child.stdout?.on('data', (chunk) => {
-43 |     stdoutChunks.push(chunk);
-44 |   });
-45 | 
-46 |   const exitCode: number = await new Promise((resolve, reject) => {
-47 |     child.on('error', reject);
-48 |     child.on('close', (code) => {
-49 |       resolve(code ?? 0);
-50 |     });
-51 |   });
-52 | 
-53 |   const stderrOutput = stderrChunks.join('');
-54 |   assert.strictEqual(exitCode, 1, 'expected validator to exit with failure');
-55 |   assert.ok(
-56 |     stderrOutput.includes('prompts/example.md: missing YAML front matter'),
-57 |     `expected missing front matter error, received: ${stderrOutput || stdoutChunks.join('')}`,
-58 |   );
-59 | 
-60 |   console.log('validate metadata missing front matter test passed.');
-61 | }
-62 | 
-63 | main().catch((error) => {
-64 |   console.error(error);
-65 |   process.exitCode = 1;
-66 | });
 ```
 
 scripts/__tests__/workflow_sync.test.ts
@@ -12549,600 +13242,223 @@ src/cli/actions.ts
 src/cli/main.ts
 ```
 1 | #!/usr/bin/env node
-2 | import { spawn } from 'node:child_process';
-3 | import { promises as fs } from 'node:fs';
-4 | import path from 'node:path';
-5 | import { createInterface } from 'node:readline/promises';
-6 | import { stdin as input, stdout as output } from 'node:process';
-7 | import { createRequire } from 'node:module';
-8 | 
-9 | import { Command } from 'commander';
-10 | import { dump as dumpYaml, load as loadYaml } from 'js-yaml';
-11 | 
-12 | import { TaskIngestError, TaskValidationError } from '../adapters/taskmaster/ingest.js';
-13 | import {
-14 |   buildStatusSummary,
-15 |   formatGraphDot,
-16 |   loadIngest,
-17 |   runAdvance,
-18 |   runGraph,
-19 |   runNext,
-20 |   type GraphNode,
-21 |   type TaskLocatorOptions
-22 | } from './actions.js';
-23 | import { STATUS_ALIASES, type CanonicalTaskStatus } from '../types/prompts-task.js';
-24 | import {
-25 |   ensureArray,
-26 |   formatFrontMatter,
-27 |   parseFrontMatter,
-28 |   type FrontMatterRecord,
-29 | } from '../utils/front_matter.js';
-30 | import { extractTitleFromMarkdown, loadPhases } from '../utils/markdown.js';
-31 | 
-32 | const require = createRequire(import.meta.url);
-33 | const packageJson = require('../../package.json') as { version?: string };
-34 | 
-35 | interface GlobalCliOptions {
-36 |   tasks: string;
-37 |   tag: string;
-38 |   write?: boolean;
-39 |   pretty?: boolean;
-40 | }
-41 | 
-42 | const DEFAULT_TASKS_PATH = '.taskmaster/tasks/tasks.json';
-43 | 
-44 | const program = new Command();
-45 | program
-46 |   .name('prompts')
-47 |   .description('Task-Master companion CLI for prompts workflows')
-48 |   .version(packageJson.version ?? '0.0.0')
-49 |   .option('--tasks <path>', 'Path to Task-Master tasks.json file', DEFAULT_TASKS_PATH)
-50 |   .option('--tag <tag>', 'Tagged task list to load', 'master')
-51 |   .option('--write', 'Enable write mode for commands that persist changes')
-52 |   .option('--pretty', 'Pretty-print JSON output')
-53 |   .option('--verbose', 'Emit structured logs to stderr')
-54 |   .option('--unsafe-logs', 'Disable metadata redaction (not recommended)');
-55 | 
-56 | const getGlobalOptions = (): GlobalCliOptions => program.optsWithGlobals<GlobalCliOptions>();
-57 | 
-58 | const stringify = (value: unknown, pretty?: boolean): string =>
-59 |   JSON.stringify(value, null, pretty ? 2 : undefined) ?? 'null';
-60 | 
-61 | const printJson = (value: unknown, pretty?: boolean): void => {
-62 |   console.log(stringify(value, pretty));
-63 | };
-64 | 
-65 | const parseTaskId = (raw: string): number => {
-66 |   const value = Number.parseInt(raw, 10);
-67 |   if (!Number.isInteger(value) || value < 1) {
-68 |     throw new Error('Task id must be a positive integer.');
-69 |   }
-70 |   return value;
-71 | };
-72 | 
-73 | const parseStatus = (raw: string): CanonicalTaskStatus => {
-74 |   const key = raw.trim().toLowerCase();
-75 |   const canonical = STATUS_ALIASES[key];
-76 |   if (!canonical) {
-77 |     throw new Error(`Unsupported status value: ${raw}`);
-78 |   }
-79 |   return canonical;
-80 | };
-81 | 
-82 | const isRecord = (value: unknown): value is Record<string, unknown> =>
-83 |   !!value && typeof value === 'object';
+2 | import { createRequire } from 'node:module';
+3 | 
+4 | import { Command } from 'commander';
+5 | 
+6 | import { TaskIngestError, TaskValidationError } from '../adapters/taskmaster/ingest.js';
+7 | import {
+8 |   buildStatusSummary,
+9 |   formatGraphDot,
+10 |   loadIngest,
+11 |   runAdvance,
+12 |   runGraph,
+13 |   runNext,
+14 |   type GraphNode,
+15 |   type TaskLocatorOptions
+16 | } from './actions.js';
+17 | import { STATUS_ALIASES, type CanonicalTaskStatus } from '../types/prompts-task.js';
+18 | 
+19 | const require = createRequire(import.meta.url);
+20 | const packageJson = require('../../package.json') as { version?: string };
+21 | 
+22 | interface GlobalCliOptions {
+23 |   tasks: string;
+24 |   tag: string;
+25 |   write?: boolean;
+26 |   pretty?: boolean;
+27 | }
+28 | 
+29 | const DEFAULT_TASKS_PATH = '.taskmaster/tasks/tasks.json';
+30 | 
+31 | const program = new Command();
+32 | program
+33 |   .name('prompts')
+34 |   .description('Task-Master companion CLI for prompts workflows')
+35 |   .version(packageJson.version ?? '0.0.0')
+36 |   .option('--tasks <path>', 'Path to Task-Master tasks.json file', DEFAULT_TASKS_PATH)
+37 |   .option('--tag <tag>', 'Tagged task list to load', 'master')
+38 |   .option('--write', 'Enable write mode for commands that persist changes')
+39 |   .option('--pretty', 'Pretty-print JSON output')
+40 |   .option('--verbose', 'Emit structured logs to stderr')
+41 |   .option('--unsafe-logs', 'Disable metadata redaction (not recommended)');
+42 | 
+43 | const getGlobalOptions = (): GlobalCliOptions => program.optsWithGlobals<GlobalCliOptions>();
+44 | 
+45 | const stringify = (value: unknown, pretty?: boolean): string =>
+46 |   JSON.stringify(value, null, pretty ? 2 : undefined) ?? 'null';
+47 | 
+48 | const printJson = (value: unknown, pretty?: boolean): void => {
+49 |   console.log(stringify(value, pretty));
+50 | };
+51 | 
+52 | const parseTaskId = (raw: string): number => {
+53 |   const value = Number.parseInt(raw, 10);
+54 |   if (!Number.isInteger(value) || value < 1) {
+55 |     throw new Error('Task id must be a positive integer.');
+56 |   }
+57 |   return value;
+58 | };
+59 | 
+60 | const parseStatus = (raw: string): CanonicalTaskStatus => {
+61 |   const key = raw.trim().toLowerCase();
+62 |   const canonical = STATUS_ALIASES[key];
+63 |   if (!canonical) {
+64 |     throw new Error(`Unsupported status value: ${raw}`);
+65 |   }
+66 |   return canonical;
+67 | };
+68 | 
+69 | const isRecord = (value: unknown): value is Record<string, unknown> =>
+70 |   !!value && typeof value === 'object';
+71 | 
+72 | const printError = (error: unknown): void => {
+73 |   if (error instanceof TaskValidationError) {
+74 |     console.error(`Validation failed: ${error.message}`);
+75 |     if (isRecord(error.context) && Array.isArray(error.context.errors)) {
+76 |       for (const issue of error.context.errors as { message?: string }[]) {
+77 |         if (issue && typeof issue.message === 'string') {
+78 |           console.error(`- ${issue.message}`);
+79 |         }
+80 |       }
+81 |     }
+82 |     return;
+83 |   }
 84 | 
-85 | const printError = (error: unknown): void => {
-86 |   if (error instanceof TaskValidationError) {
-87 |     console.error(`Validation failed: ${error.message}`);
-88 |     if (isRecord(error.context) && Array.isArray(error.context.errors)) {
-89 |       for (const issue of error.context.errors as { message?: string }[]) {
-90 |         if (issue && typeof issue.message === 'string') {
-91 |           console.error(`- ${issue.message}`);
-92 |         }
-93 |       }
-94 |     }
-95 |     return;
-96 |   }
-97 | 
-98 |   if (error instanceof TaskIngestError) {
-99 |     console.error(error.message);
-100 |     if (error.context) {
-101 |       console.error(stringify(error.context, true));
-102 |     }
-103 |     return;
-104 |   }
-105 | 
-106 |   console.error(error instanceof Error ? error.message : String(error));
-107 | };
-108 | 
-109 | import { createSecureLogger, logger as baseLogger } from '../logger.js';
-110 | const withCliErrors = async (runner: () => Promise<void>): Promise<void> => {
-111 |   try {
-112 |     const opts = getGlobalOptions() as any;
-113 |     const cliLogger = createSecureLogger(baseLogger, { unsafe: Boolean(opts.unsafeLogs) });
-114 |     if (opts.verbose) cliLogger.info('cli_start');
-115 |     await runner();
-116 |     if (opts.verbose) cliLogger.info('cli_end');
-117 |   } catch (error) {
-118 |     printError(error);
-119 |     process.exitCode = 1;
-120 |   }
-121 | };
-122 | 
-123 | const toLocatorOptions = (options: GlobalCliOptions): TaskLocatorOptions => ({
-124 |   tasksPath: options.tasks,
-125 |   tag: options.tag,
-126 |   cwd: process.cwd()
-127 | });
-128 | 
-129 | program
-130 |   .command('ingest')
-131 |   .description('Validate and normalize Task-Master tasks into the canonical schema.')
-132 |   .action(async () => {
-133 |     await withCliErrors(async () => {
-134 |       const options = getGlobalOptions();
-135 |       const result = await loadIngest(toLocatorOptions(options));
-136 |       printJson(
-137 |         {
-138 |           tasks: result.tasks,
-139 |           report: result.report
-140 |         },
-141 |         options.pretty
-142 |       );
-143 |     });
-144 |   });
-145 | 
-146 | program
-147 |   .command('next')
-148 |   .description('Select the next ready task based on dependency and priority rules.')
-149 |   .action(async () => {
-150 |     await withCliErrors(async () => {
-151 |       const options = getGlobalOptions();
-152 |       const { task, ready } = await runNext(toLocatorOptions(options));
-153 | 
-154 |       printJson(
-155 |         {
-156 |           task,
-157 |           ready
-158 |         },
-159 |         options.pretty
-160 |       );
-161 |     });
-162 |   });
-163 | 
-164 | program
-165 |   .command('advance')
-166 |   .description('Update a task\'s status. Persists only when --write is supplied.')
-167 |   .argument('<id>', 'Task identifier to update.')
-168 |   .argument('<status>', 'New status (canonical name or supported alias).')
-169 |   .action(async (id: string, status: string) => {
-170 |     await withCliErrors(async () => {
-171 |       const options = getGlobalOptions();
-172 |       const taskId = parseTaskId(id);
-173 |       const canonicalStatus = parseStatus(status);
-174 |       const result = await runAdvance(toLocatorOptions(options), taskId, canonicalStatus, Boolean(options.write));
-175 | 
-176 |       printJson(
-177 |         {
-178 |           task: result.task,
-179 |           persisted: result.persisted
-180 |         },
-181 |         options.pretty
-182 |       );
-183 |     });
-184 |   });
-185 | 
-186 | program
-187 |   .command('graph')
-188 |   .description('Export the task dependency graph as JSON or DOT.')
-189 |   .option('--format <format>', 'Output format: json or dot', 'json')
-190 |   .action(async (commandOptions: { format: string }) => {
-191 |     await withCliErrors(async () => {
-192 |       const options = getGlobalOptions();
-193 |       const graph = await runGraph(toLocatorOptions(options));
-194 |       const format = (commandOptions.format ?? 'json').toLowerCase();
-195 | 
-196 |       if (format === 'json') {
-197 |         printJson(graph, options.pretty);
-198 |         return;
-199 |       }
-200 | 
-201 |       if (format === 'dot') {
-202 |         console.log(formatGraphDot(graph.nodes as GraphNode[]));
-203 |         return;
-204 |       }
-205 | 
-206 |       throw new Error(`Unsupported graph format: ${commandOptions.format}`);
-207 |     });
-208 |   });
-209 | 
-210 | program
-211 |   .command('scaffold')
-212 |   .description('Scaffold metadata, catalog entries, and docs for a prompt slug.')
-213 |   .argument('<slug>', 'Prompt slug relative to the prompts directory')
-214 |   .option('--fix <path>', 'Override the markdown file path to update')
-215 |   .action(async (slug: string, commandOptions: { fix?: string }) => {
-216 |     await withCliErrors(async () => {
-217 |       const repoRoot = await findRepoRoot(process.cwd());
-218 |       const promptFile = await resolvePromptFile(repoRoot, slug, commandOptions.fix);
-219 |       const workflowPath = path.join(repoRoot, 'WORKFLOW.md');
-220 |       const validPhases = await loadPhases(workflowPath);
-221 | 
-222 |       const original = await fs.readFile(promptFile.absolute, 'utf8');
-223 |       const parsed = parseFrontMatter(original);
-224 |       const baseMetadata: FrontMatterRecord = parsed ? { ...parsed.metadata } : {};
-225 |       const body = original.slice(parsed?.endOffset ?? 0);
-226 | 
-227 |       const scaffold = await collectMetadataInteractively(baseMetadata, validPhases, slug);
-228 |       const updatedMetadata: FrontMatterRecord = {
-229 |         ...baseMetadata,
-230 |         phase: scaffold.phases.length === 1 ? scaffold.phases[0] : scaffold.phases,
-231 |         gate: scaffold.gate,
-232 |         status: scaffold.status,
-233 |         previous: scaffold.previous,
-234 |         next: scaffold.next,
-235 |       };
-236 | 
-237 |       const frontMatterBlock = formatFrontMatter(updatedMetadata);
-238 |       const bodyWithoutLeadingBreak = body.replace(/^\r?\n/, '');
-239 |       const updatedContent = `${frontMatterBlock}${bodyWithoutLeadingBreak}`;
-240 |       if (updatedContent !== original) {
-241 |         await fs.writeFile(promptFile.absolute, updatedContent, 'utf8');
-242 |         console.log(`Updated ${promptFile.relative}`);
-243 |       } else {
-244 |         console.log(`No changes required for ${promptFile.relative}`);
-245 |       }
-246 | 
-247 |       const title = extractTitleFromMarkdown(bodyWithoutLeadingBreak, promptFile.relative);
-248 |       const primaryPhase = scaffold.phases[0] ?? '';
-249 |       const metadataUpdated = await updatePromptMetadataFile(repoRoot, {
-250 |         id: slugToId(slug),
-251 |         title,
-252 |         path: promptFile.relative,
-253 |         phase: primaryPhase,
-254 |         gate: scaffold.gate,
-255 |       });
-256 |       if (metadataUpdated) {
-257 |         console.log('Updated resources/prompts.meta.yaml');
-258 |       }
-259 | 
-260 |       const missingPhases = scaffold.phases.filter((phase) => !phaseExists(phase, validPhases));
-261 |       if (missingPhases.length > 0) {
-262 |         console.log(
-263 |           `Phase(s) ${missingPhases.join(', ')} not found in WORKFLOW.md. Running catalog build with --update-workflow.`,
-264 |         );
-265 |       }
-266 | 
-267 |       await runValidationScripts(repoRoot, missingPhases.length > 0);
-268 |     });
-269 |   });
-270 | 
-271 | program
-272 |   .command('status')
-273 |   .description('Summarize task statuses and readiness information.')
-274 |   .action(async () => {
-275 |     await withCliErrors(async () => {
-276 |       const options = getGlobalOptions();
-277 |       const summary = await buildStatusSummary(toLocatorOptions(options));
-278 |       printJson(summary, options.pretty);
-279 |     });
-280 |   });
-281 | 
-282 | type PromptInterface = ReturnType<typeof createInterface>;
-283 | 
-284 | interface PromptFileInfo {
-285 |   absolute: string;
-286 |   relative: string;
-287 | }
-288 | 
-289 | interface PromptMetadataUpdate {
-290 |   id: string;
-291 |   title: string;
-292 |   path: string;
-293 |   phase: string;
-294 |   gate: string;
-295 | }
-296 | 
-297 | interface ScaffoldMetadata {
-298 |   phases: string[];
-299 |   gate: string;
-300 |   status: string;
-301 |   previous: string[];
-302 |   next: string[];
-303 | }
-304 | 
-305 | async function findRepoRoot(start: string): Promise<string> {
-306 |   let current = path.resolve(start);
-307 |   const { root } = path.parse(current);
-308 |   while (true) {
-309 |     const candidate = path.join(current, 'package.json');
-310 |     try {
-311 |       await fs.access(candidate);
-312 |       return current;
-313 |     } catch {
-314 |       if (current === root) {
-315 |         throw new Error('Unable to locate repository root. Run this command from within the project.');
-316 |       }
-317 |       current = path.dirname(current);
-318 |     }
-319 |   }
-320 | }
-321 | 
-322 | async function resolvePromptFile(repoRoot: string, slug: string, overridePath?: string): Promise<PromptFileInfo> {
-323 |   const targetPath = overridePath
-324 |     ? path.resolve(repoRoot, overridePath)
-325 |     : path.resolve(repoRoot, 'prompts', ensureMarkdownExtension(slug));
-326 | 
-327 |   const relative = path.relative(repoRoot, targetPath);
-328 |   if (relative.startsWith('..') || path.isAbsolute(relative)) {
-329 |     throw new Error('Prompt file must reside inside the repository.');
-330 |   }
-331 | 
-332 |   try {
-333 |     const stats = await fs.stat(targetPath);
-334 |     if (!stats.isFile()) {
-335 |       throw new Error(`Expected ${targetPath} to be a file.`);
-336 |     }
-337 |   } catch (error) {
-338 |     if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
-339 |       throw new Error(`Unable to locate prompt markdown at ${targetPath}.`);
-340 |     }
-341 |     throw error;
-342 |   }
-343 | 
-344 |   return {
-345 |     absolute: targetPath,
-346 |     relative: toPosixPath(relative),
-347 |   };
-348 | }
-349 | 
-350 | async function collectMetadataInteractively(
-351 |   metadata: FrontMatterRecord,
-352 |   validPhases: Set<string>,
-353 |   slug: string,
-354 | ): Promise<ScaffoldMetadata> {
-355 |   const rl = createInterface({ input, output });
-356 |   try {
-357 |     console.log(`\nScaffolding metadata for ${slug}`);
-358 |     if (validPhases.size > 0) {
-359 |       const phasesList = Array.from(validPhases).sort((a, b) => a.localeCompare(b));
-360 |       console.log(`Available phases: ${phasesList.join(', ')}`);
-361 |     }
-362 |     console.log('Enter comma-separated lists for multi-value fields. Press enter to keep defaults.');
-363 | 
-364 |     const phases = await promptForPhases(rl, ensureArray(metadata.phase), validPhases);
-365 |     const gate = await promptForString(rl, 'Gate', typeof metadata.gate === 'string' ? metadata.gate : undefined);
-366 |     const status = await promptForString(
-367 |       rl,
-368 |       'Status',
-369 |       typeof metadata.status === 'string' ? metadata.status : undefined,
-370 |     );
-371 |     const previous = await promptForList(rl, 'Previous commands', ensureArray(metadata.previous));
-372 |     const next = await promptForList(rl, 'Next commands', ensureArray(metadata.next));
-373 | 
-374 |     return { phases, gate, status, previous, next };
-375 |   } finally {
-376 |     rl.close();
-377 |   }
-378 | }
-379 | 
-380 | async function promptForPhases(
-381 |   rl: PromptInterface,
-382 |   defaults: string[],
-383 |   validPhases: Set<string>,
-384 | ): Promise<string[]> {
-385 |   while (true) {
-386 |     const promptLabel = defaults.length > 0 ? `Phase [${defaults.join(', ')}]` : 'Phase';
-387 |     const answer = (await rl.question(`${promptLabel}: `)).trim();
-388 |     const raw = answer.length > 0 ? answer : defaults.join(',');
-389 |     const values = raw
-390 |       .split(',')
-391 |       .map((value) => value.trim())
-392 |       .filter((value) => value.length > 0);
-393 |     if (values.length === 0) {
-394 |       console.log('Phase is required.');
-395 |       continue;
-396 |     }
-397 |     const missing = values.filter((phase) => !phaseExists(phase, validPhases));
-398 |     if (missing.length > 0) {
-399 |       console.log(`Warning: phase(s) ${missing.join(', ')} not present in WORKFLOW.md.`);
-400 |     }
-401 |     return values;
-402 |   }
-403 | }
-404 | 
-405 | async function promptForString(
-406 |   rl: PromptInterface,
-407 |   label: string,
-408 |   defaultValue?: string,
-409 | ): Promise<string> {
-410 |   while (true) {
-411 |     const promptLabel = defaultValue ? `${label} [${defaultValue}]` : label;
-412 |     const answer = (await rl.question(`${promptLabel}: `)).trim();
-413 |     if (answer.length > 0) {
-414 |       return answer;
-415 |     }
-416 |     if (defaultValue && defaultValue.trim().length > 0) {
-417 |       return defaultValue.trim();
-418 |     }
-419 |     console.log(`${label} is required.`);
-420 |   }
-421 | }
-422 | 
-423 | async function promptForList(rl: PromptInterface, label: string, defaults: string[]): Promise<string[]> {
-424 |   while (true) {
-425 |     const promptLabel = defaults.length > 0 ? `${label} [${defaults.join(', ')}]` : label;
-426 |     const answer = (await rl.question(`${promptLabel}: `)).trim();
-427 |     const raw = answer.length > 0 ? answer : defaults.join(',');
-428 |     const values = raw
-429 |       .split(',')
-430 |       .map((value) => value.trim())
-431 |       .filter((value) => value.length > 0);
-432 |     if (values.length === 0) {
-433 |       console.log(`${label} must include at least one entry.`);
-434 |       continue;
-435 |     }
-436 |     return values;
-437 |   }
-438 | }
-439 | 
-440 | function phaseExists(phase: string, validPhases: Set<string>): boolean {
-441 |   if (validPhases.size === 0) {
-442 |     return true;
-443 |   }
-444 |   const normalized = phase.trim().toLowerCase();
-445 |   return Array.from(validPhases).some((heading) => heading.toLowerCase().includes(normalized));
-446 | }
-447 | 
-448 | function slugToId(slug: string): string {
-449 |   const withoutExtension = slug.replace(/\.md$/i, '');
-450 |   const segments = withoutExtension.split(/[\\/]+/).filter((segment) => segment.length > 0);
-451 |   const rawId = segments.join('-').replace(/[^a-zA-Z0-9-]+/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
-452 |   const normalized = rawId.length > 0 ? rawId : slug.replace(/[^a-zA-Z0-9-]+/g, '-');
-453 |   return normalized.toLowerCase();
-454 | }
-455 | 
-456 | async function updatePromptMetadataFile(repoRoot: string, update: PromptMetadataUpdate): Promise<boolean> {
-457 |   const metadataPath = path.join(repoRoot, 'resources', 'prompts.meta.yaml');
-458 |   const original = await fs.readFile(metadataPath, 'utf8');
-459 |   const { header, rest } = splitLeadingComments(original);
-460 |   const parsed = rest.trim().length > 0 ? loadYaml(rest) : [];
-461 |   if (parsed !== undefined && !Array.isArray(parsed)) {
-462 |     throw new Error('Prompt metadata file must contain a YAML array.');
-463 |   }
-464 | 
-465 |   const entries = Array.isArray(parsed) ? (parsed as Record<string, unknown>[]) : [];
-466 |   let index = entries.findIndex((entry) => isPlainObject(entry) && entry.id === update.id);
-467 |   if (index === -1) {
-468 |     entries.push({});
-469 |     index = entries.length - 1;
-470 |   }
-471 | 
-472 |   const normalized = normalizeMetadataEntry(entries[index], update);
-473 |   entries[index] = normalized;
-474 |   entries.sort((a, b) => String(a.id).localeCompare(String(b.id)));
-475 | 
-476 |   const orderedEntries = entries.map(orderMetadataEntry);
-477 |   const serialized = dumpYaml(orderedEntries, {
-478 |     lineWidth: 120,
-479 |     noRefs: true,
-480 |     sortKeys: false,
-481 |     quotingType: '"',
-482 |   }).trimEnd();
-483 | 
-484 |   const headerSection = header;
-485 |   const bodySection = serialized.length > 0 ? `${serialized}\n` : '';
-486 |   const nextContent = `${headerSection}${bodySection}`;
-487 | 
-488 |   if (nextContent === original) {
-489 |     return false;
-490 |   }
-491 | 
-492 |   await fs.writeFile(metadataPath, nextContent, 'utf8');
-493 |   return true;
-494 | }
-495 | 
-496 | async function runValidationScripts(repoRoot: string, updateWorkflow: boolean): Promise<void> {
-497 |   await runNpmScript(repoRoot, 'validate:metadata');
-498 |   const buildArgs = updateWorkflow ? ['--', '--update-workflow'] : [];
-499 |   await runNpmScript(repoRoot, 'build:catalog', buildArgs);
-500 | }
-501 | 
-502 | async function runNpmScript(repoRoot: string, script: string, extraArgs: string[] = []): Promise<void> {
-503 |   const commandArgs = ['run', script, ...extraArgs];
-504 |   await new Promise<void>((resolve, reject) => {
-505 |     const child = spawn('npm', commandArgs, {
-506 |       cwd: repoRoot,
-507 |       stdio: 'inherit',
-508 |     });
-509 |     child.on('error', reject);
-510 |     child.on('close', (code) => {
-511 |       if (code === 0) {
-512 |         resolve();
-513 |       } else {
-514 |         reject(new Error(`npm run ${script} exited with code ${code}`));
-515 |       }
-516 |     });
-517 |   });
-518 | }
-519 | 
-520 | function splitLeadingComments(content: string): { header: string; rest: string } {
-521 |   const match = content.match(/^(?:#.*\r?\n)*/);
-522 |   const header = match ? match[0] : '';
-523 |   const rest = content.slice(header.length);
-524 |   return { header, rest };
-525 | }
-526 | 
-527 | function normalizeMetadataEntry(
-528 |   existing: unknown,
-529 |   update: PromptMetadataUpdate,
-530 | ): Record<string, unknown> {
-531 |   const base = isPlainObject(existing) ? { ...existing } : {};
-532 |   base.id = update.id;
-533 |   base.title = update.title;
-534 |   base.path = toPosixPath(update.path);
-535 |   base.phase = update.phase;
-536 |   base.gate = update.gate;
-537 |   if (typeof base.description !== 'string') {
-538 |     base.description = '';
-539 |   }
-540 |   base.tags = normalizeStringArray(base.tags);
-541 |   base.dependsOn = normalizeStringArray(base.dependsOn);
-542 |   base.variables = Array.isArray(base.variables) ? base.variables : [];
-543 |   return base;
-544 | }
-545 | 
-546 | function orderMetadataEntry(entry: Record<string, unknown>): Record<string, unknown> {
-547 |   const ordered: Record<string, unknown> = {};
-548 |   const priority = ['id', 'title', 'description', 'path', 'phase', 'gate', 'tags', 'dependsOn', 'variables'];
-549 |   for (const key of priority) {
-550 |     if (entry[key] !== undefined) {
-551 |       ordered[key] = entry[key];
-552 |     }
-553 |   }
-554 |   for (const [key, value] of Object.entries(entry)) {
-555 |     if (ordered[key] !== undefined) {
-556 |       continue;
-557 |     }
-558 |     ordered[key] = value;
-559 |   }
-560 |   return ordered;
-561 | }
-562 | 
-563 | function normalizeStringArray(value: unknown): string[] {
-564 |   if (!Array.isArray(value)) {
-565 |     return [];
-566 |   }
-567 |   return value
-568 |     .map((item) => (typeof item === 'string' ? item : String(item)))
-569 |     .map((item) => item.trim())
-570 |     .filter((item) => item.length > 0);
-571 | }
-572 | 
-573 | function isPlainObject(value: unknown): value is Record<string, any> {
-574 |   return !!value && typeof value === 'object' && !Array.isArray(value);
-575 | }
-576 | 
-577 | function toPosixPath(filePath: string): string {
-578 |   return filePath.split(path.sep).join('/');
-579 | }
-580 | 
-581 | function ensureMarkdownExtension(slug: string): string {
-582 |   return slug.endsWith('.md') ? slug : `${slug}.md`;
-583 | }
-584 | 
-585 | program
-586 |   .command('help', { isDefault: false })
-587 |   .description('Display CLI help information.')
-588 |   .action(() => {
-589 |     program.help();
-590 |   });
-591 | 
-592 | program.parseAsync(process.argv).catch((error) => {
-593 |   printError(error);
-594 |   process.exitCode = 1;
-595 | });
+85 |   if (error instanceof TaskIngestError) {
+86 |     console.error(error.message);
+87 |     if (error.context) {
+88 |       console.error(stringify(error.context, true));
+89 |     }
+90 |     return;
+91 |   }
+92 | 
+93 |   console.error(error instanceof Error ? error.message : String(error));
+94 | };
+95 | 
+96 | import { createSecureLogger, logger as baseLogger } from '../logger.js';
+97 | const withCliErrors = async (runner: () => Promise<void>): Promise<void> => {
+98 |   try {
+99 |     const opts = getGlobalOptions() as any;
+100 |     const cliLogger = createSecureLogger(baseLogger, { unsafe: Boolean(opts.unsafeLogs) });
+101 |     if (opts.verbose) cliLogger.info('cli_start');
+102 |     await runner();
+103 |     if (opts.verbose) cliLogger.info('cli_end');
+104 |   } catch (error) {
+105 |     printError(error);
+106 |     process.exitCode = 1;
+107 |   }
+108 | };
+109 | 
+110 | const toLocatorOptions = (options: GlobalCliOptions): TaskLocatorOptions => ({
+111 |   tasksPath: options.tasks,
+112 |   tag: options.tag,
+113 |   cwd: process.cwd()
+114 | });
+115 | 
+116 | program
+117 |   .command('ingest')
+118 |   .description('Validate and normalize Task-Master tasks into the canonical schema.')
+119 |   .action(async () => {
+120 |     await withCliErrors(async () => {
+121 |       const options = getGlobalOptions();
+122 |       const result = await loadIngest(toLocatorOptions(options));
+123 |       printJson(
+124 |         {
+125 |           tasks: result.tasks,
+126 |           report: result.report
+127 |         },
+128 |         options.pretty
+129 |       );
+130 |     });
+131 |   });
+132 | 
+133 | program
+134 |   .command('next')
+135 |   .description('Select the next ready task based on dependency and priority rules.')
+136 |   .action(async () => {
+137 |     await withCliErrors(async () => {
+138 |       const options = getGlobalOptions();
+139 |       const { task, ready } = await runNext(toLocatorOptions(options));
+140 | 
+141 |       printJson(
+142 |         {
+143 |           task,
+144 |           ready
+145 |         },
+146 |         options.pretty
+147 |       );
+148 |     });
+149 |   });
+150 | 
+151 | program
+152 |   .command('advance')
+153 |   .description('Update a task\'s status. Persists only when --write is supplied.')
+154 |   .argument('<id>', 'Task identifier to update.')
+155 |   .argument('<status>', 'New status (canonical name or supported alias).')
+156 |   .action(async (id: string, status: string) => {
+157 |     await withCliErrors(async () => {
+158 |       const options = getGlobalOptions();
+159 |       const taskId = parseTaskId(id);
+160 |       const canonicalStatus = parseStatus(status);
+161 |       const result = await runAdvance(toLocatorOptions(options), taskId, canonicalStatus, Boolean(options.write));
+162 | 
+163 |       printJson(
+164 |         {
+165 |           task: result.task,
+166 |           persisted: result.persisted
+167 |         },
+168 |         options.pretty
+169 |       );
+170 |     });
+171 |   });
+172 | 
+173 | program
+174 |   .command('graph')
+175 |   .description('Export the task dependency graph as JSON or DOT.')
+176 |   .option('--format <format>', 'Output format: json or dot', 'json')
+177 |   .action(async (commandOptions: { format: string }) => {
+178 |     await withCliErrors(async () => {
+179 |       const options = getGlobalOptions();
+180 |       const graph = await runGraph(toLocatorOptions(options));
+181 |       const format = (commandOptions.format ?? 'json').toLowerCase();
+182 | 
+183 |       if (format === 'json') {
+184 |         printJson(graph, options.pretty);
+185 |         return;
+186 |       }
+187 | 
+188 |       if (format === 'dot') {
+189 |         console.log(formatGraphDot(graph.nodes as GraphNode[]));
+190 |         return;
+191 |       }
+192 | 
+193 |       throw new Error(`Unsupported graph format: ${commandOptions.format}`);
+194 |     });
+195 |   });
+196 | 
+197 | program
+198 |   .command('status')
+199 |   .description('Summarize task statuses and readiness information.')
+200 |   .action(async () => {
+201 |     await withCliErrors(async () => {
+202 |       const options = getGlobalOptions();
+203 |       const summary = await buildStatusSummary(toLocatorOptions(options));
+204 |       printJson(summary, options.pretty);
+205 |     });
+206 |   });
+207 | 
+208 | program
+209 |   .command('help', { isDefault: false })
+210 |   .description('Display CLI help information.')
+211 |   .action(() => {
+212 |     program.help();
+213 |   });
+214 | 
+215 | program.parseAsync(process.argv).catch((error) => {
+216 |   printError(error);
+217 |   process.exitCode = 1;
+218 | });
 ```
 
 src/enrichment/index.ts
@@ -15531,29 +15847,27 @@ src/tools/task-tools.ts
 187 | 
 188 |   for (const tool of tools) {
 189 |     const schema = tool.inputSchema as z.ZodObject<any> | undefined;
-190 | 
-191 |     server.registerTool(
-192 |       tool.name,
-193 |       {
-194 |         title: tool.title,
-195 |         description: tool.description,
-196 |         inputSchema: schema ? schema.shape : {},
-197 |         annotations: {
-198 |           idempotentHint: tool.name === 'set_task_status' ? false : true
-199 |         }
-200 |       },
-201 |       async (rawArgs: unknown) => {
-202 |         const result = await tool.handler(rawArgs);
-203 |         return {
-204 |           content: buildTextContent(result.content),
-205 |           structuredResult: result.structuredResult,
-206 |           isError: result.isError
-207 |         };
-208 |       }
-209 |     );
-210 |   }
-211 | };
-212 | 
+190 |     server.registerTool(
+191 |       tool.name,
+192 |       {
+193 |         title: tool.title,
+194 |         description: tool.description,
+195 |         inputSchema: schema ? schema.shape : {},
+196 |         annotations: {
+197 |           idempotentHint: tool.name === 'set_task_status' ? false : true
+198 |         }
+199 |       },
+200 |       async (rawArgs: unknown) => {
+201 |         const result = await tool.handler(rawArgs);
+202 |         return {
+203 |           content: buildTextContent(result.content),
+204 |           structuredResult: result.structuredResult,
+205 |           isError: result.isError
+206 |         };
+207 |       }
+208 |     );
+209 |   }
+210 | };
 ```
 
 src/types/prompts-task.d.ts
@@ -15760,173 +16074,6 @@ src/types/prompts-task.ts
 102 |   tasks: PromptsTask[];
 103 |   report: StatusNormalizationReport;
 104 | }
-```
-
-src/utils/front_matter.ts
-```
-1 | import matter from 'gray-matter';
-2 | 
-3 | export type Scalar = string;
-4 | export type MetadataValue = Scalar | Scalar[];
-5 | 
-6 | export interface ParsedFrontMatter {
-7 |   metadata: Record<string, MetadataValue>;
-8 |   endOffset: number;
-9 | }
-10 | 
-11 | export type FrontMatterRecord = Record<string, MetadataValue | undefined>;
-12 | 
-13 | const FRONT_MATTER_PATTERN = /^---\r?\n([\s\S]*?)\r?\n---\r?\n?/;
-14 | 
-15 | export function parseFrontMatter(content: string): ParsedFrontMatter | null {
-16 |   if (!content.startsWith('---')) {
-17 |     return null;
-18 |   }
-19 | 
-20 |   const match = content.match(FRONT_MATTER_PATTERN);
-21 |   if (!match) {
-22 |     throw new Error('Front matter missing closing delimiter.');
-23 |   }
-24 | 
-25 |   const parsed = matter(content, { excerpt: false });
-26 |   const metadata = normalizeMetadata(parsed.data);
-27 | 
-28 |   return {
-29 |     metadata,
-30 |     endOffset: match[0].length,
-31 |   };
-32 | }
-33 | 
-34 | export function ensureArray(value: MetadataValue | undefined): string[] {
-35 |   if (value === undefined) {
-36 |     return [];
-37 |   }
-38 |   if (Array.isArray(value)) {
-39 |     return value.map((entry) => entry.trim()).filter((entry) => entry.length > 0);
-40 |   }
-41 |   const trimmed = value.trim();
-42 |   return trimmed.length > 0 ? [trimmed] : [];
-43 | }
-44 | 
-45 | export function formatFrontMatter(
-46 |   metadata: FrontMatterRecord,
-47 |   preferredOrder: string[] = ['phase', 'gate', 'status', 'previous', 'next'],
-48 | ): string {
-49 |   const normalizedEntries: [string, MetadataValue][] = [];
-50 |   for (const [key, value] of Object.entries(metadata)) {
-51 |     if (value === undefined || value === null) {
-52 |       continue;
-53 |     }
-54 |     if (Array.isArray(value)) {
-55 |       const items = value.map((item) => item.trim()).filter((item) => item.length > 0);
-56 |       normalizedEntries.push([key, items]);
-57 |     } else {
-58 |       const trimmed = value.trim();
-59 |       if (trimmed.length === 0) {
-60 |         continue;
-61 |       }
-62 |       normalizedEntries.push([key, trimmed]);
-63 |     }
-64 |   }
-65 | 
-66 |   const orderedKeys = new Set<string>();
-67 |   for (const key of preferredOrder) {
-68 |     if (normalizedEntries.some(([entryKey]) => entryKey === key)) {
-69 |       orderedKeys.add(key);
-70 |     }
-71 |   }
-72 |   for (const [key] of normalizedEntries) {
-73 |     if (!orderedKeys.has(key)) {
-74 |       orderedKeys.add(key);
-75 |     }
-76 |   }
-77 | 
-78 |   const lines: string[] = ['---'];
-79 |   for (const key of orderedKeys) {
-80 |     const entry = normalizedEntries.find(([entryKey]) => entryKey === key);
-81 |     if (!entry) {
-82 |       continue;
-83 |     }
-84 |     const [, value] = entry;
-85 |     if (Array.isArray(value)) {
-86 |       if (value.length === 0) {
-87 |         lines.push(`${key}: []`);
-88 |         continue;
-89 |       }
-90 |       lines.push(`${key}:`);
-91 |       for (const item of value) {
-92 |         lines.push(`  - ${JSON.stringify(item)}`);
-93 |       }
-94 |     } else {
-95 |       lines.push(`${key}: ${JSON.stringify(value)}`);
-96 |     }
-97 |   }
-98 | 
-99 |   lines.push('---', '');
-100 |   return `${lines.join('\n')}\n`;
-101 | }
-102 | 
-103 | function normalizeMetadata(raw: unknown): Record<string, MetadataValue> {
-104 |   if (raw === null || typeof raw !== 'object') {
-105 |     return {};
-106 |   }
-107 | 
-108 |   const entries = Object.entries(raw as Record<string, unknown>);
-109 |   const normalized: Record<string, MetadataValue> = {};
-110 | 
-111 |   for (const [key, value] of entries) {
-112 |     if (value === undefined || value === null) {
-113 |       continue;
-114 |     }
-115 |     if (Array.isArray(value)) {
-116 |       normalized[key] = value.map((item) => stringify(item)).filter((item) => item.length > 0);
-117 |     } else {
-118 |       const stringValue = stringify(value);
-119 |       if (stringValue.length > 0) {
-120 |         normalized[key] = stringValue;
-121 |       }
-122 |     }
-123 |   }
-124 | 
-125 |   return normalized;
-126 | }
-127 | 
-128 | function stringify(input: unknown): string {
-129 |   if (typeof input === 'string') {
-130 |     return input.trim();
-131 |   }
-132 |   return String(input).trim();
-133 | }
-```
-
-src/utils/markdown.ts
-```
-1 | import { promises as fs } from 'node:fs';
-2 | import path from 'node:path';
-3 | 
-4 | export async function loadPhases(workflowPath: string): Promise<Set<string>> {
-5 |   const content = await fs.readFile(workflowPath, 'utf8');
-6 |   const headingRegex = /^(##|###)\s+(.+)$/gm;
-7 |   const phases = new Set<string>();
-8 |   let match: RegExpExecArray | null;
-9 |   while ((match = headingRegex.exec(content)) !== null) {
-10 |     phases.add(match[2].trim());
-11 |   }
-12 |   return phases;
-13 | }
-14 | 
-15 | export function extractTitleFromMarkdown(body: string, filePath: string): string {
-16 |   const headingMatch = body.match(/^#\s+(.+)$/m);
-17 |   if (headingMatch) {
-18 |     return headingMatch[1].trim();
-19 |   }
-20 |   const base = path.basename(filePath, path.extname(filePath));
-21 |   const words = base.split(/[-_]+/).filter(Boolean);
-22 |   if (words.length === 0) {
-23 |     return base;
-24 |   }
-25 |   return words.map((word) => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
-26 | }
 ```
 
 src/utils/safety.test.ts
@@ -16484,7 +16631,7 @@ test/integration/run-lint.test.ts
 1 | import { describe, expect, test } from '@jest/globals';
 2 | import { createRunLintTool } from '../../src/tools/definitions/run-domain.ts';
 3 | 
-4 | describe('workflow/run_lint', () => {
+4 | describe('workflow_run_lint', () => {
 5 |   test('dry-run returns the expected command summary', async () => {
 6 |     const tool = createRunLintTool();
 7 |     const res: any = await tool.handler({ dryRun: true });
@@ -16499,7 +16646,6 @@ test/integration/run-lint.test.ts
 16 |     expect(String(res.summary)).toMatch(/Execution disabled/);
 17 |   });
 18 | });
-19 | 
 ```
 
 test/integration/run-script.error-event.test.ts
@@ -16508,7 +16654,7 @@ test/integration/run-script.error-event.test.ts
 2 | 
 3 | import { createRunScriptTool } from '../../src/tools/definitions/run-script.ts';
 4 | 
-5 | describe('workflow/run_script error handling', () => {
+5 | describe('workflow_run_script error handling', () => {
 6 |   test('resolves on spawn error when npm is not found', async () => {
 7 |     // Enable execution path to reach spawn
 8 |     process.env.PROMPTS_EXEC_ALLOW = '1';
@@ -16526,7 +16672,6 @@ test/integration/run-script.error-event.test.ts
 20 |     }
 21 |   });
 22 | });
-23 | 
 ```
 
 test/integration/run-script.live-enabled.test.ts
@@ -16535,7 +16680,7 @@ test/integration/run-script.live-enabled.test.ts
 2 | 
 3 | import { createRunScriptTool } from '../../src/tools/definitions/run-script.ts';
 4 | 
-5 | describe('workflow/run_script live execution (gated)', () => {
+5 | describe('workflow_run_script live execution (gated)', () => {
 6 |   test('executes allowlisted noop when PROMPTS_EXEC_ALLOW=1', async () => {
 7 |     const prev = process.env.PROMPTS_EXEC_ALLOW;
 8 |     process.env.PROMPTS_EXEC_ALLOW = '1';
@@ -16551,7 +16696,6 @@ test/integration/run-script.live-enabled.test.ts
 18 |     }
 19 |   });
 20 | });
-21 | 
 ```
 
 test/integration/run-script.test.ts
@@ -16560,7 +16704,7 @@ test/integration/run-script.test.ts
 2 | 
 3 | import { createRunScriptTool } from '../../src/tools/definitions/run-script.ts';
 4 | 
-5 | describe('workflow/run_script tool', () => {
+5 | describe('workflow_run_script tool', () => {
 6 |   test('rejects when execution is disabled', async () => {
 7 |     delete process.env.PROMPTS_EXEC_ALLOW;
 8 |     const tool = createRunScriptTool();
@@ -16575,7 +16719,6 @@ test/integration/run-script.test.ts
 17 |     expect(String(result.summary)).toContain('npm run --silent validate:metadata');
 18 |   });
 19 | });
-20 | 
 ```
 
 test/integration/run-task-action.error-cases.test.ts
@@ -16598,7 +16741,7 @@ test/integration/run-task-action.error-cases.test.ts
 16 |   return { dir, service } as const;
 17 | };
 18 | 
-19 | describe('workflow/run_task_action error cases', () => {
+19 | describe('workflow_run_task_action error cases', () => {
 20 |   let tempDir = '';
 21 | 
 22 |   afterEach(async () => {
@@ -16744,10 +16887,10 @@ test/integration/server-advertises.test.ts
 42 |         'export_task_list', // workflow tool
 43 |         'next_task', // task tool
 44 |         'list_tasks', // task tool
-45 |         'workflow/run_task_action',
-46 |         'workflow/run_tests',
-47 |         'workflow/run_build',
-48 |         'workflow/run_lint',
+45 |         'workflow_run_task_action',
+46 |         'workflow_run_tests',
+47 |         'workflow_run_build',
+48 |         'workflow_run_lint',
 49 |       ]) {
 50 |         assert.ok(names.includes(expected), `expected tool ${expected}`);
 51 |       }
@@ -17581,270 +17724,6 @@ tests/adapters/ingest.test.ts
 66 | });
 ```
 
-docs/llms.txt/E2B/llms-ctx-full.txt
-```
-1 | <project title="Mcp Server" summary="The E2B MCP server enables users to run code in a sandboxed environment within the Claude Desktop app, providing code interpretation capabilities through the E2B Sandbox. The project aims to offer a server implementation that supports both JavaScript and Python, allowing developers to execute code securely and efficiently in a controlled environment.">**Remember:**
-2 | - MCP server
-3 | - Code interpreter
-4 | - Sandboxed execution
-5 | - JavaScript/Python support
-6 | - Claude Desktop integration
-7 | - Server-side code execution<docs><doc title="README" desc="overview and usage."># Changesets
-8 | 
-9 | To add changeset run:
-10 | 
-11 | ```bash
-12 | npx changeset
-13 | ```
-14 | 
-15 | in the root of the project. This will create a new changeset in the `.changeset` folder.</doc></docs><examples><doc title="README" desc="overview."><!doctype html>
-16 | <html>
-17 | <head>
-18 |     <title>Example Domain</title>
-19 | 
-20 |     <meta charset="utf-8" />
-21 |     <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
-22 |     <meta name="viewport" content="width=device-width, initial-scale=1" />
-23 |     <style type="text/css">
-24 |     body {
-25 |         background-color: #f0f0f2;
-26 |         margin: 0;
-27 |         padding: 0;
-28 |         font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
-29 |         
-30 |     }
-31 |     div {
-32 |         width: 600px;
-33 |         margin: 5em auto;
-34 |         padding: 2em;
-35 |         background-color: #fdfdff;
-36 |         border-radius: 0.5em;
-37 |         box-shadow: 2px 3px 7px 2px rgba(0,0,0,0.02);
-38 |     }
-39 |     a:link, a:visited {
-40 |         color: #38488f;
-41 |         text-decoration: none;
-42 |     }
-43 |     @media (max-width: 700px) {
-44 |         div {
-45 |             margin: 0 auto;
-46 |             width: auto;
-47 |         }
-48 |     }
-49 |     </style>    
-50 | </head>
-51 | 
-52 | <body>
-53 | <div>
-54 |     <h1>Example Domain</h1>
-55 |     <p>This domain is for use in illustrative examples in documents. You may use this
-56 |     domain in literature without prior coordination or asking for permission.</p>
-57 |     <p><a href="https://www.iana.org/domains/example">More information...</a></p>
-58 | </div>
-59 | </body>
-60 | </html></doc></examples><optional><doc title="License" desc="optional reading.">                                 Apache License
-61 |                            Version 2.0, January 2004
-62 |                         http://www.apache.org/licenses/
-63 | 
-64 |    TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION
-65 | 
-66 |    1. Definitions.
-67 | 
-68 |       "License" shall mean the terms and conditions for use, reproduction,
-69 |       and distribution as defined by Sections 1 through 9 of this document.
-70 | 
-71 |       "Licensor" shall mean the copyright owner or entity authorized by
-72 |       the copyright owner that is granting the License.
-73 | 
-74 |       "Legal Entity" shall mean the union of the acting entity and all
-75 |       other entities that control, are controlled by, or are under common
-76 |       control with that entity. For the purposes of this definition,
-77 |       "control" means (i) the power, direct or indirect, to cause the
-78 |       direction or management of such entity, whether by contract or
-79 |       otherwise, or (ii) ownership of fifty percent (50%) or more of the
-80 |       outstanding shares, or (iii) beneficial ownership of such entity.
-81 | 
-82 |       "You" (or "Your") shall mean an individual or Legal Entity
-83 |       exercising permissions granted by this License.
-84 | 
-85 |       "Source" form shall mean the preferred form for making modifications,
-86 |       including but not limited to software source code, documentation
-87 |       source, and configuration files.
-88 | 
-89 |       "Object" form shall mean any form resulting from mechanical
-90 |       transformation or translation of a Source form, including but
-91 |       not limited to compiled object code, generated documentation,
-92 |       and conversions to other media types.
-93 | 
-94 |       "Work" shall mean the work of authorship, whether in Source or
-95 |       Object form, made available under the License, as indicated by a
-96 |       copyright notice that is included in or attached to the work
-97 |       (an example is provided in the Appendix below).
-98 | 
-99 |       "Derivative Works" shall mean any work, whether in Source or Object
-100 |       form, that is based on (or derived from) the Work and for which the
-101 |       editorial revisions, annotations, elaborations, or other modifications
-102 |       represent, as a whole, an original work of authorship. For the purposes
-103 |       of this License, Derivative Works shall not include works that remain
-104 |       separable from, or merely link (or bind by name) to the interfaces of,
-105 |       the Work and Derivative Works thereof.
-106 | 
-107 |       "Contribution" shall mean any work of authorship, including
-108 |       the original version of the Work and any modifications or additions
-109 |       to that Work or Derivative Works thereof, that is intentionally
-110 |       submitted to Licensor for inclusion in the Work by the copyright owner
-111 |       or by an individual or Legal Entity authorized to submit on behalf of
-112 |       the copyright owner. For the purposes of this definition, "submitted"
-113 |       means any form of electronic, verbal, or written communication sent
-114 |       to the Licensor or its representatives, including but not limited to
-115 |       communication on electronic mailing lists, source code control systems,
-116 |       and issue tracking systems that are managed by, or on behalf of, the
-117 |       Licensor for the purpose of discussing and improving the Work, but
-118 |       excluding communication that is conspicuously marked or otherwise
-119 |       designated in writing by the copyright owner as "Not a Contribution."
-120 | 
-121 |       "Contributor" shall mean Licensor and any individual or Legal Entity
-122 |       on behalf of whom a Contribution has been received by Licensor and
-123 |       subsequently incorporated within the Work.
-124 | 
-125 |    2. Grant of Copyright License. Subject to the terms and conditions of
-126 |       this License, each Contributor hereby grants to You a perpetual,
-127 |       worldwide, non-exclusive, no-charge, royalty-free, irrevocable
-128 |       copyright license to reproduce, prepare Derivative Works of,
-129 |       publicly display, publicly perform, sublicense, and distribute the
-130 |       Work and such Derivative Works in Source or Object form.
-131 | 
-132 |    3. Grant of Patent License. Subject to the terms and conditions of
-133 |       this License, each Contributor hereby grants to You a perpetual,
-134 |       worldwide, non-exclusive, no-charge, royalty-free, irrevocable
-135 |       (except as stated in this section) patent license to make, have made,
-136 |       use, offer to sell, sell, import, and otherwise transfer the Work,
-137 |       where such license applies only to those patent claims licensable
-138 |       by such Contributor that are necessarily infringed by their
-139 |       Contribution(s) alone or by combination of their Contribution(s)
-140 |       with the Work to which such Contribution(s) was submitted. If You
-141 |       institute patent litigation against any entity (including a
-142 |       cross-claim or counterclaim in a lawsuit) alleging that the Work
-143 |       or a Contribution incorporated within the Work constitutes direct
-144 |       or contributory patent infringement, then any patent licenses
-145 |       granted to You under this License for that Work shall terminate
-146 |       as of the date such litigation is filed.
-147 | 
-148 |    4. Redistribution. You may reproduce and distribute copies of the
-149 |       Work or Derivative Works thereof in any medium, with or without
-150 |       modifications, and in Source or Object form, provided that You
-151 |       meet the following conditions:
-152 | 
-153 |       (a) You must give any other recipients of the Work or
-154 |           Derivative Works a copy of this License; and
-155 | 
-156 |       (b) You must cause any modified files to carry prominent notices
-157 |           stating that You changed the files; and
-158 | 
-159 |       (c) You must retain, in the Source form of any Derivative Works
-160 |           that You distribute, all copyright, patent, trademark, and
-161 |           attribution notices from the Source form of the Work,
-162 |           excluding those notices that do not pertain to any part of
-163 |           the Derivative Works; and
-164 | 
-165 |       (d) If the Work includes a "NOTICE" text file as part of its
-166 |           distribution, then any Derivative Works that You distribute must
-167 |           include a readable copy of the attribution notices contained
-168 |           within such NOTICE file, excluding those notices that do not
-169 |           pertain to any part of the Derivative Works, in at least one
-170 |           of the following places: within a NOTICE text file distributed
-171 |           as part of the Derivative Works; within the Source form or
-172 |           documentation, if provided along with the Derivative Works; or,
-173 |           within a display generated by the Derivative Works, if and
-174 |           wherever such third-party notices normally appear. The contents
-175 |           of the NOTICE file are for informational purposes only and
-176 |           do not modify the License. You may add Your own attribution
-177 |           notices within Derivative Works that You distribute, alongside
-178 |           or as an addendum to the NOTICE text from the Work, provided
-179 |           that such additional attribution notices cannot be construed
-180 |           as modifying the License.
-181 | 
-182 |       You may add Your own copyright statement to Your modifications and
-183 |       may provide additional or different license terms and conditions
-184 |       for use, reproduction, or distribution of Your modifications, or
-185 |       for any such Derivative Works as a whole, provided Your use,
-186 |       reproduction, and distribution of the Work otherwise complies with
-187 |       the conditions stated in this License.
-188 | 
-189 |    5. Submission of Contributions. Unless You explicitly state otherwise,
-190 |       any Contribution intentionally submitted for inclusion in the Work
-191 |       by You to the Licensor shall be under the terms and conditions of
-192 |       this License, without any additional terms or conditions.
-193 |       Notwithstanding the above, nothing herein shall supersede or modify
-194 |       the terms of any separate license agreement you may have executed
-195 |       with Licensor regarding such Contributions.
-196 | 
-197 |    6. Trademarks. This License does not grant permission to use the trade
-198 |       names, trademarks, service marks, or product names of the Licensor,
-199 |       except as required for reasonable and customary use in describing the
-200 |       origin of the Work and reproducing the content of the NOTICE file.
-201 | 
-202 |    7. Disclaimer of Warranty. Unless required by applicable law or
-203 |       agreed to in writing, Licensor provides the Work (and each
-204 |       Contributor provides its Contributions) on an "AS IS" BASIS,
-205 |       WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
-206 |       implied, including, without limitation, any warranties or conditions
-207 |       of TITLE, NON-INFRINGEMENT, MERCHANTABILITY, or FITNESS FOR A
-208 |       PARTICULAR PURPOSE. You are solely responsible for determining the
-209 |       appropriateness of using or redistributing the Work and assume any
-210 |       risks associated with Your exercise of permissions under this License.
-211 | 
-212 |    8. Limitation of Liability. In no event and under no legal theory,
-213 |       whether in tort (including negligence), contract, or otherwise,
-214 |       unless required by applicable law (such as deliberate and grossly
-215 |       negligent acts) or agreed to in writing, shall any Contributor be
-216 |       liable to You for damages, including any direct, indirect, special,
-217 |       incidental, or consequential damages of any character arising as a
-218 |       result of this License or out of the use or inability to use the
-219 |       Work (including but not limited to damages for loss of goodwill,
-220 |       work stoppage, computer failure or malfunction, or any and all
-221 |       other commercial damages or losses), even if such Contributor
-222 |       has been advised of the possibility of such damages.
-223 | 
-224 |    9. Accepting Warranty or Additional Liability. While redistributing
-225 |       the Work or Derivative Works thereof, You may choose to offer,
-226 |       and charge a fee for, acceptance of support, warranty, indemnity,
-227 |       or other liability obligations and/or rights consistent with this
-228 |       License. However, in accepting such obligations, You may act only
-229 |       on Your own behalf and on Your sole responsibility, not on behalf
-230 |       of any other Contributor, and only if You agree to indemnify,
-231 |       defend, and hold each Contributor harmless for any liability
-232 |       incurred by, or claims asserted against, such Contributor by reason
-233 |       of your accepting any such warranty or additional liability.
-234 | 
-235 |    END OF TERMS AND CONDITIONS
-236 | 
-237 |    APPENDIX: How to apply the Apache License to your work.
-238 | 
-239 |       To apply the Apache License to your work, attach the following
-240 |       boilerplate notice, with the fields enclosed by brackets "[]"
-241 |       replaced with your own identifying information. (Don't include
-242 |       the brackets!)  The text should be enclosed in the appropriate
-243 |       comment syntax for the file format. We also recommend that a
-244 |       file or class name and description of purpose be included on the
-245 |       same "printed page" as the copyright notice for easier
-246 |       identification within third-party archives.
-247 | 
-248 |    Copyright 2023 FoundryLabs, Inc.
-249 | 
-250 |    Licensed under the Apache License, Version 2.0 (the "License");
-251 |    you may not use this file except in compliance with the License.
-252 |    You may obtain a copy of the License at
-253 | 
-254 |        http://www.apache.org/licenses/LICENSE-2.0
-255 | 
-256 |    Unless required by applicable law or agreed to in writing, software
-257 |    distributed under the License is distributed on an "AS IS" BASIS,
-258 |    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-259 |    See the License for the specific language governing permissions and
-260 |    limitations under the License.</doc></optional></project>
-```
-
 packages/prompts-tools/src/index.ts
 ```
 1 | import { z } from 'zod';
@@ -18659,44 +18538,47 @@ src/tools/definitions/advance-state.ts
 12 | export const advanceStateInputSchema = z
 13 |   .object({
 14 |     id: z.string().min(1, 'Tool id is required'),
-15 |     outputs: z.record(z.any()).default({}),
-16 |     artifacts: z.array(artifactSchema).default([]),
-17 |   })
-18 |   .strict();
-19 | 
-20 | export type AdvanceStateInput = z.infer<typeof advanceStateInputSchema>;
-21 | 
-22 | export interface AdvanceStateResult {
-23 |   ok: true;
-24 |   statePath: string;
-25 | }
-26 | 
-27 | export interface AdvanceStateTool {
-28 |   name: string;
-29 |   title: string;
-30 |   description: string;
-31 |   inputSchema: typeof advanceStateInputSchema;
-32 |   handler: (input: AdvanceStateInput) => Promise<AdvanceStateResult>;
-33 | }
-34 | 
-35 | export const createAdvanceStateTool = (stateStore: StateStore): AdvanceStateTool => ({
-36 |   name: 'advance_state',
-37 |   title: 'Advance Workflow State',
-38 |   description:
-39 |     'Record a completed workflow tool, capture its outputs, and persist any produced artifacts.',
-40 |   inputSchema: advanceStateInputSchema,
-41 |   handler: async (input) => {
-42 |     const { id, outputs, artifacts } = input;
-43 | 
-44 |     stateStore.recordCompletion(id, outputs, artifacts as Artifact[]);
-45 |     await stateStore.save();
+15 |     outputs: z
+16 |       .object({})
+17 |       .catchall(z.unknown())
+18 |       .default({}),
+19 |     artifacts: z.array(artifactSchema).default([]),
+20 |   })
+21 |   .strict();
+22 | 
+23 | export type AdvanceStateInput = z.infer<typeof advanceStateInputSchema>;
+24 | 
+25 | export interface AdvanceStateResult {
+26 |   ok: true;
+27 |   statePath: string;
+28 | }
+29 | 
+30 | export interface AdvanceStateTool {
+31 |   name: string;
+32 |   title: string;
+33 |   description: string;
+34 |   inputSchema: typeof advanceStateInputSchema;
+35 |   handler: (input: AdvanceStateInput) => Promise<AdvanceStateResult>;
+36 | }
+37 | 
+38 | export const createAdvanceStateTool = (stateStore: StateStore): AdvanceStateTool => ({
+39 |   name: 'advance_state',
+40 |   title: 'Advance Workflow State',
+41 |   description:
+42 |     'Record a completed workflow tool, capture its outputs, and persist any produced artifacts.',
+43 |   inputSchema: advanceStateInputSchema,
+44 |   handler: async (input) => {
+45 |     const { id, outputs, artifacts } = input;
 46 | 
-47 |     return {
-48 |       ok: true,
-49 |       statePath: stateStore.statePath,
-50 |     } satisfies AdvanceStateResult;
-51 |   },
-52 | });
+47 |     stateStore.recordCompletion(id, outputs, artifacts as Artifact[]);
+48 |     await stateStore.save();
+49 | 
+50 |     return {
+51 |       ok: true,
+52 |       statePath: stateStore.statePath,
+53 |     } satisfies AdvanceStateResult;
+54 |   },
+55 | });
 ```
 
 src/tools/definitions/export-task-list.ts
@@ -18910,14 +18792,14 @@ src/tools/definitions/run-domain.ts
 12 | export const createRunTestsTool = () => {
 13 |   const runScript = createRunScriptTool();
 14 |   return {
-15 |     name: 'workflow/run_tests',
+15 |     name: 'workflow_run_tests',
 16 |     title: 'Run project tests',
 17 |     description: 'Execute the test suite using an allowlisted package script.',
 18 |     inputSchema: baseSchema,
 19 |     async handler(raw: unknown) {
 20 |       const parsed = baseSchema.safeParse(raw ?? {});
 21 |       if (!parsed.success) {
-22 |         return { isError: true, summary: 'workflow/run_tests input validation failed', issues: parsed.error.flatten() };
+22 |         return { isError: true, summary: 'workflow_run_tests input validation failed', issues: parsed.error.flatten() };
 23 |       }
 24 |       const { args = [], dryRun, timeoutMs } = parsed.data;
 25 |       return runScript.handler({ script: 'test:jest', args, dryRun, timeoutMs });
@@ -18928,14 +18810,14 @@ src/tools/definitions/run-domain.ts
 30 | export const createRunBuildTool = () => {
 31 |   const runScript = createRunScriptTool();
 32 |   return {
-33 |     name: 'workflow/run_build',
+33 |     name: 'workflow_run_build',
 34 |     title: 'Run project build',
 35 |     description: 'Execute the build using an allowlisted package script.',
 36 |     inputSchema: baseSchema,
 37 |     async handler(raw: unknown) {
 38 |       const parsed = baseSchema.safeParse(raw ?? {});
 39 |       if (!parsed.success) {
-40 |         return { isError: true, summary: 'workflow/run_build input validation failed', issues: parsed.error.flatten() };
+40 |         return { isError: true, summary: 'workflow_run_build input validation failed', issues: parsed.error.flatten() };
 41 |       }
 42 |       const { args = [], dryRun, timeoutMs } = parsed.data;
 43 |       return runScript.handler({ script: 'build', args, dryRun, timeoutMs });
@@ -18946,14 +18828,14 @@ src/tools/definitions/run-domain.ts
 48 | export const createRunLintTool = () => {
 49 |   const runScript = createRunScriptTool();
 50 |   return {
-51 |     name: 'workflow/run_lint',
+51 |     name: 'workflow_run_lint',
 52 |     title: 'Run project lint',
 53 |     description: 'Execute the linter using an allowlisted package script.',
 54 |     inputSchema: baseSchema,
 55 |     async handler(raw: unknown) {
 56 |       const parsed = baseSchema.safeParse(raw ?? {});
 57 |       if (!parsed.success) {
-58 |         return { isError: true, summary: 'workflow/run_lint input validation failed', issues: parsed.error.flatten() };
+58 |         return { isError: true, summary: 'workflow_run_lint input validation failed', issues: parsed.error.flatten() };
 59 |       }
 60 |       const { args = [], dryRun, timeoutMs } = parsed.data;
 61 |       return runScript.handler({ script: 'lint', args, dryRun, timeoutMs });
@@ -18973,7 +18855,7 @@ src/tools/definitions/run-script.ts
 7 | const packageJson = require('../../../package.json') as { mcpAllowScripts?: string[] };
 8 | 
 9 | export const createRunScriptTool = () => ({
-10 |   name: 'workflow/run_script',
+10 |   name: 'workflow_run_script',
 11 |   title: 'Run an allowed package script',
 12 |   description:
 13 |     'Execute an allowed script from package.json in a sandboxed way. Disabled unless PROMPTS_EXEC_ALLOW=1 and script is allowlisted under package.json#mcpAllowScripts.',
@@ -18990,7 +18872,7 @@ src/tools/definitions/run-script.ts
 24 |     if (!parsed.success) {
 25 |       return {
 26 |         isError: true,
-27 |         summary: 'workflow/run_script input validation failed',
+27 |         summary: 'workflow_run_script input validation failed',
 28 |         issues: parsed.error.flatten(),
 29 |       };
 30 |     }
@@ -19017,7 +18899,7 @@ src/tools/definitions/run-script.ts
 51 |       return {
 52 |         isError: true,
 53 |         summary:
-54 |           'Execution disabled. Set PROMPTS_EXEC_ALLOW=1 and restart the server to enable workflow/run_script.',
+54 |           'Execution disabled. Set PROMPTS_EXEC_ALLOW=1 and restart the server to enable workflow_run_script.',
 55 |       };
 56 |     }
 57 | 
@@ -19076,7 +18958,7 @@ src/tools/definitions/run-task-action.ts
 8 | const ActionsSchema = z.record(z.string(), z.object({ script: z.string(), args: z.array(z.string()).optional() }));
 9 | 
 10 | export const createRunTaskActionTool = (service: TaskService) => ({
-11 |   name: 'workflow/run_task_action',
+11 |   name: 'workflow_run_task_action',
 12 |   title: 'Run action mapped to a task id',
 13 |   description: 'Resolve an action (script + args) from task metadata or actions.json and execute via run_script.',
 14 |   inputSchema: z
@@ -19092,7 +18974,7 @@ src/tools/definitions/run-task-action.ts
 24 |     if (!parsed.success) {
 25 |       return {
 26 |         isError: true,
-27 |         summary: 'workflow/run_task_action input validation failed',
+27 |         summary: 'workflow_run_task_action input validation failed',
 28 |         issues: parsed.error.flatten(),
 29 |       };
 30 |     }
