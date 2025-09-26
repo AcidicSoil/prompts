@@ -25,7 +25,6 @@ node_modules/
 dist/
 /tmp
 .cursor/
-package-lock.json
 .vscode
 .mcp/
 codefetch/
