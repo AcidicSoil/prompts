@@ -1,3 +1,6 @@
+[![Pack contents check](https://github.com/AcidicSoil/prompts/actions/workflows/pack-contents.yml/badge.svg?branch=main)](https://github.com/AcidicSoil/prompts/actions/workflows/pack-contents.yml)
+
+
 # Codex Prompts — Vibe Coding Additions
 
 This pack extends the default Codex CLI prompts with vibe-coding playbooks inspired by YC cadences. Drop the folder into `~/.codex/prompts` and you get a catalog of opinionated helpers covering planning, scope control, testing, audits, and model orchestration.
